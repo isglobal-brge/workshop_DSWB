@@ -121,5 +121,13 @@ This combination of technologies enables powerful federated analysis with strong
 <a href="schedule.qmd" class="btn btn-secondary btn-lg">Workshop schedule</a>
 :::
 
+---
+
+::: {.text-center .mt-4}
+This project **(PID2021-122855OB-I00)** has received funding from **MCIN /AEI /10.13039/501100011033 / FEDER, UE**.
+
+![](images/ciencia.png){height=80px}
+:::
+
 ::: {.mb-5}
 :::
