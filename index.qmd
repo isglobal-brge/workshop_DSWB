@@ -10,12 +10,21 @@ toc: false
 
 This hands-on session will introduce you to the combination of DataSHIELD's federated analysis capabilities and the OMOP Common Data Model (CDM) for clinical databases using the dsOMOP framework.
 
+---
+
+::: {.text-center}
+![](images/isglobal_logo.jpg){.img-fluid width=120px}
+![](images/brge_logo.png){.img-fluid width=100px}
+![](images/ciencia.png){height=60px}
+<br>
+<small>This project **(PID2021-122855OB-I00)** has received funding from **MCIN /AEI /10.13039/501100011033 / FEDER, UE**.</small>
+:::
+
+---
+
 ### Institutions behind this workshop
 
 ::: {.text-center}
-![](images/isglobal_logo.jpg){.img-fluid width=160px}
-![](images/brge_logo.png){.img-fluid width=140px}
-<br>
 ![](images/aphrc_logo.png){.img-fluid width=200px}
 ![](images/dgh.png){.img-fluid width=180px}
 ![](images/iressef.png){.img-fluid width=180px}
@@ -119,14 +128,6 @@ This combination of technologies enables powerful federated analysis with strong
 ::: {.text-center .mt-5 .mb-5}
 <a href="getting-started.qmd" class="btn btn-primary btn-lg">Getting ready for the workshop</a>
 <a href="schedule.qmd" class="btn btn-secondary btn-lg">Workshop schedule</a>
-:::
-
----
-
-::: {.text-center .mt-4}
-This project **(PID2021-122855OB-I00)** has received funding from **MCIN /AEI /10.13039/501100011033 / FEDER, UE**.
-
-![](images/ciencia.png){height=80px}
 :::
 
 ::: {.mb-5}
