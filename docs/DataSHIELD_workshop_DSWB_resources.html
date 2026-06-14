@@ -264,12 +264,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># prepare login data and resources to assign</span></span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>builder <span class="ot">&lt;-</span> DSI<span class="sc">::</span><span class="fu">newDSLoginBuilder</span>()</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>builder<span class="sc">$</span><span class="fu">append</span>(<span class="at">server =</span> <span class="st">"study1"</span>, <span class="at">url =</span> <span class="st">"https://opal-demo.obiba.org"</span>, </span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>               <span class="at">user =</span> <span class="st">"dsuser"</span>, <span class="at">password =</span> <span class="st">"P@ssw0rd"</span>, </span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>builder<span class="sc">$</span><span class="fu">append</span>(<span class="at">server =</span> <span class="st">"study1"</span>, <span class="at">url =</span> <span class="st">"https://opal-demo.obiba.org"</span>,</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>               <span class="at">user =</span> <span class="st">"dsuser"</span>, <span class="at">password =</span> <span class="st">"P@ssw0rd"</span>,</span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>               <span class="at">resource =</span> <span class="st">"RSRC.CNSIM1"</span>, <span class="at">profile =</span> <span class="st">"default"</span>)</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co">#builder$append(server = "study2", url = "https://opal.isglobal.org/repo",</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co">#               user = "invited",  password = "12345678Aa@",, </span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="co">#               resource = "CNSIM.CNSIM2", profile = "rock-inma")</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>builder<span class="sc">$</span><span class="fu">append</span>(<span class="at">server =</span> <span class="st">"study2"</span>, <span class="at">url =</span> <span class="st">"https://opal.isglobal.org/repo"</span>,</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>               <span class="at">user =</span> <span class="st">"invited"</span>, <span class="at">password =</span> <span class="st">"12345678Aa@"</span>,</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>               <span class="at">resource =</span> <span class="st">"CNSIM.CNSIM2"</span>, <span class="at">profile =</span> <span class="st">"rock-inma"</span>)</span>
 <span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>logindata <span class="ot">&lt;-</span> builder<span class="sc">$</span><span class="fu">build</span>()</span>
 <span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
@@ -280,7 +280,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.class</span>(<span class="st">"res"</span>)</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>$study1
-[1] "SQLResourceClient" "ResourceClient"    "R6"               </code></pre>
+[1] "SQLResourceClient" "ResourceClient"    "R6"               
+
+$study2
+[1] "TidyFileResourceClient" "FileResourceClient"     "ResourceClient"        
+[4] "R6"                    </code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># coerce ResourceClient objects to data.frames</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co"># (DataSHIELD config allows as.resource.data.frame() assignment function for the purpose of the demo)</span></span>
@@ -289,6 +293,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.class</span>(<span class="st">"D"</span>)</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>$study1
+[1] "data.frame"
+
+$study2
 [1] "data.frame"</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.colnames</span>(<span class="st">"D"</span>)</span></code></pre></div>
@@ -297,7 +304,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
  [1] "id"                 "LAB_TSC"            "LAB_TRIG"          
  [4] "LAB_HDL"            "LAB_GLUC_ADJUSTED"  "PM_BMI_CONTINUOUS" 
  [7] "DIS_CVA"            "MEDI_LPD"           "DIS_DIAB"          
-[10] "DIS_AMI"            "GENDER"             "PM_BMI_CATEGORICAL"</code></pre>
+[10] "DIS_AMI"            "GENDER"             "PM_BMI_CATEGORICAL"
+
+$study2
+ [1] "LAB_TSC"            "LAB_TRIG"           "LAB_HDL"           
+ [4] "LAB_GLUC_ADJUSTED"  "PM_BMI_CONTINUOUS"  "DIS_CVA"           
+ [7] "MEDI_LPD"           "DIS_DIAB"           "DIS_AMI"           
+[10] "GENDER"             "PM_BMI_CATEGORICAL"</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># do usual dsBase analysis</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.summary</span>(<span class="st">'D$LAB_HDL'</span>)</span></code></pre></div>
@@ -311,13 +324,28 @@ $study1$length
 
 $study1$`quantiles &amp; mean`
       5%      10%      25%      50%      75%      90%      95%     Mean 
-0.875240 1.047400 1.300000 1.581000 1.844500 2.090000 2.210900 1.569416 </code></pre>
+0.875240 1.047400 1.300000 1.581000 1.844500 2.090000 2.210900 1.569416 
+
+
+$study2
+$study2$class
+[1] "numeric"
+
+$study2$length
+[1] 3088
+
+$study2$`quantiles &amp; mean`
+      5%      10%      25%      50%      75%      90%      95%     Mean 
+0.850280 1.032200 1.294000 1.563000 1.840000 2.077000 2.225000 1.556648 </code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># vector types are not necessarily the same depending on the data reader that was used</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.class</span>(<span class="st">'D$GENDER'</span>)</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>$study1
-[1] "integer"</code></pre>
+[1] "integer"
+
+$study2
+[1] "numeric"</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.asFactor</span>(<span class="st">'D$GENDER'</span>, <span class="st">'GENDER'</span>)</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -343,19 +371,36 @@ $study1$`count of '0'`
 [1] 1092
 
 $study1$`count of '1'`
-[1] 1071</code></pre>
+[1] 1071
+
+
+$study2
+$study2$class
+[1] "factor"
+
+$study2$length
+[1] 3088
+
+$study2$categories
+[1] "0" "1"
+
+$study2$`count of '0'`
+[1] 1585
+
+$study2$`count of '1'`
+[1] 1503</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>mod <span class="ot">&lt;-</span> <span class="fu">ds.glm</span>(<span class="st">"DIS_DIAB ~ LAB_TRIG + GENDER"</span>, <span class="at">data =</span> <span class="st">"D"</span> , <span class="at">family=</span><span class="st">"binomial"</span>)</span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>mod<span class="sc">$</span>coeff</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>              Estimate Std. Error    z-value      p-value low0.95CI.LP
-(Intercept) -5.1696619  0.4549328 -11.363572 6.349427e-30   -6.0613138
-LAB_TRIG     0.3813891  0.1037611   3.675647 2.372471e-04    0.1780211
-GENDER      -0.2260851  0.4375864  -0.516664 6.053908e-01   -1.0837387
+(Intercept) -5.0909361 0.29747103 -17.114057 1.165886e-65   -5.6739686
+LAB_TRIG     0.3629977 0.07146541   5.079348 3.787332e-07    0.2229280
+GENDER      -0.3522022 0.29246528  -1.204253 2.284918e-01   -0.9254236
             high0.95CI.LP        P_OR low0.95CI.P_OR high0.95CI.P_OR
-(Intercept)    -4.2780099 0.005654338    0.002325913      0.01368049
-LAB_TRIG        0.5847570 1.464317247    1.194850574      1.79455494
-GENDER          0.6315685 0.797650197    0.338328242      1.88055787</code></pre>
+(Intercept)    -4.5079036 0.006114639    0.003422456      0.01090139
+LAB_TRIG        0.5030673 1.437632489    1.249730624      1.65378613
+GENDER          0.2210192 0.703137945    0.396363487      1.24734741</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">datashield.logout</span>(conns)</span></code></pre></div>
 </div>

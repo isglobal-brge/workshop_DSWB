@@ -4,17 +4,6 @@
 # devtools::session_info()
 
 
-## ----eval=FALSE---------------------------------------------------------------
-# install.packages('DSI')
-# install.packages('DSOpal')
-# devtools::install_github("datashield/dsBaseClient", force = TRUE)
-# install.packages(
-#   "dsTidyverseClient",
-#   repos = c("https://molgenis.r-universe.dev", "https://cloud.r-project.org")
-# )
-# install.packages("metafor")
-
-
 ## -----------------------------------------------------------------------------
 # libraries to connect with Opal databases
 library(DSI)

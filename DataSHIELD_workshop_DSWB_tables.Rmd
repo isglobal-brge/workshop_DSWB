@@ -45,21 +45,9 @@ library(devtools)
 devtools::session_info()
 ```
 
-We are missing some of the necessary packages: "DSI", "DSOpal" and "dsBaseClient". 
+If any of the required packages are missing, install them following the [Getting Started](getting-started.qmd) instructions.
 
-```{r, eval=FALSE}
-install.packages('DSI')
-install.packages('DSOpal')
-devtools::install_github("datashield/dsBaseClient", force = TRUE)
-install.packages(
-  "dsTidyverseClient",
-  repos = c("https://molgenis.r-universe.dev", "https://cloud.r-project.org")
-)
-install.packages("metafor")
-```
-
-
-Remember to load them into this R session using "library()" command:
+Remember to load them into this R session using the `library()` command:
 
 ```{r}
 # libraries to connect with Opal databases

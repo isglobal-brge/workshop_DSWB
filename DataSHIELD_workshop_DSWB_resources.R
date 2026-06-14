@@ -4,12 +4,12 @@ library(dsBaseClient)
 
 # prepare login data and resources to assign
 builder <- DSI::newDSLoginBuilder()
-builder$append(server = "study1", url = "https://opal-demo.obiba.org", 
-               user = "dsuser", password = "P@ssw0rd", 
+builder$append(server = "study1", url = "https://opal-demo.obiba.org",
+               user = "dsuser", password = "P@ssw0rd",
                resource = "RSRC.CNSIM1", profile = "default")
-#builder$append(server = "study2", url = "https://opal.isglobal.org/repo",
-#               user = "invited",  password = "12345678Aa@",, 
-#               resource = "CNSIM.CNSIM2", profile = "rock-inma")
+builder$append(server = "study2", url = "https://opal.isglobal.org/repo",
+               user = "invited", password = "12345678Aa@",
+               resource = "CNSIM.CNSIM2", profile = "rock-inma")
 
 logindata <- builder$build()
 
