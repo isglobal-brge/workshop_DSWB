@@ -6,7 +6,7 @@ title: "DataSHIELD Presentation"
 
 <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; background: #f0f0f0; border: 1px solid #ddd; border-radius: 8px;">
   <iframe 
-    src="DATASHIELD_DSWB_workshop.pdf" 
+    src="DATASHIELD_AHRI_workshop.pdf"
     style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;"
     title="DataSHIELD Presentation Slides">
   </iframe>
@@ -20,7 +20,7 @@ If the embedded viewer doesn't work properly, you can download the slides using 
 ### Download Slides
 
 ::: {.text-center .mt-4}
-<a href="DATASHIELD_DSWB_workshop.pdf" download class="btn btn-primary">
+<a href="DATASHIELD_AHRI_workshop.pdf" download class="btn btn-primary">
 <i class="bi bi-download"></i> Download Presentation (PDF)
 </a>
 :::
