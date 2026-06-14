@@ -28,5 +28,5 @@ If the embedded viewer doesn't work properly, you can download the slides using 
 ---
 
 ::: {.text-center .mt-5}
-<a href="DataSHIELD_workshop_APHRC_tables.Rmd" class="btn btn-primary">Continue to DataSHIELD Workshop</a>
+<a href="DataSHIELD_workshop_DSWB_tables.Rmd" class="btn btn-primary">Continue to DataSHIELD Workshop</a>
 :::

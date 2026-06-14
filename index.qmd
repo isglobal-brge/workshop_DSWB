@@ -25,6 +25,7 @@ This hands-on session will introduce you to the combination of DataSHIELD's fede
 ### Institutions behind this workshop
 
 ::: {.text-center}
+![](images/ahri_logo.png){.img-fluid width=140px}
 ![](images/aphrc_logo.png){.img-fluid width=200px}
 ![](images/dgh.png){.img-fluid width=180px}
 ![](images/iressef.png){.img-fluid width=180px}

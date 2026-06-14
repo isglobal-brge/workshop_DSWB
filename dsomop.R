@@ -4,7 +4,7 @@ library(DSOpal)
 library(dsBaseClient)
 library(dsOMOPClient)
 library(dsOMOPHelper)
-library(dsHelper)
+library(dsTidyverseClient)
 
 
 ## ----connection---------------------------------------------------------------
@@ -98,10 +98,10 @@ ds.summary("mimiciv$systolic_blood_pressure.value_as_number")
 
 
 ## ----rename_sbp, warning=FALSE------------------------------------------------
-dh.renameVars(
-	df = "mimiciv", 
-  current_names = c("systolic_blood_pressure.value_as_number"),
-  new_names = c("sbp"))
+ds.rename(
+  df.name = "mimiciv",
+  tidy_expr = list(sbp = systolic_blood_pressure.value_as_number),
+  newobj = "mimiciv")
 
 
 ## ----colnames-----------------------------------------------------------------
@@ -141,10 +141,10 @@ ds.summary("mimiciv$gender_concept_id")
 
 
 ## ----rename_gender, warning=FALSE---------------------------------------------
-dh.renameVars(
-	df = "mimiciv", 
-  current_names = c("gender_concept_id"),
-  new_names = c("gender"))
+ds.rename(
+  df.name = "mimiciv",
+  tidy_expr = list(gender = gender_concept_id),
+  newobj = "mimiciv")
 
 
 ## ----filter_gender------------------------------------------------------------

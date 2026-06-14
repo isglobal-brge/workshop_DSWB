@@ -1,1 +1,1 @@
-Sitemap: https://isglobal-brge.github.io/workshop_APHRC/sitemap.xml
+Sitemap: https://isglobal-brge.github.io/workshop_DSWB/sitemap.xml

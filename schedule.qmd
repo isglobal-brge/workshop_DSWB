@@ -2,22 +2,22 @@
 title: "Workshop Schedule"
 ---
 
-## Workshop Locations and Dates
+## Workshop Location and Dates
 
-The DataSHIELD Without Borders workshop will be delivered at the following three institutions across Africa:
+The DataSHIELD Without Borders workshop will be delivered over four days at the following institution:
 
 ::: {.table-responsive}
 | Dates | Institution | Location |
 |-------|-------------|----------|
-| **August 18–22, 2025** | African Population and Health Research Center (APHRC) | Nairobi, Kenya |
-| **August 25–27, 2025** | Douala General Hospital (DGH) | Douala, Cameroon |
-| **August 29–31, 2025** | Institut de Recherche en Santé, de Surveillance Epidémiologique et de Formation (IRESSEF) | Dakar, Senegal |
+| **June 15–18, 2026** | Armauer Hansen Research Institute (AHRI) | Addis Ababa, Ethiopia |
 : {.table .table-striped .table-hover}
 :::
 
 ---
 
-## Daily Schedule
+## Daily Timetable
+
+The same timetable applies to each of the four days:
 
 <style>
 .schedule-table tr.day-separator td {
@@ -32,44 +32,14 @@ The DataSHIELD Without Borders workshop will be delivered at the following three
   border-top: 3px solid #c86200 !important;
   border-bottom: 3px solid #c86200 !important;
 }
-.schedule-table tr.day-header td:first-child {
-  background-color: #f8f9fa;
+.schedule-table td:first-child {
   font-weight: bold;
+  white-space: nowrap;
   border-left: 5px solid #e47200;
-  vertical-align: middle;
 }
-.schedule-table tbody tr:not(.day-separator) {
-  border-left: 1px solid #dee2e6;
-  border-right: 1px solid #dee2e6;
-}
-.schedule-table tbody tr:last-child td {
-  border-bottom: 2px solid #dee2e6;
-}
-/* Add spacing after each day section */
-.schedule-table tr:nth-child(6) td,
-.schedule-table tr:nth-child(11) td {
-  padding-bottom: 2rem !important;
-}
-/* Day 1 has light orange background */
-.schedule-table tbody tr:nth-child(2) td:first-child,
-.schedule-table tbody tr:nth-child(3) td,
-.schedule-table tbody tr:nth-child(4) td,
-.schedule-table tbody tr:nth-child(5) td {
+.schedule-table tr.break-row td {
   background-color: rgba(228, 114, 0, 0.05);
-}
-/* Day 2 has light blue background */
-.schedule-table tbody tr:nth-child(7) td:first-child,
-.schedule-table tbody tr:nth-child(8) td,
-.schedule-table tbody tr:nth-child(9) td,
-.schedule-table tbody tr:nth-child(10) td {
-  background-color: rgba(23, 162, 184, 0.05);
-}
-/* Day 3 has light green background */
-.schedule-table tbody tr:nth-child(12) td:first-child,
-.schedule-table tbody tr:nth-child(13) td,
-.schedule-table tbody tr:nth-child(14) td,
-.schedule-table tbody tr:nth-child(15) td {
-  background-color: rgba(82, 183, 136, 0.05);
+  font-style: italic;
 }
 </style>
 
@@ -77,59 +47,59 @@ The DataSHIELD Without Borders workshop will be delivered at the following three
 <table class="table table-striped table-hover schedule-table">
 <thead>
 <tr>
+<th>Time</th>
+<th>Activity</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>09:00 – 10:30</td>
+<td>Workshop session</td>
+</tr>
+<tr class="break-row">
+<td>10:30 – 11:00</td>
+<td>Coffee break</td>
+</tr>
+<tr>
+<td>11:00 – 13:00</td>
+<td>Workshop session</td>
+</tr>
+<tr class="break-row">
+<td>13:00 – 14:00</td>
+<td>Lunch</td>
+</tr>
+</tbody>
+</table>
+:::
+
+---
+
+## Topics by Day
+
+::: {.table-responsive}
+<table class="table table-striped table-hover schedule-table">
+<thead>
+<tr>
 <th>Day</th>
-<th>Session</th>
 <th>Topics</th>
 </tr>
 </thead>
 <tbody>
-<tr class="day-separator">
-<td colspan="3">Day 1: Introduction to DataSHIELD</td>
-</tr>
-<tr class="day-header">
-<td rowspan="3"><strong>Day 1</strong><br><em>Introduction to DataSHIELD</em></td>
-<td><strong>Morning</strong></td>
-<td>• DSWB Overview<br>• Federated analysis, Learning, Pooled analysis and Meta analysis<br>• DataSHIELD architecture: client-server setup, disclosure control</td>
+<tr>
+<td><strong>Monday</strong><br><em>June 15, 2026</em></td>
+<td>Introduction to DataSHIELD and Opal; DataSHIELD with tables</td>
 </tr>
 <tr>
-<td><strong>Mid-Morning</strong></td>
-<td>• Using DataSHIELD interface in RStudio<br>• Connecting to Opal and loading tabular datasets<br>• Basic descriptive analyses, models, graphs using tables</td>
+<td><strong>Tuesday</strong><br><em>June 16, 2026</em></td>
+<td>DataSHIELD with resources</td>
 </tr>
 <tr>
-<td><strong>Afternoon</strong></td>
-<td>Questions and Technical Support Discussions</td>
-</tr>
-<tr class="day-separator">
-<td colspan="3">Day 2: Resources and External Data</td>
-</tr>
-<tr class="day-header">
-<td rowspan="3"><strong>Day 2</strong><br><em>Resources and External Data</em></td>
-<td><strong>Morning</strong></td>
-<td>• Concept of resources in Opal (vs table-based data)<br>• Registering external resources (CSV, PostgreSQL)</td>
+<td><strong>Wednesday</strong><br><em>June 17, 2026</em></td>
+<td>OMOP CDM and DataSHIELD with OMOP databases (dsOMOP)</td>
 </tr>
 <tr>
-<td><strong>Mid-Morning</strong></td>
-<td>• Performing aggregation and modeling using resource-based data</td>
-</tr>
-<tr>
-<td><strong>Afternoon</strong></td>
-<td>Questions and Technical Support Discussions</td>
-</tr>
-<tr class="day-separator">
-<td colspan="3">Day 3: OMOP CDM and dsOMOP</td>
-</tr>
-<tr class="day-header">
-<td rowspan="3"><strong>Day 3</strong><br><em>OMOP CDM and dsOMOP</em></td>
-<td><strong>Morning</strong></td>
-<td>• Introduction to OMOP CDM data model<br>• Tables, structure, and use cases</td>
-</tr>
-<tr>
-<td><strong>Mid-Morning</strong></td>
-<td>• dsOMOP architecture and prerequisites<br>• Setting up OMOP connections in Opal<br>• Federated analysis on OMOP databases</td>
-</tr>
-<tr>
-<td><strong>Afternoon</strong></td>
-<td>Questions and Technical Support Discussions</td>
+<td><strong>Thursday</strong><br><em>June 18, 2026</em></td>
+<td>Open hands-on session, exploring other packages (dsFlower, dsImaging…)</td>
 </tr>
 </tbody>
 </table>

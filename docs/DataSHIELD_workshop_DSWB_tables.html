@@ -2,12 +2,12 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.7.31">
+<meta name="generator" content="quarto-1.8.27">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>DataSHIELD Workshop: Data Science Without Borders – DataSHIELD APHRC Workshop</title>
+<title>DataSHIELD Workshop: Data Science Without Borders – DataSHIELD DSWB Workshop</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -68,13 +68,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="./images/isglobal_logo.jpg" rel="icon" type="image/jpeg">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-b08616ca30bc6986c6ffe4cecfeccd70.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-afdc90b34ebced266e103efb07108d1c.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-d2fec8d93cc0814413f782f2e7a38223.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-ccc22283debd23ef421ac463adf8e61d.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -146,12 +147,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
  <span class="dropdown-text">DataSHIELD Presentation</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./DataSHIELD_workshop_APHRC_tables.html"><i class="bi bi-table" role="img">
+    <a class="dropdown-item" href="./DataSHIELD_workshop_DSWB_tables.html"><i class="bi bi-table" role="img">
 </i> 
  <span class="dropdown-text">DataSHIELD (Tables)</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./DataSHIELD_workshop_APHRC_resources.html"><i class="bi bi-link-45deg" role="img">
+    <a class="dropdown-item" href="./DataSHIELD_workshop_DSWB_resources.html"><i class="bi bi-link-45deg" role="img">
 </i> 
  <span class="dropdown-text">DataSHIELD (Resources)</span></a>
   </li>  
@@ -228,7 +229,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#describing-data-aggregate-type-functions" id="toc-describing-data-aggregate-type-functions" class="nav-link" data-scroll-target="#describing-data-aggregate-type-functions">Describing data (‘aggregate-type functions’)</a>
   <ul class="collapse">
   <li><a href="#were-going-to-be-focus-on-hdl" id="toc-were-going-to-be-focus-on-hdl" class="nav-link" data-scroll-target="#were-going-to-be-focus-on-hdl">We’re going to be focus on HDL</a></li>
-  <li><a href="#using-dshelper-to-retrieve-statistics-in-a-neater-format." id="toc-using-dshelper-to-retrieve-statistics-in-a-neater-format." class="nav-link" data-scroll-target="#using-dshelper-to-retrieve-statistics-in-a-neater-format.">Using dsHelper to retrieve statistics in a neater format.</a></li>
+  <li><a href="#retrieving-statistics-for-multiple-variables" id="toc-retrieving-statistics-for-multiple-variables" class="nav-link" data-scroll-target="#retrieving-statistics-for-multiple-variables">Retrieving statistics for multiple variables</a></li>
   </ul></li>
   <li><a href="#manipulating-data-assign-type-functions" id="toc-manipulating-data-assign-type-functions" class="nav-link" data-scroll-target="#manipulating-data-assign-type-functions">Manipulating data (‘assign-type’ functions)</a></li>
   <li><a href="#sub-setting-data" id="toc-sub-setting-data" class="nav-link" data-scroll-target="#sub-setting-data">Sub-setting data</a>
@@ -237,7 +238,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#sub-setting-by-inequality" id="toc-sub-setting-by-inequality" class="nav-link" data-scroll-target="#sub-setting-by-inequality">Sub-setting by inequality</a></li>
   <li><a href="#sub-setting-by-multiple-conditions" id="toc-sub-setting-by-multiple-conditions" class="nav-link" data-scroll-target="#sub-setting-by-multiple-conditions">Sub-setting by multiple conditions</a></li>
   </ul></li>
-  <li><a href="#data-manipulation-with-dshelper" id="toc-data-manipulation-with-dshelper" class="nav-link" data-scroll-target="#data-manipulation-with-dshelper">Data manipulation with dsHelper</a>
+  <li><a href="#data-manipulation-with-dstidyverse" id="toc-data-manipulation-with-dstidyverse" class="nav-link" data-scroll-target="#data-manipulation-with-dstidyverse">Data manipulation with dsTidyverse</a>
   <ul class="collapse">
   <li><a href="#create-a-subset-of-columns-by-a-vector-of-column-names" id="toc-create-a-subset-of-columns-by-a-vector-of-column-names" class="nav-link" data-scroll-target="#create-a-subset-of-columns-by-a-vector-of-column-names">Create a subset of columns by a vector of column names</a></li>
   <li><a href="#rename-variables" id="toc-rename-variables" class="nav-link" data-scroll-target="#rename-variables">Rename variables</a></li>
@@ -283,7 +284,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p><a href="DataSHIELD_workshop_APHRC_tables.R" download="DataSHIELD_workshop_APHRC_tables.R" class="btn btn-primary btn-sm"> <i class="bi bi-download"></i> Download this R file </a></p>
+<p><a href="DataSHIELD_workshop_DSWB_tables.R" download="DataSHIELD_workshop_DSWB_tables.R" class="btn btn-primary btn-sm"> <i class="bi bi-download"></i> Download this R file </a></p>
 <section id="information-for-newcomers-to-rstudio-notebooks" class="level3">
 <h3 data-anchor-id="information-for-newcomers-to-rstudio-notebooks">INFORMATION FOR NEWCOMERS TO RSTUDIO NOTEBOOKS:</h3>
 <p>This is an <a href="http://rmarkdown.rstudio.com">R Markdown</a> Notebook. When you execute code within the notebook, the results appear beneath the code.</p>
@@ -298,7 +299,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>Describing data</li>
 <li>Manipulating data</li>
 <li>Subsetting data</li>
-<li>Data manipulation with dsHelper</li>
+<li>Data manipulation with dsTidyverse</li>
 <li>Making graphs</li>
 <li>Performing regression analysis</li>
 </ul>
@@ -315,8 +316,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">'DSI'</span>)</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">'DSOpal'</span>)</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>devtools<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">"datashield/dsBaseClient"</span>, <span class="at">force =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>devtools<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">"timcadman/ds-helper"</span>)</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"metafor"</span>)</span></code></pre></div>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">"dsTidyverseClient"</span>,</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">repos =</span> <span class="fu">c</span>(<span class="st">"https://molgenis.r-universe.dev"</span>, <span class="st">"https://cloud.r-project.org"</span>)</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"metafor"</span>)</span></code></pre></div>
 </div>
 <p>Remember to load them into this R session using “library()” command:</p>
 <div class="cell">
@@ -326,7 +330,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co"># DataSHIELD client libraries</span></span>
 <span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dsBaseClient)</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dsHelper)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dsTidyverseClient)</span>
 <span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Library to perform meta-analyses</span></span>
 <span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(metafor)</span></code></pre></div>
@@ -337,106 +341,81 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell-output cell-output-stdout">
 <pre><code>─ Session info ───────────────────────────────────────────────────────────────
  setting  value
- version  R version 4.4.2 (2024-10-31)
+ version  R version 4.5.2 (2025-10-31)
  os       macOS Sequoia 15.4.1
  system   aarch64, darwin20
  ui       X11
  language (EN)
  collate  en_US.UTF-8
  ctype    en_US.UTF-8
- tz       Africa/Nairobi
- date     2025-08-19
- pandoc   3.6.3 @ /opt/homebrew/bin/ (via rmarkdown)
- quarto   1.7.31 @ /usr/local/bin/quarto
+ tz       Africa/Addis_Ababa
+ date     2026-06-14
+ pandoc   3.8.3 @ /opt/homebrew/bin/ (via rmarkdown)
+ quarto   1.8.27 @ /usr/local/bin/quarto
 
 ─ Packages ───────────────────────────────────────────────────────────────────
- package      * version    date (UTC) lib source
- arrow          20.0.0.2   2025-05-26 [1] CRAN (R 4.4.1)
- assertthat     0.2.1      2019-03-21 [1] CRAN (R 4.4.1)
- backports      1.5.0      2024-05-23 [1] CRAN (R 4.4.1)
- bit            4.6.0      2025-03-06 [1] CRAN (R 4.4.1)
- bit64          4.6.0-1    2025-01-16 [1] CRAN (R 4.4.1)
- boot           1.3-31     2024-08-28 [1] CRAN (R 4.4.2)
- cachem         1.1.0      2024-05-16 [1] CRAN (R 4.4.1)
- checkmate      2.3.2      2024-07-29 [1] CRAN (R 4.4.0)
- cli            3.6.5      2025-04-23 [1] CRAN (R 4.4.1)
- crayon         1.5.3      2024-06-20 [1] CRAN (R 4.4.1)
- data.table     1.17.8     2025-07-10 [1] CRAN (R 4.4.1)
- devtools       2.4.5      2022-10-11 [1] CRAN (R 4.4.0)
- digest         0.6.37     2024-08-19 [1] CRAN (R 4.4.1)
- dplyr          1.1.4      2023-11-17 [1] CRAN (R 4.4.0)
- dsBaseClient * 6.3.3      2025-08-18 [1] Github (datashield/dsBaseClient@2334dc4)
- dsHelper     * 1.7.1      2025-07-03 [1] Github (timcadman/ds-helper@1b2348d)
- DSI          * 1.7.1      2024-11-03 [1] CRAN (R 4.4.1)
- DSOpal       * 1.4.0      2022-10-06 [1] CRAN (R 4.4.0)
- ellipsis       0.3.2      2021-04-29 [1] CRAN (R 4.4.1)
- evaluate       1.0.3      2025-01-10 [1] CRAN (R 4.4.1)
- fastmap        1.2.0      2024-05-15 [1] CRAN (R 4.4.1)
- forcats        1.0.0      2023-01-29 [1] CRAN (R 4.4.0)
- fs             1.6.5      2024-10-30 [1] CRAN (R 4.4.1)
- generics       0.1.4      2025-05-09 [1] CRAN (R 4.4.1)
- glue           1.8.0      2024-09-30 [1] CRAN (R 4.4.1)
- haven          2.5.4      2023-11-30 [1] CRAN (R 4.4.0)
- hms            1.1.3      2023-03-21 [1] CRAN (R 4.4.0)
- htmltools      0.5.8.1    2024-04-04 [1] CRAN (R 4.4.1)
- htmlwidgets    1.6.4      2023-12-06 [1] CRAN (R 4.4.0)
- httpuv         1.6.15     2024-03-26 [1] CRAN (R 4.4.0)
- httr         * 1.4.7      2023-08-15 [1] CRAN (R 4.4.0)
- jsonlite       2.0.0      2025-03-27 [1] CRAN (R 4.4.1)
- knitr          1.49       2024-11-08 [1] CRAN (R 4.4.1)
- labelled       2.14.0     2025-01-08 [1] CRAN (R 4.4.1)
- later          1.4.1      2024-11-27 [1] CRAN (R 4.4.1)
- lattice        0.22-6     2024-03-20 [1] CRAN (R 4.4.2)
- lifecycle      1.0.4      2023-11-07 [1] CRAN (R 4.4.1)
- lme4           1.1-37     2025-03-26 [1] CRAN (R 4.4.1)
- magrittr       2.0.3      2022-03-30 [1] CRAN (R 4.4.1)
- MASS           7.3-61     2024-06-13 [1] CRAN (R 4.4.2)
- mathjaxr       1.8-0      2025-04-30 [1] CRAN (R 4.4.1)
- Matrix       * 1.7-1      2024-10-18 [1] CRAN (R 4.4.2)
- memoise        2.0.1      2021-11-26 [1] CRAN (R 4.4.0)
- metadat      * 1.4-0      2025-02-04 [1] CRAN (R 4.4.1)
- metafor      * 4.8-0      2025-01-28 [1] CRAN (R 4.4.1)
- mime           0.13       2025-03-17 [1] CRAN (R 4.4.1)
- miniUI         0.1.1.1    2018-05-18 [1] CRAN (R 4.4.0)
- minqa          1.2.8      2024-08-17 [1] CRAN (R 4.4.1)
- nlme           3.1-166    2024-08-14 [1] CRAN (R 4.4.2)
- nloptr         2.2.1      2025-03-17 [1] CRAN (R 4.4.1)
- numDeriv     * 2016.8-1.1 2019-06-06 [1] CRAN (R 4.4.1)
- opalr        * 3.4.2      2024-09-18 [1] CRAN (R 4.4.1)
- pillar         1.11.0     2025-07-04 [1] CRAN (R 4.4.1)
- pkgbuild       1.4.6      2025-01-16 [1] CRAN (R 4.4.1)
- pkgconfig      2.0.3      2019-09-22 [1] CRAN (R 4.4.1)
- pkgload        1.4.0      2024-06-28 [1] CRAN (R 4.4.0)
- prettyunits    1.2.0      2023-09-24 [1] CRAN (R 4.4.1)
- profvis        0.4.0      2024-09-20 [1] CRAN (R 4.4.1)
- progress     * 1.2.3      2023-12-06 [1] CRAN (R 4.4.0)
- promises       1.3.2      2024-11-28 [1] CRAN (R 4.4.1)
- purrr          1.1.0      2025-07-10 [1] CRAN (R 4.4.1)
- R6           * 2.6.1      2025-02-15 [1] CRAN (R 4.4.1)
- rbibutils      2.3        2024-10-04 [1] CRAN (R 4.4.1)
- Rcpp           1.1.0      2025-07-02 [1] CRAN (R 4.4.1)
- Rdpack         2.6.4      2025-04-09 [1] CRAN (R 4.4.1)
- readr          2.1.5      2024-01-10 [1] CRAN (R 4.4.0)
- reformulas     0.4.1      2025-04-30 [1] CRAN (R 4.4.1)
- remotes        2.5.0      2024-03-17 [1] CRAN (R 4.4.1)
- rlang          1.1.6      2025-04-11 [1] CRAN (R 4.4.1)
- rmarkdown      2.29       2024-11-04 [1] CRAN (R 4.4.1)
- sessioninfo    1.2.3      2025-02-05 [1] CRAN (R 4.4.1)
- shiny          1.10.0     2024-12-14 [1] CRAN (R 4.4.1)
- stringi        1.8.7      2025-03-27 [1] CRAN (R 4.4.1)
- stringr        1.5.1      2023-11-14 [1] CRAN (R 4.4.0)
- tibble         3.3.0      2025-06-08 [1] CRAN (R 4.4.1)
- tidyr          1.3.1      2024-01-24 [1] CRAN (R 4.4.1)
- tidyselect     1.2.1      2024-03-11 [1] CRAN (R 4.4.0)
- tzdb           0.5.0      2025-03-15 [1] CRAN (R 4.4.1)
- urlchecker     1.0.1      2021-11-30 [1] CRAN (R 4.4.1)
- usethis        3.1.0      2024-11-26 [1] CRAN (R 4.4.1)
- vctrs          0.6.5      2023-12-01 [1] CRAN (R 4.4.0)
- xfun           0.50       2025-01-07 [1] CRAN (R 4.4.1)
- xtable         1.8-4      2019-04-21 [1] CRAN (R 4.4.1)
- yaml           2.3.10     2024-07-26 [1] CRAN (R 4.4.1)
+ package           * version    date (UTC) lib source
+ assertthat          0.2.1      2019-03-21 [1] CRAN (R 4.5.0)
+ cachem              1.1.0      2024-05-16 [1] CRAN (R 4.5.0)
+ cli                 3.6.6      2026-04-09 [1] CRAN (R 4.5.2)
+ crayon              1.5.3      2024-06-20 [1] CRAN (R 4.5.0)
+ data.table          1.17.8     2025-07-10 [1] CRAN (R 4.5.0)
+ devtools            2.4.6      2025-10-03 [1] CRAN (R 4.5.0)
+ digest              0.6.39     2025-11-19 [1] CRAN (R 4.5.2)
+ dplyr               1.1.4      2023-11-17 [1] CRAN (R 4.5.0)
+ dsBaseClient      * 6.3.4      2025-12-17 [1] Github (datashield/dsBaseClient@8b9557f)
+ DSI               * 1.8.0      2025-11-03 [1] CRAN (R 4.5.0)
+ DSOpal            * 1.5.0      2025-11-05 [1] CRAN (R 4.5.0)
+ dsTidyverseClient * 1.1.1      2026-05-08 [1] https://molgenis.r-universe.dev (R 4.5.3)
+ ellipsis            0.3.2      2021-04-29 [1] CRAN (R 4.5.0)
+ evaluate            1.0.5      2025-08-27 [1] CRAN (R 4.5.0)
+ fastmap             1.2.0      2024-05-15 [1] CRAN (R 4.5.0)
+ forcats             1.0.1      2025-09-25 [1] CRAN (R 4.5.0)
+ fs                  1.6.6      2025-04-12 [1] CRAN (R 4.5.0)
+ generics            0.1.4      2025-05-09 [1] CRAN (R 4.5.0)
+ glue                1.8.0      2024-09-30 [1] CRAN (R 4.5.0)
+ haven               2.5.5      2025-05-30 [1] CRAN (R 4.5.0)
+ hms                 1.1.4      2025-10-17 [1] CRAN (R 4.5.0)
+ htmltools           0.5.9      2025-12-04 [1] CRAN (R 4.5.2)
+ htmlwidgets         1.6.4      2023-12-06 [1] CRAN (R 4.5.0)
+ httr              * 1.4.8      2026-02-13 [1] CRAN (R 4.5.2)
+ jsonlite            2.0.0      2025-03-27 [1] CRAN (R 4.5.0)
+ knitr               1.50       2025-03-16 [1] CRAN (R 4.5.0)
+ labelled            2.16.0     2025-10-22 [1] CRAN (R 4.5.0)
+ lattice             0.22-7     2025-04-02 [1] CRAN (R 4.5.2)
+ lifecycle           1.0.5      2026-01-08 [1] CRAN (R 4.5.2)
+ magrittr            2.0.4      2025-09-12 [1] CRAN (R 4.5.0)
+ mathjaxr            2.0-0      2025-12-01 [1] CRAN (R 4.5.2)
+ Matrix            * 1.7-4      2025-08-28 [1] CRAN (R 4.5.2)
+ memoise             2.0.1      2021-11-26 [1] CRAN (R 4.5.0)
+ metadat           * 1.4-0      2025-02-04 [1] CRAN (R 4.5.0)
+ metafor           * 4.8-0      2025-01-28 [1] CRAN (R 4.5.0)
+ mime                0.13       2025-03-17 [1] CRAN (R 4.5.0)
+ nlme                3.1-168    2025-03-31 [1] CRAN (R 4.5.2)
+ numDeriv          * 2016.8-1.1 2019-06-06 [1] CRAN (R 4.5.0)
+ opalr             * 3.5.2      2025-12-09 [1] CRAN (R 4.5.2)
+ pillar              1.11.1     2025-09-17 [1] CRAN (R 4.5.0)
+ pkgbuild            1.4.8      2025-05-26 [1] CRAN (R 4.5.0)
+ pkgconfig           2.0.3      2019-09-22 [1] CRAN (R 4.5.0)
+ pkgload             1.4.1      2025-09-23 [1] CRAN (R 4.5.0)
+ prettyunits         1.2.0      2023-09-24 [1] CRAN (R 4.5.0)
+ progress          * 1.2.3      2023-12-06 [1] CRAN (R 4.5.0)
+ purrr               1.2.0      2025-11-04 [1] CRAN (R 4.5.0)
+ R6                * 2.6.1      2025-02-15 [1] CRAN (R 4.5.0)
+ readr               2.1.6      2025-11-14 [1] CRAN (R 4.5.2)
+ remotes             2.5.0      2024-03-17 [1] CRAN (R 4.5.0)
+ rlang               1.2.0      2026-04-06 [1] CRAN (R 4.5.2)
+ rmarkdown           2.30       2025-09-28 [1] CRAN (R 4.5.0)
+ sessioninfo         1.2.3      2025-02-05 [1] CRAN (R 4.5.0)
+ tibble              3.3.0      2025-06-08 [1] CRAN (R 4.5.0)
+ tidyselect          1.2.1      2024-03-11 [1] CRAN (R 4.5.0)
+ tzdb                0.5.0      2025-03-15 [1] CRAN (R 4.5.0)
+ usethis             3.2.1      2025-09-06 [1] CRAN (R 4.5.0)
+ vctrs               0.7.3      2026-04-11 [1] CRAN (R 4.5.2)
+ xfun                0.55       2025-12-16 [1] CRAN (R 4.5.2)
+ yaml                2.3.12     2025-12-10 [1] CRAN (R 4.5.2)
 
- [1] /Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/library
+ [1] /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/library
  * ── Packages attached to the search path.
 
 ──────────────────────────────────────────────────────────────────────────────</code></pre>
@@ -788,46 +767,216 @@ $validity.message
 </div>
 </div>
 </section>
-<section id="using-dshelper-to-retrieve-statistics-in-a-neater-format." class="level3">
-<h3 data-anchor-id="using-dshelper-to-retrieve-statistics-in-a-neater-format.">Using dsHelper to retrieve statistics in a neater format.</h3>
-<p>As you may have noticed, some operations which are more straightforward in R can be more complicated in datashield. To help with this, the dsHelper package allows you to do some common operations in fewer lines of code. DsHelper is an entirely serverside package - it contains only clientside functions which call DataSHIELD functions serverside.</p>
-<p>We have seen datashield has a range of functions to retrieve statistics, but is limited in that (i) you need to use different functions for different statistics, (ii) you can only get stats for one variable at a time. dh.GetStats returns many useful stats in a tibble, and allows you to retrieve stats for multiple variables at a time.</p>
+<section id="retrieving-statistics-for-multiple-variables" class="level3">
+<h3 data-anchor-id="retrieving-statistics-for-multiple-variables">Retrieving statistics for multiple variables</h3>
+<p>As you may have noticed, some operations which are more straightforward in R can be more complicated in DataSHIELD. DataSHIELD provides a range of functions to retrieve statistics, but you typically need a different function for each statistic, and most of them return results for one variable at a time.</p>
+<p>For <strong>continuous</strong> variables, <code>ds.mean</code>, <code>ds.var</code> and <code>ds.quantileMean</code> return the mean, variance and quantiles:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>neat_stats <span class="ot">&lt;-</span> <span class="fu">dh.getStats</span>(</span>
-<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">df =</span> <span class="st">"D"</span>,</span>
-<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">vars =</span> <span class="fu">c</span>(<span class="st">"GENDER"</span>, <span class="st">"LAB_TRIG"</span>, <span class="st">"LAB_HDL"</span>, <span class="st">"DIS_CVA"</span>, <span class="st">"DIS_DIAB"</span>))</span>
-<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>           </span>
-<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>neat_stats</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.mean</span>(<span class="st">"D$LAB_TRIG"</span>)</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>$categorical
-# A tibble: 27 × 10
-   variable cohort   category value cohort_n valid_n missing_n perc_valid
-   &lt;chr&gt;    &lt;chr&gt;    &lt;fct&gt;    &lt;int&gt;    &lt;int&gt;   &lt;int&gt;     &lt;int&gt;      &lt;dbl&gt;
- 1 DIS_CVA  combined 0         5248     5251    5251         0      99.9 
- 2 DIS_CVA  combined 1            3     5251    5251         0       0.06
- 3 DIS_CVA  combined &lt;NA&gt;         0     5251      NA        NA      NA   
- 4 DIS_DIAB combined 0         5174     5251    5251         0      98.5 
- 5 DIS_DIAB combined 1           77     5251    5251         0       1.47
- 6 DIS_DIAB combined &lt;NA&gt;         0     5251      NA        NA      NA   
- 7 GENDER   combined 0         2677     5251    5251         0      51.0 
- 8 GENDER   combined 1         2574     5251    5251         0      49.0 
- 9 GENDER   combined &lt;NA&gt;         0     5251      NA        NA      NA   
-10 DIS_CVA  France   0         2163     2163    2163         0     100   
-# ℹ 17 more rows
-# ℹ 2 more variables: perc_missing &lt;dbl&gt;, perc_total &lt;dbl&gt;
+<pre><code>$Mean.by.Study
+         EstimatedMean Nmissing Nvalid Ntotal
+France        2.099295      362   1801   2163
+ISGlobal      2.046618      562   2526   3088
 
-$continuous
-# A tibble: 6 × 15
-  variable cohort    mean std.dev perc_5 perc_10 perc_25 perc_50 perc_75 perc_90
-  &lt;chr&gt;    &lt;chr&gt;    &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;
-1 LAB_HDL  France    1.57    0.41   0.88    1.05    1.3     1.58    1.84    2.09
-2 LAB_HDL  ISGlobal  1.56    0.42   0.85    1.03    1.29    1.56    1.84    2.08
-3 LAB_TRIG France    2.1     1.58  -0.36    0.17    1.04    2.11    3.12    4.07
-4 LAB_TRIG ISGlobal  2.05    1.58  -0.55    0.01    1       2.05    3.06    4.03
-5 LAB_HDL  combined  1.56    0.42   0.86    1.04    1.3     1.57    1.84    2.08
-6 LAB_TRIG combined  2.07    1.58  -0.47    0.08    1.02    2.08    3.09    4.05
-# ℹ 5 more variables: perc_95 &lt;dbl&gt;, valid_n &lt;dbl&gt;, cohort_n &lt;dbl&gt;,
-#   missing_n &lt;dbl&gt;, missing_perc &lt;dbl&gt;</code></pre>
+$Nstudies
+[1] 2
+
+$ValidityMessage
+         ValidityMessage 
+France   "VALID ANALYSIS"
+ISGlobal "VALID ANALYSIS"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.var</span>(<span class="st">"D$LAB_TRIG"</span>)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$Variance.by.Study
+         EstimatedVar Nmissing Nvalid Ntotal
+France       2.492889      362   1801   2163
+ISGlobal     2.489966      562   2526   3088
+
+$Nstudies
+[1] 2
+
+$ValidityMessage
+         ValidityMessage 
+France   "VALID ANALYSIS"
+ISGlobal "VALID ANALYSIS"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.quantileMean</span>(<span class="st">"D$LAB_HDL"</span>)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>       5%       10%       25%       50%       75%       90%       95%      Mean 
+0.8606589 1.0385205 1.2964949 1.5704848 1.8418712 2.0824057 2.2191369 1.5619572 </code></pre>
+</div>
+</div>
+<p>For <strong>categorical</strong> variables, <code>ds.table</code> returns the counts and proportions of each category, including missingness:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.table</span>(<span class="st">"D$GENDER"</span>)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+ Data in all studies were valid 
+
+Study 1 :  No errors reported from this study
+Study 2 :  No errors reported from this study</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$output.list
+$output.list$TABLE_rvar.by.study_row.props
+        study
+D$GENDER    France  ISGlobal
+      0  0.4079193 0.5920807
+      1  0.4160839 0.5839161
+      NA       NaN       NaN
+
+$output.list$TABLE_rvar.by.study_col.props
+        study
+D$GENDER    France  ISGlobal
+      0  0.5048544 0.5132772
+      1  0.4951456 0.4867228
+      NA 0.0000000 0.0000000
+
+$output.list$TABLE_rvar.by.study_counts
+        study
+D$GENDER France ISGlobal
+      0    1092     1585
+      1    1071     1503
+      NA      0        0
+
+$output.list$TABLES.COMBINED_all.sources_proportions
+D$GENDER
+   0    1   NA 
+0.51 0.49 0.00 
+
+$output.list$TABLES.COMBINED_all.sources_counts
+D$GENDER
+   0    1   NA 
+2677 2574    0 
+
+
+$validity.message
+[1] "Data in all studies were valid"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.table</span>(<span class="st">"D$DIS_CVA"</span>)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+ Data in all studies were valid 
+
+Study 1 :  No errors reported from this study
+Study 2 :  No errors reported from this study</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$output.list
+$output.list$TABLE_rvar.by.study_row.props
+         study
+D$DIS_CVA   France ISGlobal
+       0  0.412157 0.587843
+       1  0.000000 1.000000
+       NA      NaN      NaN
+
+$output.list$TABLE_rvar.by.study_col.props
+         study
+D$DIS_CVA France     ISGlobal
+       0       1 0.9990284974
+       1       0 0.0009715026
+       NA      0 0.0000000000
+
+$output.list$TABLE_rvar.by.study_counts
+         study
+D$DIS_CVA France ISGlobal
+       0    2163     3085
+       1       0        3
+       NA      0        0
+
+$output.list$TABLES.COMBINED_all.sources_proportions
+D$DIS_CVA
+       0        1       NA 
+0.999000 0.000571 0.000000 
+
+$output.list$TABLES.COMBINED_all.sources_counts
+D$DIS_CVA
+   0    1   NA 
+5248    3    0 
+
+
+$validity.message
+[1] "Data in all studies were valid"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.table</span>(<span class="st">"D$DIS_DIAB"</span>)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+ Data in all studies were valid 
+
+Study 1 :  No errors reported from this study
+Study 2 :  No errors reported from this study</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$output.list
+$output.list$TABLE_rvar.by.study_row.props
+          study
+D$DIS_DIAB    France  ISGlobal
+        0  0.4122536 0.5877464
+        1  0.3896104 0.6103896
+        NA       NaN       NaN
+
+$output.list$TABLE_rvar.by.study_col.props
+          study
+D$DIS_DIAB     France   ISGlobal
+        0  0.98613037 0.98477979
+        1  0.01386963 0.01522021
+        NA 0.00000000 0.00000000
+
+$output.list$TABLE_rvar.by.study_counts
+          study
+D$DIS_DIAB France ISGlobal
+        0    2133     3041
+        1      30       47
+        NA      0        0
+
+$output.list$TABLES.COMBINED_all.sources_proportions
+D$DIS_DIAB
+     0      1     NA 
+0.9850 0.0147 0.0000 
+
+$output.list$TABLES.COMBINED_all.sources_counts
+D$DIS_DIAB
+   0    1   NA 
+5174   77    0 
+
+
+$validity.message
+[1] "Data in all studies were valid"</code></pre>
+</div>
+</div>
+<p>To retrieve the same statistic for several variables at once, you can loop over them:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (v <span class="cf">in</span> <span class="fu">c</span>(<span class="st">"LAB_TRIG"</span>, <span class="st">"LAB_HDL"</span>)) {</span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="fu">ds.mean</span>(<span class="fu">paste0</span>(<span class="st">"D$"</span>, v)))</span>
+<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$Mean.by.Study
+         EstimatedMean Nmissing Nvalid Ntotal
+France        2.099295      362   1801   2163
+ISGlobal      2.046618      562   2526   3088
+
+$Nstudies
+[1] 2
+
+$ValidityMessage
+         ValidityMessage 
+France   "VALID ANALYSIS"
+ISGlobal "VALID ANALYSIS"
+
+$Mean.by.Study
+         EstimatedMean Nmissing Nvalid Ntotal
+France        1.569416      360   1803   2163
+ISGlobal      1.556648      555   2533   3088
+
+$Nstudies
+[1] 2
+
+$ValidityMessage
+         ValidityMessage 
+France   "VALID ANALYSIS"
+ISGlobal "VALID ANALYSIS"</code></pre>
 </div>
 </div>
 <section id="section-1" class="level80">
@@ -841,7 +990,7 @@ $continuous
 <p>The reason for this is that some calculations could be highly disclosive- and if such data were transmitted to the analyst, with not much effort at all, with an inverse function, the analyst could work out exactly what the raw data are- and thus the data’s privacy is broken!</p>
 <p>To demonstrate:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.ls</span>()</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.ls</span>()</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>$France
 $France$environment.searched
@@ -858,8 +1007,8 @@ $ISGlobal$environment.searched
 $ISGlobal$objects.found
 [1] "D"</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.log</span>(<span class="at">x=</span><span class="st">'D$LAB_HDL'</span>, <span class="at">newobj=</span><span class="st">'HDL_log'</span>)</span>
-<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.ls</span>()</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.log</span>(<span class="at">x=</span><span class="st">'D$LAB_HDL'</span>, <span class="at">newobj=</span><span class="st">'HDL_log'</span>)</span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.ls</span>()</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>$France
 $France$environment.searched
@@ -876,7 +1025,7 @@ $ISGlobal$environment.searched
 $ISGlobal$objects.found
 [1] "D"       "HDL_log"</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.mean</span>(<span class="at">x=</span><span class="st">"HDL_log"</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.mean</span>(<span class="at">x=</span><span class="st">"HDL_log"</span>)</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>$Mean.by.Study
          EstimatedMean Nmissing Nvalid Ntotal
@@ -891,7 +1040,7 @@ $ValidityMessage
 France   "VALID ANALYSIS"
 ISGlobal "VALID ANALYSIS"</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.mean</span>(<span class="at">x=</span><span class="st">"D$LAB_HDL"</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.mean</span>(<span class="at">x=</span><span class="st">"D$LAB_HDL"</span>)</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>$Mean.by.Study
          EstimatedMean Nmissing Nvalid Ntotal
@@ -910,8 +1059,8 @@ ISGlobal "VALID ANALYSIS"</code></pre>
 <p>The second “ds.mean” shows that the mean of the logged values are definitely smaller, by about the right amount. The DataSHIELD log function has worked.</p>
 <p>There is another DataSHIELD assign function that can be used for data transformations - a square root function. Let’s test again:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.sqrt</span>(<span class="at">x=</span><span class="st">'D$LAB_HDL'</span>, <span class="at">newobj=</span><span class="st">'HDL_sqrt'</span>)</span>
-<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.ls</span>()</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.sqrt</span>(<span class="at">x=</span><span class="st">'D$LAB_HDL'</span>, <span class="at">newobj=</span><span class="st">'HDL_sqrt'</span>)</span>
+<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.ls</span>()</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>$France
 $France$environment.searched
@@ -928,7 +1077,7 @@ $ISGlobal$environment.searched
 $ISGlobal$objects.found
 [1] "D"        "HDL_log"  "HDL_sqrt"</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.mean</span>(<span class="at">x=</span><span class="st">"HDL_sqrt"</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.mean</span>(<span class="at">x=</span><span class="st">"HDL_sqrt"</span>)</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>$Mean.by.Study
          EstimatedMean Nmissing Nvalid Ntotal
@@ -943,7 +1092,7 @@ $ValidityMessage
 France   "VALID ANALYSIS"
 ISGlobal "VALID ANALYSIS"</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.mean</span>(<span class="at">x=</span><span class="st">"D$LAB_HDL"</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb66"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.mean</span>(<span class="at">x=</span><span class="st">"D$LAB_HDL"</span>)</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>$Mean.by.Study
          EstimatedMean Nmissing Nvalid Ntotal
@@ -962,7 +1111,7 @@ ISGlobal "VALID ANALYSIS"</code></pre>
 <p>These new objects are not attached to a dataframe. Use the help function to find out about the ds.dataFrame function, which can be used to combine objects.</p>
 <p>Now join “HDL_sqrt” and “HDL_log” to the dataframe “D”.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.dataFrame</span>(<span class="fu">c</span>(<span class="st">"D"</span>, <span class="st">"HDL_sqrt"</span>, <span class="st">"HDL_log"</span>), <span class="at">newobj =</span> <span class="st">"D"</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb68"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.dataFrame</span>(<span class="fu">c</span>(<span class="st">"D"</span>, <span class="st">"HDL_sqrt"</span>, <span class="st">"HDL_log"</span>), <span class="at">newobj =</span> <span class="st">"D"</span>)</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>$is.object.created
 [1] "A data object &lt;D&gt; has been created in all specified data sources"
@@ -970,7 +1119,7 @@ ISGlobal "VALID ANALYSIS"</code></pre>
 $validity.check
 [1] "&lt;D&gt; appears valid in all sources"</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.colnames</span>(<span class="st">"D"</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb70"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.colnames</span>(<span class="st">"D"</span>)</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>$France
  [1] "LAB_TSC"            "LAB_TRIG"           "LAB_HDL"           
@@ -996,8 +1145,8 @@ $ISGlobal
 <p>You may wish to use it to:</p>
 <p>Subset a column of data by its “Class” Subset a dataframe to remove any “NA”s Subset a numeric column of a dataframe using a Boolean inequalilty</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="co"># first find the column name you wish to refer to</span></span>
-<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.colnames</span>(<span class="at">x=</span><span class="st">"D"</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb72"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a><span class="co"># first find the column name you wish to refer to</span></span>
+<span id="cb72-2"><a href="#cb72-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.colnames</span>(<span class="at">x=</span><span class="st">"D"</span>)</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>$France
  [1] "LAB_TSC"            "LAB_TRIG"           "LAB_HDL"           
@@ -1013,8 +1162,8 @@ $ISGlobal
 [10] "PM_BMI_CATEGORICAL" "PM_BMI_CONTINUOUS"  "HDL_sqrt"          
 [13] "HDL_log"           </code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="co"># then check which levels you need to apply a boolean operator to:</span></span>
-<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.levels</span>(<span class="at">x=</span><span class="st">"D$GENDER"</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb74"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a><span class="co"># then check which levels you need to apply a boolean operator to:</span></span>
+<span id="cb74-2"><a href="#cb74-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.levels</span>(<span class="at">x=</span><span class="st">"D$GENDER"</span>)</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>$France
 $France$Levels
@@ -1031,12 +1180,12 @@ $ISGlobal$Levels
 $ISGlobal$ValidityMessage
 [1] "VALID ANALYSIS"</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb61"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a>?ds.dataFrameSubset</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb76"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a>?ds.dataFrameSubset</span></code></pre></div>
 </div>
 <p>Splitting into GENDER groups, assigned to different server-side objects.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.dataFrameSubset</span>(<span class="at">df.name =</span> <span class="st">"D"</span>, <span class="at">V1.name =</span> <span class="st">"D$GENDER"</span>, <span class="at">V2.name =</span> <span class="st">"1"</span>, </span>
-<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a>                   <span class="at">Boolean.operator =</span> <span class="st">"=="</span>, <span class="at">newobj =</span> <span class="st">"CNSIM.subset.Males"</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb77"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.dataFrameSubset</span>(<span class="at">df.name =</span> <span class="st">"D"</span>, <span class="at">V1.name =</span> <span class="st">"D$GENDER"</span>, <span class="at">V2.name =</span> <span class="st">"1"</span>, </span>
+<span id="cb77-2"><a href="#cb77-2" aria-hidden="true" tabindex="-1"></a>                   <span class="at">Boolean.operator =</span> <span class="st">"=="</span>, <span class="at">newobj =</span> <span class="st">"CNSIM.subset.Males"</span>)</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>$is.object.created
 [1] "A data object &lt;CNSIM.subset.Males&gt; has been created in all specified data sources"
@@ -1044,8 +1193,8 @@ $ISGlobal$ValidityMessage
 $validity.check
 [1] "&lt;CNSIM.subset.Males&gt; appears valid in all sources"</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.dataFrameSubset</span>(<span class="at">df.name =</span> <span class="st">"D"</span>, <span class="at">V1.name =</span> <span class="st">"D$GENDER"</span>, <span class="at">V2.name =</span> <span class="st">"0"</span>, </span>
-<span id="cb64-2"><a href="#cb64-2" aria-hidden="true" tabindex="-1"></a>                   <span class="at">Boolean.operator =</span> <span class="st">"=="</span>, <span class="at">newobj =</span> <span class="st">"CNSIM.subset.Females"</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb79"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.dataFrameSubset</span>(<span class="at">df.name =</span> <span class="st">"D"</span>, <span class="at">V1.name =</span> <span class="st">"D$GENDER"</span>, <span class="at">V2.name =</span> <span class="st">"0"</span>, </span>
+<span id="cb79-2"><a href="#cb79-2" aria-hidden="true" tabindex="-1"></a>                   <span class="at">Boolean.operator =</span> <span class="st">"=="</span>, <span class="at">newobj =</span> <span class="st">"CNSIM.subset.Females"</span>)</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>$is.object.created
 [1] "A data object &lt;CNSIM.subset.Females&gt; has been created in all specified data sources"
@@ -1058,7 +1207,7 @@ $validity.check
 <section id="sub-setting-to-remove-nas" class="level3">
 <h3 data-anchor-id="sub-setting-to-remove-nas">Sub-setting to remove NAs</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb66"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.completeCases</span>(<span class="at">x1=</span><span class="st">"D"</span>,<span class="at">newobj=</span><span class="st">"D_without_NA"</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb81"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb81-1"><a href="#cb81-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.completeCases</span>(<span class="at">x1=</span><span class="st">"D"</span>,<span class="at">newobj=</span><span class="st">"D_without_NA"</span>)</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>$is.object.created
 [1] "A data object &lt;D_without_NA&gt; has been created in all specified data sources"
@@ -1072,11 +1221,11 @@ $validity.check
 <h3 data-anchor-id="sub-setting-by-inequality">Sub-setting by inequality</h3>
 <p>Say we wanted to have a subset of patients where BMI values are ≥ 25, and call it subset.BMI.25.plus</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb68"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.dataFrameSubset</span>(<span class="at">df.name =</span> <span class="st">"D"</span>,</span>
-<span id="cb68-2"><a href="#cb68-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">V1.name =</span> <span class="st">"D$PM_BMI_CONTINUOUS"</span>,</span>
-<span id="cb68-3"><a href="#cb68-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">V2.name =</span> <span class="st">"25"</span>,</span>
-<span id="cb68-4"><a href="#cb68-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">Boolean.operator =</span> <span class="st">"&gt;="</span>,</span>
-<span id="cb68-5"><a href="#cb68-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">newobj =</span> <span class="st">"subset.BMI.25.plus"</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb83"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb83-1"><a href="#cb83-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.dataFrameSubset</span>(<span class="at">df.name =</span> <span class="st">"D"</span>,</span>
+<span id="cb83-2"><a href="#cb83-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">V1.name =</span> <span class="st">"D$PM_BMI_CONTINUOUS"</span>,</span>
+<span id="cb83-3"><a href="#cb83-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">V2.name =</span> <span class="st">"25"</span>,</span>
+<span id="cb83-4"><a href="#cb83-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">Boolean.operator =</span> <span class="st">"&gt;="</span>,</span>
+<span id="cb83-5"><a href="#cb83-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">newobj =</span> <span class="st">"subset.BMI.25.plus"</span>)</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>$is.object.created
 [1] "A data object &lt;subset.BMI.25.plus&gt; has been created in all specified data sources"
@@ -1087,7 +1236,7 @@ $validity.check
 </div>
 <p>Checking we have successfully created such an object, using quantiles and histograms:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb70"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.quantileMean</span>(<span class="at">x=</span><span class="st">"subset.BMI.25.plus$PM_BMI_CONTINUOUS"</span>, <span class="at">type =</span> <span class="st">"split"</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb85"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb85-1"><a href="#cb85-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.quantileMean</span>(<span class="at">x=</span><span class="st">"subset.BMI.25.plus$PM_BMI_CONTINUOUS"</span>, <span class="at">type =</span> <span class="st">"split"</span>)</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>$France
      5%     10%     25%     50%     75%     90%     95%    Mean 
@@ -1097,11 +1246,11 @@ $ISGlobal
       5%      10%      25%      50%      75%      90%      95%     Mean 
 25.46900 25.91800 27.19000 29.27000 32.20500 34.76200 36.24300 29.92606 </code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb72"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.histogram</span>(<span class="at">x=</span><span class="st">"subset.BMI.25.plus$PM_BMI_CONTINUOUS"</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb87"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb87-1"><a href="#cb87-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.histogram</span>(<span class="at">x=</span><span class="st">"subset.BMI.25.plus$PM_BMI_CONTINUOUS"</span>)</span></code></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="DataSHIELD_workshop_APHRC_tables_files/figure-html/unnamed-chunk-26-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="DataSHIELD_workshop_DSWB_tables_files/figure-html/unnamed-chunk-28-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -1162,12 +1311,12 @@ attr(,"class")
 <h3 data-anchor-id="sub-setting-by-multiple-conditions">Sub-setting by multiple conditions</h3>
 <p>If we want to create a subset based on multiple conditions we can use the ds.Boole function before subsetting. For example, let’s say that we want to create a subset of individuals where BMI values are ≥ 25 and adjusted glucose is lower than 6.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb74"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.Boole</span>(</span>
-<span id="cb74-2"><a href="#cb74-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">V1 =</span> <span class="st">"D$PM_BMI_CONTINUOUS"</span>,</span>
-<span id="cb74-3"><a href="#cb74-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">V2 =</span> <span class="st">"25"</span>,</span>
-<span id="cb74-4"><a href="#cb74-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">Boolean.operator =</span> <span class="st">"&gt;="</span>,</span>
-<span id="cb74-5"><a href="#cb74-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">numeric.output =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb74-6"><a href="#cb74-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">newobj =</span> <span class="st">"BMI.25.plus"</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb89"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb89-1"><a href="#cb89-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.Boole</span>(</span>
+<span id="cb89-2"><a href="#cb89-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">V1 =</span> <span class="st">"D$PM_BMI_CONTINUOUS"</span>,</span>
+<span id="cb89-3"><a href="#cb89-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">V2 =</span> <span class="st">"25"</span>,</span>
+<span id="cb89-4"><a href="#cb89-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">Boolean.operator =</span> <span class="st">"&gt;="</span>,</span>
+<span id="cb89-5"><a href="#cb89-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">numeric.output =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb89-6"><a href="#cb89-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">newobj =</span> <span class="st">"BMI.25.plus"</span>)</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>$is.object.created
 [1] "A data object &lt;BMI.25.plus&gt; has been created in all specified data sources"
@@ -1175,12 +1324,12 @@ attr(,"class")
 $validity.check
 [1] "&lt;BMI.25.plus&gt; appears valid in all sources"</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb76"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.Boole</span>(</span>
-<span id="cb76-2"><a href="#cb76-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">V1 =</span> <span class="st">"D$LAB_GLUC_ADJUSTED"</span>,</span>
-<span id="cb76-3"><a href="#cb76-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">V2 =</span> <span class="st">"6"</span>,</span>
-<span id="cb76-4"><a href="#cb76-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">Boolean.operator =</span> <span class="st">"&lt;"</span>,</span>
-<span id="cb76-5"><a href="#cb76-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">numeric.output =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb76-6"><a href="#cb76-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">newobj =</span> <span class="st">"GLUC.6.less"</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb91"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb91-1"><a href="#cb91-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.Boole</span>(</span>
+<span id="cb91-2"><a href="#cb91-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">V1 =</span> <span class="st">"D$LAB_GLUC_ADJUSTED"</span>,</span>
+<span id="cb91-3"><a href="#cb91-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">V2 =</span> <span class="st">"6"</span>,</span>
+<span id="cb91-4"><a href="#cb91-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">Boolean.operator =</span> <span class="st">"&lt;"</span>,</span>
+<span id="cb91-5"><a href="#cb91-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">numeric.output =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb91-6"><a href="#cb91-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">newobj =</span> <span class="st">"GLUC.6.less"</span>)</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>$is.object.created
 [1] "A data object &lt;GLUC.6.less&gt; has been created in all specified data sources"
@@ -1191,10 +1340,10 @@ $validity.check
 </div>
 <p>We can then use the ds.make function to make a new categorical variable which combines these groups:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb78"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb78-1"><a href="#cb78-1" aria-hidden="true" tabindex="-1"></a>?ds.make </span>
-<span id="cb78-2"><a href="#cb78-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb78-3"><a href="#cb78-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.make</span>(<span class="at">toAssign =</span> <span class="st">"BMI.25.plus+GLUC.6.less"</span>,</span>
-<span id="cb78-4"><a href="#cb78-4" aria-hidden="true" tabindex="-1"></a>        <span class="at">newobj =</span> <span class="st">"BMI.25.plus_GLUC.6.less"</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb93"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb93-1"><a href="#cb93-1" aria-hidden="true" tabindex="-1"></a>?ds.make </span>
+<span id="cb93-2"><a href="#cb93-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-3"><a href="#cb93-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.make</span>(<span class="at">toAssign =</span> <span class="st">"BMI.25.plus+GLUC.6.less"</span>,</span>
+<span id="cb93-4"><a href="#cb93-4" aria-hidden="true" tabindex="-1"></a>        <span class="at">newobj =</span> <span class="st">"BMI.25.plus_GLUC.6.less"</span>)</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>$is.object.created
 [1] "A data object &lt;BMI.25.plus_GLUC.6.less&gt; has been created in all specified data sources"
@@ -1202,13 +1351,13 @@ $validity.check
 $validity.check
 [1] "&lt;BMI.25.plus_GLUC.6.less&gt; appears valid in all sources"</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb80"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb80-1"><a href="#cb80-1" aria-hidden="true" tabindex="-1"></a><span class="co"># If BMI &gt;= 25 and glucose &lt; 6, then BMI.25.plus_GLUC.6.less=2</span></span>
-<span id="cb80-2"><a href="#cb80-2" aria-hidden="true" tabindex="-1"></a><span class="co"># If BMI &gt;= 25 and glucose &gt;= 6, then BMI.25.plus_GLUC.6.less=1</span></span>
-<span id="cb80-3"><a href="#cb80-3" aria-hidden="true" tabindex="-1"></a><span class="co"># If BMI &lt; 25 and glucose &lt; 6, then BMI.25.plus_GLUC.6.less=1</span></span>
-<span id="cb80-4"><a href="#cb80-4" aria-hidden="true" tabindex="-1"></a><span class="co"># If BMI &lt; 25 and glucose &gt;= 6, then BMI.25.plus_GLUC.6.less=0</span></span>
-<span id="cb80-5"><a href="#cb80-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb80-6"><a href="#cb80-6" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.table</span>(<span class="at">rvar=</span> <span class="st">"BMI.25.plus_GLUC.6.less"</span>,</span>
-<span id="cb80-7"><a href="#cb80-7" aria-hidden="true" tabindex="-1"></a>         <span class="at">datasources =</span> conns)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb95"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb95-1"><a href="#cb95-1" aria-hidden="true" tabindex="-1"></a><span class="co"># If BMI &gt;= 25 and glucose &lt; 6, then BMI.25.plus_GLUC.6.less=2</span></span>
+<span id="cb95-2"><a href="#cb95-2" aria-hidden="true" tabindex="-1"></a><span class="co"># If BMI &gt;= 25 and glucose &gt;= 6, then BMI.25.plus_GLUC.6.less=1</span></span>
+<span id="cb95-3"><a href="#cb95-3" aria-hidden="true" tabindex="-1"></a><span class="co"># If BMI &lt; 25 and glucose &lt; 6, then BMI.25.plus_GLUC.6.less=1</span></span>
+<span id="cb95-4"><a href="#cb95-4" aria-hidden="true" tabindex="-1"></a><span class="co"># If BMI &lt; 25 and glucose &gt;= 6, then BMI.25.plus_GLUC.6.less=0</span></span>
+<span id="cb95-5"><a href="#cb95-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb95-6"><a href="#cb95-6" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.table</span>(<span class="at">rvar=</span> <span class="st">"BMI.25.plus_GLUC.6.less"</span>,</span>
+<span id="cb95-7"><a href="#cb95-7" aria-hidden="true" tabindex="-1"></a>         <span class="at">datasources =</span> conns)</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
  Data in all studies were valid 
@@ -1256,7 +1405,7 @@ BMI.25.plus_GLUC.6.less
 $validity.message
 [1] "Data in all studies were valid"</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb83"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb83-1"><a href="#cb83-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.dataFrame</span>(<span class="at">x=</span><span class="fu">c</span>(<span class="st">"D"</span>, <span class="st">"BMI.25.plus_GLUC.6.less"</span>), <span class="at">newobj =</span> <span class="st">"D2"</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb98"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb98-1"><a href="#cb98-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.dataFrame</span>(<span class="at">x=</span><span class="fu">c</span>(<span class="st">"D"</span>, <span class="st">"BMI.25.plus_GLUC.6.less"</span>), <span class="at">newobj =</span> <span class="st">"D2"</span>)</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>$is.object.created
 [1] "A data object &lt;D2&gt; has been created in all specified data sources"
@@ -1264,7 +1413,7 @@ $validity.message
 $validity.check
 [1] "&lt;D2&gt; appears valid in all sources"</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb85"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb85-1"><a href="#cb85-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.colnames</span>(<span class="st">"D2"</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb100"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb100-1"><a href="#cb100-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.colnames</span>(<span class="st">"D2"</span>)</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>$France
  [1] "LAB_TSC"                 "LAB_TRIG"               
@@ -1284,11 +1433,11 @@ $ISGlobal
 [11] "PM_BMI_CONTINUOUS"       "HDL_sqrt"               
 [13] "HDL_log"                 "BMI.25.plus_GLUC.6.less"</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb87"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb87-1"><a href="#cb87-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.dataFrameSubset</span>(<span class="at">df.name =</span> <span class="st">"D2"</span>,</span>
-<span id="cb87-2"><a href="#cb87-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">V1.name =</span> <span class="st">"D2$BMI.25.plus_GLUC.6.less"</span>,</span>
-<span id="cb87-3"><a href="#cb87-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">V2.name =</span> <span class="st">"2"</span>,</span>
-<span id="cb87-4"><a href="#cb87-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">Boolean.operator =</span> <span class="st">"=="</span>,</span>
-<span id="cb87-5"><a href="#cb87-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">newobj =</span> <span class="st">"subset2"</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb102"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb102-1"><a href="#cb102-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.dataFrameSubset</span>(<span class="at">df.name =</span> <span class="st">"D2"</span>,</span>
+<span id="cb102-2"><a href="#cb102-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">V1.name =</span> <span class="st">"D2$BMI.25.plus_GLUC.6.less"</span>,</span>
+<span id="cb102-3"><a href="#cb102-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">V2.name =</span> <span class="st">"2"</span>,</span>
+<span id="cb102-4"><a href="#cb102-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">Boolean.operator =</span> <span class="st">"=="</span>,</span>
+<span id="cb102-5"><a href="#cb102-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">newobj =</span> <span class="st">"subset2"</span>)</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>$is.object.created
 [1] "A data object &lt;subset2&gt; has been created in all specified data sources"
@@ -1296,7 +1445,7 @@ $ISGlobal
 $validity.check
 [1] "&lt;subset2&gt; appears valid in all sources"</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb89"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb89-1"><a href="#cb89-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.dim</span>(<span class="st">"subset2"</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb104"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb104-1"><a href="#cb104-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.dim</span>(<span class="st">"subset2"</span>)</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>$`dimensions of subset2 in France`
 [1] 550  14
@@ -1310,55 +1459,58 @@ $`dimensions of subset2 in combined studies`
 </div>
 </section>
 </section>
-<section id="data-manipulation-with-dshelper" class="level2">
-<h2 data-anchor-id="data-manipulation-with-dshelper">Data manipulation with dsHelper</h2>
-<p>Again, we can use some dsHelper functions to do data manipulation operations in a more efficient way.</p>
+<section id="data-manipulation-with-dstidyverse" class="level2">
+<h2 data-anchor-id="data-manipulation-with-dstidyverse">Data manipulation with dsTidyverse</h2>
+<p>Again, we can use some <code>dsTidyverse</code> functions to do data manipulation operations in a more efficient way. <code>dsTidyverse</code> brings the familiar <code>dplyr</code> verbs (such as <code>select</code>, <code>rename</code>, <code>filter</code> and <code>mutate</code>) to DataSHIELD, running them server-side in a non-disclosive way.</p>
+<blockquote class="blockquote">
+<p><strong>Note:</strong> these functions require the <code>dsTidyverse</code> server-side package to be installed in the DataSHIELD profile you are connecting to.</p>
+</blockquote>
 <section id="create-a-subset-of-columns-by-a-vector-of-column-names" class="level3">
 <h3 data-anchor-id="create-a-subset-of-columns-by-a-vector-of-column-names">Create a subset of columns by a vector of column names</h3>
+<p>We can use <code>ds.select</code> to keep only the columns we are interested in. The column names are passed unquoted inside <code>tidy_expr</code>:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb91"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb91-1"><a href="#cb91-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dh.dropCols</span>(</span>
-<span id="cb91-2"><a href="#cb91-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">df =</span> <span class="st">"D"</span>, </span>
-<span id="cb91-3"><a href="#cb91-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">vars =</span> <span class="fu">c</span>(<span class="st">"PM_BMI_CONTINUOUS"</span>, <span class="st">"GENDER"</span>), </span>
-<span id="cb91-4"><a href="#cb91-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">type =</span> <span class="st">"keep"</span>,</span>
-<span id="cb91-5"><a href="#cb91-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">new_obj =</span> <span class="st">"df_subset"</span>)</span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>$France
-$France$is.object.created
-[1] "A data object &lt;df_subset&gt; has been created in all specified data sources"
-
-$France$validity.check
-[1] "&lt;df_subset&gt; appears valid in all sources"
-
-
-$ISGlobal
-$ISGlobal$is.object.created
-[1] "A data object &lt;df_subset&gt; has been created in all specified data sources"
-
-$ISGlobal$validity.check
-[1] "&lt;df_subset&gt; appears valid in all sources"</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb93"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb93-1"><a href="#cb93-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.colnames</span>(<span class="st">"df_subset"</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb106"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb106-1"><a href="#cb106-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.select</span>(</span>
+<span id="cb106-2"><a href="#cb106-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">df.name =</span> <span class="st">"D"</span>,</span>
+<span id="cb106-3"><a href="#cb106-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">tidy_expr =</span> <span class="fu">list</span>(PM_BMI_CONTINUOUS, GENDER),</span>
+<span id="cb106-4"><a href="#cb106-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">newobj =</span> <span class="st">"df_subset"</span>)</span>
+<span id="cb106-5"><a href="#cb106-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb106-6"><a href="#cb106-6" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.colnames</span>(<span class="st">"df_subset"</span>)</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>$France
 [1] "PM_BMI_CONTINUOUS" "GENDER"           
 
 $ISGlobal
-[1] "GENDER"            "PM_BMI_CONTINUOUS"</code></pre>
+[1] "PM_BMI_CONTINUOUS" "GENDER"           </code></pre>
 </div>
 </div>
 </section>
 <section id="rename-variables" class="level3">
 <h3 data-anchor-id="rename-variables">Rename variables</h3>
+<p>We can use <code>ds.rename</code> to rename columns. The <code>tidy_expr</code> argument takes a list with the format <code>new_name = old_name</code>:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb95"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb95-1"><a href="#cb95-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dh.renameVars</span>(</span>
-<span id="cb95-2"><a href="#cb95-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">df =</span> <span class="st">"D"</span>, </span>
-<span id="cb95-3"><a href="#cb95-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">current_names =</span> <span class="fu">c</span>(<span class="st">"PM_BMI_CONTINUOUS"</span>, <span class="st">"GENDER"</span>),</span>
-<span id="cb95-4"><a href="#cb95-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">new_names =</span> <span class="fu">c</span>(<span class="st">"bmi"</span>, <span class="st">"sex"</span>), </span>
-<span id="cb95-5"><a href="#cb95-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">new_obj =</span> <span class="st">"df_rename"</span>)</span>
-<span id="cb95-6"><a href="#cb95-6" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb95-7"><a href="#cb95-7" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.colnames</span>(<span class="st">"df_rename"</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb108"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb108-1"><a href="#cb108-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.rename</span>(</span>
+<span id="cb108-2"><a href="#cb108-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">df.name =</span> <span class="st">"D"</span>,</span>
+<span id="cb108-3"><a href="#cb108-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">tidy_expr =</span> <span class="fu">list</span>(<span class="at">bmi =</span> PM_BMI_CONTINUOUS, <span class="at">sex =</span> GENDER),</span>
+<span id="cb108-4"><a href="#cb108-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">newobj =</span> <span class="st">"df_rename"</span>)</span>
+<span id="cb108-5"><a href="#cb108-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb108-6"><a href="#cb108-6" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.colnames</span>(<span class="st">"df_rename"</span>)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$France
+ [1] "LAB_TSC"            "LAB_TRIG"           "LAB_HDL"           
+ [4] "LAB_GLUC_ADJUSTED"  "bmi"                "DIS_CVA"           
+ [7] "MEDI_LPD"           "DIS_DIAB"           "DIS_AMI"           
+[10] "sex"                "PM_BMI_CATEGORICAL" "HDL_sqrt"          
+[13] "HDL_log"           
+
+$ISGlobal
+ [1] "DIS_AMI"            "DIS_CVA"            "DIS_DIAB"          
+ [4] "sex"                "LAB_GLUC_ADJUSTED"  "LAB_HDL"           
+ [7] "LAB_TRIG"           "LAB_TSC"            "MEDI_LPD"          
+[10] "PM_BMI_CATEGORICAL" "bmi"                "HDL_sqrt"          
+[13] "HDL_log"           </code></pre>
 </div>
-<p>There are many more dsHelper functions designed to make common operations easier in datashield, check out the vignettes at: <a href="https://github.com/timcadman/ds-helper/blob/master/vignettes/ds-helper-main-vignette.Rmd">https://github.com/timcadman/ds-helper/blob/master/vignettes/ds-helper-main-vignette.Rmd</a></p>
+</div>
+<p>There are many more <code>dsTidyverse</code> functions designed to make common operations easier in DataSHIELD, check out the documentation at: <a href="https://molgenis.github.io/ds-tidyverse-client/">https://molgenis.github.io/ds-tidyverse-client/</a></p>
 <section id="section-2" class="level80">
 <p class="heading"></p>
 </section>
@@ -1372,12 +1524,12 @@ $ISGlobal
 <p>Firstly, histograms give a good sense of how one variable is distributed. But no individual points are disclosed because values are “binned” into groups of a similar magnitude, disguising what each one actually is. We protect privacy by removing bins with low counts (below specific threshold). If you have a symmetric distribution, you may find some things aren’t observed at the extreme ends.</p>
 <p>Let’s create a histogram of the variable we’ve been investigating for much of this study: HDL Cholesterol (“LAB_HDL”).</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb96"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb96-1"><a href="#cb96-1" aria-hidden="true" tabindex="-1"></a>?ds.histogram</span>
-<span id="cb96-2"><a href="#cb96-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.histogram</span>(<span class="at">x=</span><span class="st">'D$LAB_HDL'</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb110"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb110-1"><a href="#cb110-1" aria-hidden="true" tabindex="-1"></a>?ds.histogram</span>
+<span id="cb110-2"><a href="#cb110-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.histogram</span>(<span class="at">x=</span><span class="st">'D$LAB_HDL'</span>)</span></code></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="DataSHIELD_workshop_APHRC_tables_files/figure-html/unnamed-chunk-31-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="DataSHIELD_workshop_DSWB_tables_files/figure-html/unnamed-chunk-33-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -1439,11 +1591,11 @@ attr(,"class")
 <h3 data-anchor-id="scatterplots-of-two-numerical-variables">Scatterplots of two numerical variables</h3>
 <p>When you generate a scatter plot, you can say that the data points that are displayed are not the actual values. The function gives you the choice on how to anonymise: either you anonymise the values by additional random noise; or you take the average of the k nearest neighbours. (for more details on how anonymisation methods are used for the generation of privacy-preserving visualisations you can have a look on the paper https://epjdatascience.springeropen.com/articles/10.1140/epjds/s13688-020-00257-4)</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb98"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb98-1"><a href="#cb98-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.scatterPlot</span>(<span class="at">x=</span><span class="st">"D$LAB_HDL"</span>, <span class="at">y=</span><span class="st">"D$PM_BMI_CONTINUOUS"</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb112"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb112-1"><a href="#cb112-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.scatterPlot</span>(<span class="at">x=</span><span class="st">"D$LAB_HDL"</span>, <span class="at">y=</span><span class="st">"D$PM_BMI_CONTINUOUS"</span>)</span></code></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="DataSHIELD_workshop_APHRC_tables_files/figure-html/unnamed-chunk-32-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="DataSHIELD_workshop_DSWB_tables_files/figure-html/unnamed-chunk-34-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -1453,9 +1605,9 @@ attr(,"class")
 </div>
 <p>Other DataSHIELD graphical functions allow the creation of box plots, heatmap plots and contour plots. Investigate them using their help functions:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb100"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb100-1"><a href="#cb100-1" aria-hidden="true" tabindex="-1"></a>?ds.heatmapPlot</span>
-<span id="cb100-2"><a href="#cb100-2" aria-hidden="true" tabindex="-1"></a>?ds.contourPlot</span>
-<span id="cb100-3"><a href="#cb100-3" aria-hidden="true" tabindex="-1"></a>?ds.boxPlot</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb114"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb114-1"><a href="#cb114-1" aria-hidden="true" tabindex="-1"></a>?ds.heatmapPlot</span>
+<span id="cb114-2"><a href="#cb114-2" aria-hidden="true" tabindex="-1"></a>?ds.contourPlot</span>
+<span id="cb114-3"><a href="#cb114-3" aria-hidden="true" tabindex="-1"></a>?ds.boxPlot</span></code></pre></div>
 </div>
 <section id="section-3" class="level80">
 <p class="heading"></p>
@@ -1468,7 +1620,7 @@ attr(,"class")
 <h3 data-anchor-id="simple-linear-regression">Simple Linear Regression</h3>
 <p>We want to examine the relationship between BMI and HDL Cholesterol</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb101"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb101-1"><a href="#cb101-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.cor</span>(<span class="at">x=</span><span class="st">'D$PM_BMI_CONTINUOUS'</span>, <span class="at">y=</span><span class="st">'D$LAB_HDL'</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb115"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb115-1"><a href="#cb115-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.cor</span>(<span class="at">x=</span><span class="st">'D$PM_BMI_CONTINUOUS'</span>, <span class="at">y=</span><span class="st">'D$LAB_HDL'</span>)</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>$France
 $France$`Number of missing values in each variable`
@@ -1516,8 +1668,8 @@ y.val  2432  2432</code></pre>
 <p>The method for this (ds.glm) is a “pooled analysis”- equivalent to placing the individual-level data from all sources in one warehouse.</p>
 <p>Important to note that the link function is by default the canonical link function for each family. So binomial &lt;-&gt; logistic link, poisson &lt;-&gt; log link, gaussian &lt;-&gt; identity link.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb103"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb103-1"><a href="#cb103-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.glm</span>(<span class="at">formula =</span> <span class="st">"D$LAB_HDL~D$PM_BMI_CONTINUOUS"</span>, </span>
-<span id="cb103-2"><a href="#cb103-2" aria-hidden="true" tabindex="-1"></a>       <span class="at">family=</span><span class="st">"gaussian"</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb117"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb117-1"><a href="#cb117-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.glm</span>(<span class="at">formula =</span> <span class="st">"D$LAB_HDL~D$PM_BMI_CONTINUOUS"</span>, </span>
+<span id="cb117-2"><a href="#cb117-2" aria-hidden="true" tabindex="-1"></a>       <span class="at">family=</span><span class="st">"gaussian"</span>)</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>$Nvalid
 [1] 4164
@@ -1573,8 +1725,8 @@ $output.information
 </div>
 <p>Regress HDL Cholesterol with BMI using the Study-Level Meta-Analysis (SLMA) approach:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb105"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb105-1"><a href="#cb105-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.glmSLMA</span>(<span class="at">formula =</span> <span class="st">"D$LAB_HDL~D$PM_BMI_CONTINUOUS"</span>, <span class="at">family=</span><span class="st">"gaussian"</span>, </span>
-<span id="cb105-2"><a href="#cb105-2" aria-hidden="true" tabindex="-1"></a>           <span class="at">newobj =</span> <span class="st">"workshop.obj"</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb119"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb119-1"><a href="#cb119-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.glmSLMA</span>(<span class="at">formula =</span> <span class="st">"D$LAB_HDL~D$PM_BMI_CONTINUOUS"</span>, <span class="at">family=</span><span class="st">"gaussian"</span>, </span>
+<span id="cb119-2"><a href="#cb119-2" aria-hidden="true" tabindex="-1"></a>           <span class="at">newobj =</span> <span class="st">"workshop.obj"</span>)</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>$output.summary
 $output.summary$study1
@@ -1599,7 +1751,8 @@ $output.summary$study1$na.action$na.action
 
 
 $output.summary$study1$call
-glm(formula = formula, family = gaussian, x = TRUE)
+glm(formula = D$LAB_HDL ~ D$PM_BMI_CONTINUOUS, family = gaussian, 
+    x = TRUE)
 
 $output.summary$study1$terms
 D$LAB_HDL ~ D$PM_BMI_CONTINUOUS
@@ -1880,7 +2033,7 @@ $validity.check
 </div>
 <p>For the SLMA approach we can assign the predicted values at each study:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb107"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb107-1"><a href="#cb107-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.glmPredict</span>(<span class="at">glmname =</span> <span class="st">"workshop.obj"</span>, <span class="at">newobj =</span> <span class="st">"workshop.prediction.obj"</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb121"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb121-1"><a href="#cb121-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.glmPredict</span>(<span class="at">glmname =</span> <span class="st">"workshop.obj"</span>, <span class="at">newobj =</span> <span class="st">"workshop.prediction.obj"</span>)</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>$France
 $France$safe.list
@@ -1950,7 +2103,7 @@ $ISGlobal$safe.list$fit.quantiles
       5%      10%      25%      50%      75%      90%      95% 
 1.460655 1.481193 1.518580 1.557941 1.596839 1.633442 1.655954 </code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb109"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb109-1"><a href="#cb109-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.length</span>(<span class="st">"workshop.prediction.obj$fit"</span>, <span class="at">datasources=</span>conns)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb123"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb123-1"><a href="#cb123-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.length</span>(<span class="st">"workshop.prediction.obj$fit"</span>, <span class="at">datasources=</span>conns)</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>$`length of workshop.prediction.obj$fit in France`
 [1] 1732
@@ -1961,7 +2114,7 @@ $`length of workshop.prediction.obj$fit in ISGlobal`
 $`total length of workshop.prediction.obj$fit in all studies combined`
 [1] 4164</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb111"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb111-1"><a href="#cb111-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.length</span>(<span class="st">"D$LAB_HDL"</span>, <span class="at">datasources=</span>conns)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb125"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb125-1"><a href="#cb125-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.length</span>(<span class="st">"D$LAB_HDL"</span>, <span class="at">datasources=</span>conns)</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>$`length of D$LAB_HDL in France`
 [1] 2163
@@ -1974,7 +2127,7 @@ $`total length of D$LAB_HDL in all studies combined`
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb113"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb113-1"><a href="#cb113-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.cbind</span>(<span class="fu">c</span>(<span class="st">'D$LAB_HDL'</span>, <span class="st">'D$PM_BMI_CONTINUOUS'</span>), <span class="at">newobj=</span><span class="st">'vars'</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb127"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb127-1"><a href="#cb127-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.cbind</span>(<span class="fu">c</span>(<span class="st">'D$LAB_HDL'</span>, <span class="st">'D$PM_BMI_CONTINUOUS'</span>), <span class="at">newobj=</span><span class="st">'vars'</span>)</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>$is.object.created
 [1] "A data object &lt;vars&gt; has been created in all specified data sources"
@@ -1982,7 +2135,7 @@ $`total length of D$LAB_HDL in all studies combined`
 $validity.check
 [1] "&lt;vars&gt; appears valid in all sources"</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb115"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb115-1"><a href="#cb115-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.completeCases</span>(<span class="st">'vars'</span>, <span class="at">newobj=</span><span class="st">'vars.complete'</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb129"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb129-1"><a href="#cb129-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.completeCases</span>(<span class="st">'vars'</span>, <span class="at">newobj=</span><span class="st">'vars.complete'</span>)</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>$is.object.created
 [1] "A data object &lt;vars.complete&gt; has been created in all specified data sources"
@@ -1990,7 +2143,7 @@ $validity.check
 $validity.check
 [1] "&lt;vars.complete&gt; appears valid in all sources"</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb117"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb117-1"><a href="#cb117-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.dim</span>(<span class="st">'vars.complete'</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb131"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb131-1"><a href="#cb131-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.dim</span>(<span class="st">'vars.complete'</span>)</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>$`dimensions of vars.complete in France`
 [1] 1732    2
@@ -2004,45 +2157,45 @@ $`dimensions of vars.complete in combined studies`
 </div>
 <p>Let’s plot the best linear fit on a scatter plot</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb119"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb119-1"><a href="#cb119-1" aria-hidden="true" tabindex="-1"></a>df1 <span class="ot">&lt;-</span> <span class="fu">ds.scatterPlot</span>(<span class="st">'D$PM_BMI_CONTINUOUS'</span>, <span class="st">"D$LAB_HDL"</span>, <span class="at">return.coords =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb133"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb133-1"><a href="#cb133-1" aria-hidden="true" tabindex="-1"></a>df1 <span class="ot">&lt;-</span> <span class="fu">ds.scatterPlot</span>(<span class="st">'D$PM_BMI_CONTINUOUS'</span>, <span class="st">"D$LAB_HDL"</span>, <span class="at">return.coords =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="DataSHIELD_workshop_APHRC_tables_files/figure-html/unnamed-chunk-39-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="DataSHIELD_workshop_DSWB_tables_files/figure-html/unnamed-chunk-41-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
-<div class="sourceCode cell-code" id="cb120"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb120-1"><a href="#cb120-1" aria-hidden="true" tabindex="-1"></a>df2 <span class="ot">&lt;-</span> <span class="fu">ds.scatterPlot</span>(<span class="st">'vars.complete$PM_BMI_CONTINUOUS'</span>, <span class="st">"workshop.prediction.obj$fit"</span>, </span>
-<span id="cb120-2"><a href="#cb120-2" aria-hidden="true" tabindex="-1"></a>                      <span class="at">return.coords =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb134"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb134-1"><a href="#cb134-1" aria-hidden="true" tabindex="-1"></a>df2 <span class="ot">&lt;-</span> <span class="fu">ds.scatterPlot</span>(<span class="st">'vars.complete$PM_BMI_CONTINUOUS'</span>, <span class="st">"workshop.prediction.obj$fit"</span>, </span>
+<span id="cb134-2"><a href="#cb134-2" aria-hidden="true" tabindex="-1"></a>                      <span class="at">return.coords =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="DataSHIELD_workshop_APHRC_tables_files/figure-html/unnamed-chunk-39-2.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="DataSHIELD_workshop_DSWB_tables_files/figure-html/unnamed-chunk-41-2.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
-<div class="sourceCode cell-code" id="cb121"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb121-1"><a href="#cb121-1" aria-hidden="true" tabindex="-1"></a><span class="co"># then in native R</span></span>
-<span id="cb121-2"><a href="#cb121-2" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">2</span>))</span>
-<span id="cb121-3"><a href="#cb121-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">as.data.frame</span>(df1[[<span class="dv">1</span>]][[<span class="dv">1</span>]])<span class="sc">$</span>x,</span>
-<span id="cb121-4"><a href="#cb121-4" aria-hidden="true" tabindex="-1"></a>     <span class="fu">as.data.frame</span>(df1[[<span class="dv">1</span>]][[<span class="dv">1</span>]])<span class="sc">$</span>y, <span class="at">xlab=</span><span class="st">'Body Mass Index'</span>, <span class="at">ylab=</span><span class="st">'HDL Cholesterol'</span>, <span class="at">main=</span><span class="st">'Study 1'</span>)</span>
-<span id="cb121-5"><a href="#cb121-5" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="fu">as.data.frame</span>(df2[[<span class="dv">1</span>]][[<span class="dv">1</span>]])<span class="sc">$</span>x,<span class="fu">as.data.frame</span>(df2[[<span class="dv">1</span>]][[<span class="dv">1</span>]])<span class="sc">$</span>y, <span class="at">col=</span><span class="st">'red'</span>)</span>
-<span id="cb121-6"><a href="#cb121-6" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">as.data.frame</span>(df1[[<span class="dv">1</span>]][[<span class="dv">2</span>]])<span class="sc">$</span>x,<span class="fu">as.data.frame</span>(df1[[<span class="dv">1</span>]][[<span class="dv">2</span>]])<span class="sc">$</span>y, </span>
-<span id="cb121-7"><a href="#cb121-7" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab=</span><span class="st">'Body Mass Index'</span>, <span class="at">ylab=</span><span class="st">'HDL Cholesterol'</span>, <span class="at">main=</span><span class="st">'Study 2'</span>)</span>
-<span id="cb121-8"><a href="#cb121-8" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="fu">as.data.frame</span>(df2[[<span class="dv">1</span>]][[<span class="dv">2</span>]])<span class="sc">$</span>x,<span class="fu">as.data.frame</span>(df2[[<span class="dv">1</span>]][[<span class="dv">2</span>]])<span class="sc">$</span>y, <span class="at">col=</span><span class="st">'red'</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb135"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb135-1"><a href="#cb135-1" aria-hidden="true" tabindex="-1"></a><span class="co"># then in native R</span></span>
+<span id="cb135-2"><a href="#cb135-2" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">2</span>))</span>
+<span id="cb135-3"><a href="#cb135-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">as.data.frame</span>(df1[[<span class="dv">1</span>]][[<span class="dv">1</span>]])<span class="sc">$</span>x,</span>
+<span id="cb135-4"><a href="#cb135-4" aria-hidden="true" tabindex="-1"></a>     <span class="fu">as.data.frame</span>(df1[[<span class="dv">1</span>]][[<span class="dv">1</span>]])<span class="sc">$</span>y, <span class="at">xlab=</span><span class="st">'Body Mass Index'</span>, <span class="at">ylab=</span><span class="st">'HDL Cholesterol'</span>, <span class="at">main=</span><span class="st">'Study 1'</span>)</span>
+<span id="cb135-5"><a href="#cb135-5" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="fu">as.data.frame</span>(df2[[<span class="dv">1</span>]][[<span class="dv">1</span>]])<span class="sc">$</span>x,<span class="fu">as.data.frame</span>(df2[[<span class="dv">1</span>]][[<span class="dv">1</span>]])<span class="sc">$</span>y, <span class="at">col=</span><span class="st">'red'</span>)</span>
+<span id="cb135-6"><a href="#cb135-6" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">as.data.frame</span>(df1[[<span class="dv">1</span>]][[<span class="dv">2</span>]])<span class="sc">$</span>x,<span class="fu">as.data.frame</span>(df1[[<span class="dv">1</span>]][[<span class="dv">2</span>]])<span class="sc">$</span>y, </span>
+<span id="cb135-7"><a href="#cb135-7" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab=</span><span class="st">'Body Mass Index'</span>, <span class="at">ylab=</span><span class="st">'HDL Cholesterol'</span>, <span class="at">main=</span><span class="st">'Study 2'</span>)</span>
+<span id="cb135-8"><a href="#cb135-8" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="fu">as.data.frame</span>(df2[[<span class="dv">1</span>]][[<span class="dv">2</span>]])<span class="sc">$</span>x,<span class="fu">as.data.frame</span>(df2[[<span class="dv">1</span>]][[<span class="dv">2</span>]])<span class="sc">$</span>y, <span class="at">col=</span><span class="st">'red'</span>)</span></code></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="DataSHIELD_workshop_APHRC_tables_files/figure-html/unnamed-chunk-39-3.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="DataSHIELD_workshop_DSWB_tables_files/figure-html/unnamed-chunk-41-3.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
 </div>
 <p>For the SLMA approach we can also create the predicted values and the residuals at each study using the ds.make function:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb122"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb122-1"><a href="#cb122-1" aria-hidden="true" tabindex="-1"></a>glmslma <span class="ot">&lt;-</span> <span class="fu">ds.glmSLMA</span>(<span class="at">formula =</span> <span class="st">"vars.complete$LAB_HDL~vars.complete$PM_BMI_CONTINUOUS"</span>, <span class="at">family=</span><span class="st">"gaussian"</span>, <span class="at">newobj =</span> <span class="st">"workshop.obj"</span>)</span>
-<span id="cb122-2"><a href="#cb122-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb122-3"><a href="#cb122-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.make</span>(<span class="at">toAssign=</span><span class="fu">paste0</span>(<span class="st">"("</span>,glmslma<span class="sc">$</span>SLMA.pooled.ests.matrix[<span class="dv">1</span>,<span class="dv">1</span>],<span class="st">")+("</span>, glmslma<span class="sc">$</span>SLMA.pooled.ests.matrix[<span class="dv">2</span>,<span class="dv">1</span>],<span class="st">"*vars.complete$PM_BMI_CONTINUOUS)"</span>), </span>
-<span id="cb122-4"><a href="#cb122-4" aria-hidden="true" tabindex="-1"></a>        <span class="at">newobj =</span> <span class="st">"predicted.values"</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb136"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb136-1"><a href="#cb136-1" aria-hidden="true" tabindex="-1"></a>glmslma <span class="ot">&lt;-</span> <span class="fu">ds.glmSLMA</span>(<span class="at">formula =</span> <span class="st">"vars.complete$LAB_HDL~vars.complete$PM_BMI_CONTINUOUS"</span>, <span class="at">family=</span><span class="st">"gaussian"</span>, <span class="at">newobj =</span> <span class="st">"workshop.obj"</span>)</span>
+<span id="cb136-2"><a href="#cb136-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb136-3"><a href="#cb136-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.make</span>(<span class="at">toAssign=</span><span class="fu">paste0</span>(<span class="st">"("</span>,glmslma<span class="sc">$</span>SLMA.pooled.ests.matrix[<span class="dv">1</span>,<span class="dv">1</span>],<span class="st">")+("</span>, glmslma<span class="sc">$</span>SLMA.pooled.ests.matrix[<span class="dv">2</span>,<span class="dv">1</span>],<span class="st">"*vars.complete$PM_BMI_CONTINUOUS)"</span>), </span>
+<span id="cb136-4"><a href="#cb136-4" aria-hidden="true" tabindex="-1"></a>        <span class="at">newobj =</span> <span class="st">"predicted.values"</span>)</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>$is.object.created
 [1] "A data object &lt;predicted.values&gt; has been created in all specified data sources"
@@ -2050,8 +2203,8 @@ $`dimensions of vars.complete in combined studies`
 $validity.check
 [1] "&lt;predicted.values&gt; appears valid in all sources"</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb124"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb124-1"><a href="#cb124-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.make</span>(<span class="at">toAssign =</span> <span class="st">"vars.complete$LAB_HDL - predicted.values"</span>, </span>
-<span id="cb124-2"><a href="#cb124-2" aria-hidden="true" tabindex="-1"></a>        <span class="at">newobj =</span> <span class="st">"residuals"</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb138"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb138-1"><a href="#cb138-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.make</span>(<span class="at">toAssign =</span> <span class="st">"vars.complete$LAB_HDL - predicted.values"</span>, </span>
+<span id="cb138-2"><a href="#cb138-2" aria-hidden="true" tabindex="-1"></a>        <span class="at">newobj =</span> <span class="st">"residuals"</span>)</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>$is.object.created
 [1] "A data object &lt;residuals&gt; has been created in all specified data sources"
@@ -2059,23 +2212,23 @@ $validity.check
 $validity.check
 [1] "&lt;residuals&gt; appears valid in all sources"</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb126"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb126-1"><a href="#cb126-1" aria-hidden="true" tabindex="-1"></a><span class="co"># and you can use those to run regression plot diagnostics  </span></span>
-<span id="cb126-2"><a href="#cb126-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.scatterPlot</span>(<span class="st">'predicted.values'</span>, <span class="st">"residuals"</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb140"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb140-1"><a href="#cb140-1" aria-hidden="true" tabindex="-1"></a><span class="co"># and you can use those to run regression plot diagnostics  </span></span>
+<span id="cb140-2"><a href="#cb140-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.scatterPlot</span>(<span class="st">'predicted.values'</span>, <span class="st">"residuals"</span>)</span></code></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="DataSHIELD_workshop_APHRC_tables_files/figure-html/unnamed-chunk-40-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="DataSHIELD_workshop_DSWB_tables_files/figure-html/unnamed-chunk-42-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "Split plot created"</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb128"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb128-1"><a href="#cb128-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.histogram</span>(<span class="st">"residuals"</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb142"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb142-1"><a href="#cb142-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.histogram</span>(<span class="st">"residuals"</span>)</span></code></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="DataSHIELD_workshop_APHRC_tables_files/figure-html/unnamed-chunk-40-2.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="DataSHIELD_workshop_DSWB_tables_files/figure-html/unnamed-chunk-42-2.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -2137,7 +2290,7 @@ attr(,"class")
 <p>We want to examine the relationship between BMI and diabetes</p>
 <p>Examine the distribution of the variable “DIS_DIAB” in all cohorts using ‘ds.table’:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb130"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb130-1"><a href="#cb130-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.table</span>(<span class="st">"D$DIS_DIAB"</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb144"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb144-1"><a href="#cb144-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.table</span>(<span class="st">"D$DIS_DIAB"</span>)</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
  Data in all studies were valid 
@@ -2185,7 +2338,7 @@ $validity.message
 </div>
 <p>Check the class of “DIS_DIAB”:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb133"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb133-1"><a href="#cb133-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.class</span>(<span class="st">"D$DIS_DIAB"</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb147"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb147-1"><a href="#cb147-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.class</span>(<span class="st">"D$DIS_DIAB"</span>)</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>$France
 [1] "factor"
@@ -2196,44 +2349,44 @@ $ISGlobal
 </div>
 <p>Examine the association between BMI and diabetes:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb135"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb135-1"><a href="#cb135-1" aria-hidden="true" tabindex="-1"></a>glmSLMA_mod2<span class="ot">&lt;-</span><span class="fu">ds.glmSLMA</span>(<span class="at">formula=</span><span class="st">"D$DIS_DIAB~D$PM_BMI_CONTINUOUS"</span>, <span class="at">family=</span><span class="st">'binomial'</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb149"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb149-1"><a href="#cb149-1" aria-hidden="true" tabindex="-1"></a>glmSLMA_mod2<span class="ot">&lt;-</span><span class="fu">ds.glmSLMA</span>(<span class="at">formula=</span><span class="st">"D$DIS_DIAB~D$PM_BMI_CONTINUOUS"</span>, <span class="at">family=</span><span class="st">'binomial'</span>)</span></code></pre></div>
 </div>
 <p>Save effect estimates and standard errors as new objects</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb136"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb136-1"><a href="#cb136-1" aria-hidden="true" tabindex="-1"></a>estimates <span class="ot">&lt;-</span> <span class="fu">c</span>(glmSLMA_mod2<span class="sc">$</span>betamatrix.valid[<span class="dv">2</span>,])</span>
-<span id="cb136-2"><a href="#cb136-2" aria-hidden="true" tabindex="-1"></a>se <span class="ot">&lt;-</span> <span class="fu">c</span>(glmSLMA_mod2<span class="sc">$</span>sematrix.valid[<span class="dv">2</span>,])</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb150"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb150-1"><a href="#cb150-1" aria-hidden="true" tabindex="-1"></a>estimates <span class="ot">&lt;-</span> <span class="fu">c</span>(glmSLMA_mod2<span class="sc">$</span>betamatrix.valid[<span class="dv">2</span>,])</span>
+<span id="cb150-2"><a href="#cb150-2" aria-hidden="true" tabindex="-1"></a>se <span class="ot">&lt;-</span> <span class="fu">c</span>(glmSLMA_mod2<span class="sc">$</span>sematrix.valid[<span class="dv">2</span>,])</span></code></pre></div>
 </div>
 <p>Meta-analyse the results using rma to obtain study weights:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb137"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb137-1"><a href="#cb137-1" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">rma</span>(estimates, <span class="at">sei=</span>se)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb151"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb151-1"><a href="#cb151-1" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">rma</span>(estimates, <span class="at">sei=</span>se)</span></code></pre></div>
 </div>
 <p>Can produce simple forest plots using output:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb138"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb138-1"><a href="#cb138-1" aria-hidden="true" tabindex="-1"></a><span class="fu">forest</span>(res, <span class="at">atransf=</span>exp)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb152"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb152-1"><a href="#cb152-1" aria-hidden="true" tabindex="-1"></a><span class="fu">forest</span>(res, <span class="at">atransf=</span>exp)</span></code></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="DataSHIELD_workshop_APHRC_tables_files/figure-html/unnamed-chunk-46-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="DataSHIELD_workshop_DSWB_tables_files/figure-html/unnamed-chunk-48-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
 </div>
 <p>We can also add more information to forest plots:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb139"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb139-1"><a href="#cb139-1" aria-hidden="true" tabindex="-1"></a>study_names <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"France"</span>, <span class="st">"Spain"</span>)</span>
-<span id="cb139-2"><a href="#cb139-2" aria-hidden="true" tabindex="-1"></a>weights <span class="ot">&lt;-</span>  <span class="fu">c</span>(<span class="fu">paste0</span>(<span class="fu">formatC</span>(<span class="fu">weights</span>(res), <span class="at">format=</span><span class="st">"f"</span>, <span class="at">digits=</span><span class="dv">1</span>, <span class="at">width=</span><span class="dv">4</span>), <span class="st">"%"</span>))</span>
-<span id="cb139-3"><a href="#cb139-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb139-4"><a href="#cb139-4" aria-hidden="true" tabindex="-1"></a><span class="fu">forest</span>(res, <span class="at">atransf=</span>exp,</span>
-<span id="cb139-5"><a href="#cb139-5" aria-hidden="true" tabindex="-1"></a>       <span class="at">xlab=</span><span class="st">"Crude Odds Ratio"</span>, <span class="at">refline=</span><span class="fu">log</span>(<span class="dv">1</span>), <span class="at">xlim=</span><span class="fu">c</span>(<span class="sc">-</span><span class="fl">0.25</span>,<span class="fl">0.5</span>), </span>
-<span id="cb139-6"><a href="#cb139-6" aria-hidden="true" tabindex="-1"></a>       <span class="at">at=</span><span class="fu">log</span>(<span class="fu">c</span>(<span class="fl">0.95</span>, <span class="dv">1</span>, <span class="fl">1.1</span>, <span class="fl">1.2</span>, <span class="fl">1.3</span>)),</span>
-<span id="cb139-7"><a href="#cb139-7" aria-hidden="true" tabindex="-1"></a>       <span class="at">slab=</span><span class="fu">cbind</span>(<span class="fu">paste0</span>(study_names, <span class="st">" ("</span>, <span class="fu">paste0</span>(weights, <span class="st">")"</span>))), </span>
-<span id="cb139-8"><a href="#cb139-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">mlab=</span><span class="st">"RE model"</span>)</span>
-<span id="cb139-9"><a href="#cb139-9" aria-hidden="true" tabindex="-1"></a><span class="fu">text</span>(<span class="fl">0.5</span>, <span class="fl">4.5</span>, <span class="at">pos=</span><span class="dv">2</span>, <span class="st">"Odds Ratio [95% CI]"</span>)</span>
-<span id="cb139-10"><a href="#cb139-10" aria-hidden="true" tabindex="-1"></a><span class="fu">text</span>(<span class="sc">-</span><span class="fl">0.25</span>, <span class="fl">4.5</span>, <span class="at">pos=</span><span class="dv">4</span>, <span class="st">"Study (weight)"</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb153"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb153-1"><a href="#cb153-1" aria-hidden="true" tabindex="-1"></a>study_names <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"France"</span>, <span class="st">"Spain"</span>)</span>
+<span id="cb153-2"><a href="#cb153-2" aria-hidden="true" tabindex="-1"></a>weights <span class="ot">&lt;-</span>  <span class="fu">c</span>(<span class="fu">paste0</span>(<span class="fu">formatC</span>(<span class="fu">weights</span>(res), <span class="at">format=</span><span class="st">"f"</span>, <span class="at">digits=</span><span class="dv">1</span>, <span class="at">width=</span><span class="dv">4</span>), <span class="st">"%"</span>))</span>
+<span id="cb153-3"><a href="#cb153-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb153-4"><a href="#cb153-4" aria-hidden="true" tabindex="-1"></a><span class="fu">forest</span>(res, <span class="at">atransf=</span>exp,</span>
+<span id="cb153-5"><a href="#cb153-5" aria-hidden="true" tabindex="-1"></a>       <span class="at">xlab=</span><span class="st">"Crude Odds Ratio"</span>, <span class="at">refline=</span><span class="fu">log</span>(<span class="dv">1</span>), <span class="at">xlim=</span><span class="fu">c</span>(<span class="sc">-</span><span class="fl">0.25</span>,<span class="fl">0.5</span>), </span>
+<span id="cb153-6"><a href="#cb153-6" aria-hidden="true" tabindex="-1"></a>       <span class="at">at=</span><span class="fu">log</span>(<span class="fu">c</span>(<span class="fl">0.95</span>, <span class="dv">1</span>, <span class="fl">1.1</span>, <span class="fl">1.2</span>, <span class="fl">1.3</span>)),</span>
+<span id="cb153-7"><a href="#cb153-7" aria-hidden="true" tabindex="-1"></a>       <span class="at">slab=</span><span class="fu">cbind</span>(<span class="fu">paste0</span>(study_names, <span class="st">" ("</span>, <span class="fu">paste0</span>(weights, <span class="st">")"</span>))), </span>
+<span id="cb153-8"><a href="#cb153-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">mlab=</span><span class="st">"RE model"</span>)</span>
+<span id="cb153-9"><a href="#cb153-9" aria-hidden="true" tabindex="-1"></a><span class="fu">text</span>(<span class="fl">0.5</span>, <span class="fl">4.5</span>, <span class="at">pos=</span><span class="dv">2</span>, <span class="st">"Odds Ratio [95% CI]"</span>)</span>
+<span id="cb153-10"><a href="#cb153-10" aria-hidden="true" tabindex="-1"></a><span class="fu">text</span>(<span class="sc">-</span><span class="fl">0.25</span>, <span class="fl">4.5</span>, <span class="at">pos=</span><span class="dv">4</span>, <span class="st">"Study (weight)"</span>)</span></code></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="DataSHIELD_workshop_APHRC_tables_files/figure-html/unnamed-chunk-47-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="DataSHIELD_workshop_DSWB_tables_files/figure-html/unnamed-chunk-49-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -2243,16 +2396,16 @@ $ISGlobal
 <h3 data-anchor-id="modelling-multiple-variables-and-interactions">Modelling multiple variables and interactions</h3>
 <p>Also possible to model multiple explanatory variables and include interactions:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb140"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb140-1"><a href="#cb140-1" aria-hidden="true" tabindex="-1"></a>glm_mod1<span class="ot">&lt;-</span><span class="fu">ds.glm</span>(<span class="at">formula=</span><span class="st">"D$DIS_DIAB~D$PM_BMI_CONTINUOUS+D$LAB_HDL*D$GENDER"</span>, <span class="at">family=</span><span class="st">'binomial'</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb154"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb154-1"><a href="#cb154-1" aria-hidden="true" tabindex="-1"></a>glm_mod1<span class="ot">&lt;-</span><span class="fu">ds.glm</span>(<span class="at">formula=</span><span class="st">"D$DIS_DIAB~D$PM_BMI_CONTINUOUS+D$LAB_HDL*D$GENDER"</span>, <span class="at">family=</span><span class="st">'binomial'</span>)</span></code></pre></div>
 </div>
 <p>The “*” between LAB_HDL and GENDER means fit all possible main effects and interactions between the two covariates.</p>
 <p>Compare with results of a study-level meta analysis:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb141"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb141-1"><a href="#cb141-1" aria-hidden="true" tabindex="-1"></a>glmSLMA_mod2<span class="ot">&lt;-</span><span class="fu">ds.glmSLMA</span>(<span class="at">formula=</span><span class="st">"D$DIS_DIAB~D$PM_BMI_CONTINUOUS+D$LAB_HDL*D$GENDER"</span>, <span class="at">family=</span><span class="st">'binomial'</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb155"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb155-1"><a href="#cb155-1" aria-hidden="true" tabindex="-1"></a>glmSLMA_mod2<span class="ot">&lt;-</span><span class="fu">ds.glmSLMA</span>(<span class="at">formula=</span><span class="st">"D$DIS_DIAB~D$PM_BMI_CONTINUOUS+D$LAB_HDL*D$GENDER"</span>, <span class="at">family=</span><span class="st">'binomial'</span>)</span></code></pre></div>
 </div>
 <p>Now compare outputs:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb142"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb142-1"><a href="#cb142-1" aria-hidden="true" tabindex="-1"></a>glm_mod1<span class="sc">$</span>coefficients</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb156"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb156-1"><a href="#cb156-1" aria-hidden="true" tabindex="-1"></a>glm_mod1<span class="sc">$</span>coefficients</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                      Estimate Std. Error    z-value      p-value low0.95CI.LP
 (Intercept)         -6.9064142 1.08980103 -6.3373166 2.338013e-10  -9.04238494
@@ -2267,7 +2420,7 @@ D$LAB_HDL              -0.2558494 0.38005445   0.1865544594     0.774258560
 D$GENDER1               0.6861624 0.24427693   0.0300447352     1.986079051
 D$LAB_HDL:D$GENDER1     2.0064263 1.90790747   0.4894797709     7.436693232</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb144"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb144-1"><a href="#cb144-1" aria-hidden="true" tabindex="-1"></a>glmSLMA_mod2<span class="sc">$</span>SLMA.pooled.ests.matrix</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb158"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb158-1"><a href="#cb158-1" aria-hidden="true" tabindex="-1"></a>glmSLMA_mod2<span class="sc">$</span>SLMA.pooled.ests.matrix</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                     pooled.ML      se.ML pooled.REML    se.REML  pooled.FE
 (Intercept)         -6.9801281 1.10288774  -6.9801281 1.10288774 -6.9801281
@@ -2290,21 +2443,21 @@ D$LAB_HDL:D$GENDER1 0.69958422</code></pre>
 <h2 data-anchor-id="at-the-end-of-your-rstudio-server-analysis">At the end of your RStudio Server analysis:</h2>
 <p>You can save your workspace:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb146"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb146-1"><a href="#cb146-1" aria-hidden="true" tabindex="-1"></a><span class="fu">datashield.workspace_save</span>(<span class="at">conns =</span> conns, <span class="at">ws =</span> <span class="st">"workspace2025"</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb160"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb160-1"><a href="#cb160-1" aria-hidden="true" tabindex="-1"></a><span class="fu">datashield.workspace_save</span>(<span class="at">conns =</span> conns, <span class="at">ws =</span> <span class="st">"workspace2025"</span>)</span></code></pre></div>
 </div>
 <p>Don’t forget to log out! Using:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb147"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb147-1"><a href="#cb147-1" aria-hidden="true" tabindex="-1"></a><span class="fu">datashield.logout</span>(conns)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb161"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb161-1"><a href="#cb161-1" aria-hidden="true" tabindex="-1"></a><span class="fu">datashield.logout</span>(conns)</span></code></pre></div>
 </div>
 <p>You can restore your workspace, the next time you want to continue with your analysis</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb148"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb148-1"><a href="#cb148-1" aria-hidden="true" tabindex="-1"></a>conns <span class="ot">&lt;-</span> <span class="fu">datashield.login</span>(<span class="at">logins =</span> logindata, </span>
-<span id="cb148-2"><a href="#cb148-2" aria-hidden="true" tabindex="-1"></a>                          <span class="at">assign =</span> <span class="cn">TRUE</span>, <span class="at">symbol =</span> <span class="st">"D"</span>)</span>
-<span id="cb148-3"><a href="#cb148-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.ls</span>()</span>
-<span id="cb148-4"><a href="#cb148-4" aria-hidden="true" tabindex="-1"></a><span class="fu">datashield.logout</span>(conns)</span>
-<span id="cb148-5"><a href="#cb148-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb148-6"><a href="#cb148-6" aria-hidden="true" tabindex="-1"></a>conns <span class="ot">&lt;-</span> <span class="fu">datashield.login</span>(<span class="at">logins =</span> logindata, <span class="at">restore =</span> <span class="st">"workspace2025"</span>)</span>
-<span id="cb148-7"><a href="#cb148-7" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.ls</span>()</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb162"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb162-1"><a href="#cb162-1" aria-hidden="true" tabindex="-1"></a>conns <span class="ot">&lt;-</span> <span class="fu">datashield.login</span>(<span class="at">logins =</span> logindata, </span>
+<span id="cb162-2"><a href="#cb162-2" aria-hidden="true" tabindex="-1"></a>                          <span class="at">assign =</span> <span class="cn">TRUE</span>, <span class="at">symbol =</span> <span class="st">"D"</span>)</span>
+<span id="cb162-3"><a href="#cb162-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.ls</span>()</span>
+<span id="cb162-4"><a href="#cb162-4" aria-hidden="true" tabindex="-1"></a><span class="fu">datashield.logout</span>(conns)</span>
+<span id="cb162-5"><a href="#cb162-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb162-6"><a href="#cb162-6" aria-hidden="true" tabindex="-1"></a>conns <span class="ot">&lt;-</span> <span class="fu">datashield.login</span>(<span class="at">logins =</span> logindata, <span class="at">restore =</span> <span class="st">"workspace2025"</span>)</span>
+<span id="cb162-7"><a href="#cb162-7" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.ls</span>()</span></code></pre></div>
 </div>
 <p>Also you can delete unwanted workspaces using the datashield.workspace_rm</p>
 <p>In Rstudio Server: DON’T forget to use the orange “quit the current R session” button (top right of browser screen) before closing the tab- otherwise you will experience an error message the next time you try to log in.</p>
@@ -2344,29 +2497,27 @@ D$LAB_HDL:D$GENDER1 0.69958422</code></pre>
 <section id="exercise-ukbiobank-meta-analysis" class="level1">
 <h1>Exercise: UKBiobank Meta-Analysis</h1>
 <p>We have access to 3 datasets corresponding to simulated data from UKBiobank available through CINECA study. This data reproduce the exact associations found at UKBiobank. The datasets are accessed in three Opal servers:</p>
-
 <p><strong>Server 1:</strong></p>
 <ul>
 <li>URL: https://opal-demo.obiba.org/ (user: administrator, pwd: password)</li>
 <li>Project: GWAS</li>
 <li>Table: ega_phenotypes_1</li>
 </ul>
-
 <p><strong>Server 2:</strong></p>
 <ul>
 <li>URL: https://opal-demo.obiba.org/ (user: administrator, pwd: password)</li>
 <li>Project: GWAS</li>
 <li>Table: ega_phenotypes_2</li>
 </ul>
-
 <p><strong>Server 3:</strong></p>
 <ul>
 <li>URL: https://opal-demo.obiba.org/ (user: administrator, pwd: password)</li>
 <li>Project: GWAS</li>
 <li>Table: ega_phenotypes_3</li>
 </ul>
-
 <p>Fit a regression model between diabetes (variable diabetes_diagnosed_doctor) and cholesterol level (variable cholesterol) using meta-analysis approach and compute the pooled effect.</p>
+
+
 </section>
 
 </main> <!-- /main -->
@@ -2374,7 +2525,7 @@ D$LAB_HDL:D$GENDER1 0.69958422</code></pre>
   window.document.addEventListener("DOMContentLoaded", function (event) {
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);
-        var filterRegex = new RegExp("https:\/\/isglobal-brge\.github\.io\/workshop_APHRC");
+        var filterRegex = new RegExp("https:\/\/isglobal-brge\.github\.io\/workshop_DSWB");
       var isInternal = (href) => {
           return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
       }

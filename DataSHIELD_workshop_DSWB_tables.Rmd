@@ -11,7 +11,7 @@ execute:
   error: true
 ---
 
-<a href="DataSHIELD_workshop_APHRC_tables.R" download="DataSHIELD_workshop_APHRC_tables.R" class="btn btn-primary btn-sm">
+<a href="DataSHIELD_workshop_DSWB_tables.R" download="DataSHIELD_workshop_DSWB_tables.R" class="btn btn-primary btn-sm">
 <i class="bi bi-download"></i> Download this R file
 </a>
 
@@ -30,7 +30,7 @@ The plan for this workshop is as follows:
 - Describing data
 - Manipulating data
 - Subsetting data
-- Data manipulation with dsHelper
+- Data manipulation with dsTidyverse
 - Making graphs
 - Performing regression analysis
 
@@ -51,7 +51,10 @@ We are missing some of the necessary packages: "DSI", "DSOpal" and "dsBaseClient
 install.packages('DSI')
 install.packages('DSOpal')
 devtools::install_github("datashield/dsBaseClient", force = TRUE)
-devtools::install_github("timcadman/ds-helper")
+install.packages(
+  "dsTidyverseClient",
+  repos = c("https://molgenis.r-universe.dev", "https://cloud.r-project.org")
+)
 install.packages("metafor")
 ```
 
@@ -65,7 +68,7 @@ library(DSOpal)
 
 # DataSHIELD client libraries
 library(dsBaseClient)
-library(dsHelper)
+library(dsTidyverseClient)
 
 # Library to perform meta-analyses
 library(metafor)
@@ -226,18 +229,32 @@ Factor variables visualize by simply writing
 ds.table("D$GENDER")
 ```
 
-### Using dsHelper to retrieve statistics in a neater format. 
+### Retrieving statistics for multiple variables
 
-As you may have noticed, some operations which are more straightforward in R can be more complicated in datashield. To help with this, the dsHelper package allows you to do some common operations in fewer lines of code. DsHelper is an entirely serverside package - it contains only clientside functions which call DataSHIELD functions serverside. 
+As you may have noticed, some operations which are more straightforward in R can be more complicated in DataSHIELD. DataSHIELD provides a range of functions to retrieve statistics, but you typically need a different function for each statistic, and most of them return results for one variable at a time.
 
-We have seen datashield has a range of functions to retrieve statistics, but is limited in that (i) you need to use different functions for different statistics, (ii) you can only get stats for one variable at a time. dh.GetStats returns many useful stats in a tibble, and allows you to retrieve stats for multiple variables at a time.
+For **continuous** variables, `ds.mean`, `ds.var` and `ds.quantileMean` return the mean, variance and quantiles:
 
 ```{r}
-neat_stats <- dh.getStats(
-	df = "D",
-  vars = c("GENDER", "LAB_TRIG", "LAB_HDL", "DIS_CVA", "DIS_DIAB"))
-           
-neat_stats
+ds.mean("D$LAB_TRIG")
+ds.var("D$LAB_TRIG")
+ds.quantileMean("D$LAB_HDL")
+```
+
+For **categorical** variables, `ds.table` returns the counts and proportions of each category, including missingness:
+
+```{r}
+ds.table("D$GENDER")
+ds.table("D$DIS_CVA")
+ds.table("D$DIS_DIAB")
+```
+
+To retrieve the same statistic for several variables at once, you can loop over them:
+
+```{r}
+for (v in c("LAB_TRIG", "LAB_HDL")) {
+  print(ds.mean(paste0("D$", v)))
+}
 ```
 
 
@@ -386,34 +403,40 @@ ds.dim("subset2")
 
 
 
-## Data manipulation with dsHelper
-Again, we can use some dsHelper functions to do data manipulation operations in a more efficient way. 
+## Data manipulation with dsTidyverse
+
+Again, we can use some `dsTidyverse` functions to do data manipulation operations in a more efficient way. `dsTidyverse` brings the familiar `dplyr` verbs (such as `select`, `rename`, `filter` and `mutate`) to DataSHIELD, running them server-side in a non-disclosive way.
+
+> **Note:** these functions require the `dsTidyverse` server-side package to be installed in the DataSHIELD profile you are connecting to.
 
 ### Create a subset of columns by a vector of column names
 
+We can use `ds.select` to keep only the columns we are interested in. The column names are passed unquoted inside `tidy_expr`:
+
 ```{r}
-dh.dropCols(
-	df = "D", 
-  vars = c("PM_BMI_CONTINUOUS", "GENDER"), 
-  type = "keep",
-  new_obj = "df_subset")
-  
+ds.select(
+  df.name = "D",
+  tidy_expr = list(PM_BMI_CONTINUOUS, GENDER),
+  newobj = "df_subset")
+
 ds.colnames("df_subset")
 ```
 
 
 ### Rename variables
-```{r, eval = FALSE}
-dh.renameVars(
-	df = "D", 
-  current_names = c("PM_BMI_CONTINUOUS", "GENDER"),
-  new_names = c("bmi", "sex"), 
-  new_obj = "df_rename")
-  
+
+We can use `ds.rename` to rename columns. The `tidy_expr` argument takes a list with the format `new_name = old_name`:
+
+```{r}
+ds.rename(
+  df.name = "D",
+  tidy_expr = list(bmi = PM_BMI_CONTINUOUS, sex = GENDER),
+  newobj = "df_rename")
+
 ds.colnames("df_rename")
 ```
 
-There are many more dsHelper functions designed to make common operations easier in datashield, check out the vignettes at: [https://github.com/timcadman/ds-helper/blob/master/vignettes/ds-helper-main-vignette.Rmd](https://github.com/timcadman/ds-helper/blob/master/vignettes/ds-helper-main-vignette.Rmd)
+There are many more `dsTidyverse` functions designed to make common operations easier in DataSHIELD, check out the documentation at: [https://molgenis.github.io/ds-tidyverse-client/](https://molgenis.github.io/ds-tidyverse-client/)
 
 
 

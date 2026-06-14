@@ -26,34 +26,20 @@ This page provides simple instructions to install R and all required packages fo
 Open RStudio and run the following commands to install all necessary packages:
 
 ```r
-# Install devtools for GitHub installations
 install.packages("devtools")
-
-# Core DataSHIELD packages
-install.packages("DSI", repos = c("https://cran.obiba.org", "https://cloud.r-project.org"))
-install.packages("DSOpal", repos = c("https://cran.obiba.org", "https://cloud.r-project.org"))
-devtools::install_github("datashield/dsBaseClient", force = TRUE)
-
-# Opal administration packages
+install.packages("DSI")
+install.packages("DSOpal")
 install.packages("opalr")
-
-# DataSHIELD helper packages
-devtools::install_github("timcadman/ds-helper")
-
-# dsOMOP packages
-devtools::install_github('isglobal-brge/dsOMOPClient')
-devtools::install_github('isglobal-brge/dsOMOPHelper')
-
-# Statistical analysis packages
+install.packages(
+  "dsTidyverseClient",
+  repos = c("https://molgenis.r-universe.dev", "https://cloud.r-project.org")
+)
+devtools::install_github("datashield/dsBaseClient", force = TRUE)
+devtools::install_github("isglobal-brge/dsOMOPClient")
+devtools::install_github("isglobal-brge/dsOmicsClient")
 install.packages("metafor")
-
-# Basic data manipulation (if not already installed)
 install.packages("readr")
 install.packages("knitr")
-
-# Additional packages for advanced workshops (optional)
-install.packages("BiocManager")
-BiocManager::install("dsOmicsClient", ask = FALSE)
 ```
 
 ---

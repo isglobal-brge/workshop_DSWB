@@ -8,9 +8,9 @@ project:
     - "*.pdf"
 
 website:
-  title: "DataSHIELD APHRC Workshop"
-  site-url: https://isglobal-brge.github.io/workshop_APHRC
-  repo-url: https://github.com/isglobal-brge/workshop_APHRC
+  title: "DataSHIELD DSWB Workshop"
+  site-url: https://isglobal-brge.github.io/workshop_DSWB
+  repo-url: https://github.com/isglobal-brge/workshop_DSWB
   
   favicon: images/isglobal_logo.jpg
   
@@ -32,10 +32,10 @@ website:
             href: datashield-presentation.qmd
             icon: file-earmark-slides
           - text: "DataSHIELD (Tables)"
-            href: DataSHIELD_workshop_APHRC_tables.Rmd
+            href: DataSHIELD_workshop_DSWB_tables.Rmd
             icon: table
           - text: "DataSHIELD (Resources)"
-            href: DataSHIELD_workshop_APHRC_resources.Rmd
+            href: DataSHIELD_workshop_DSWB_resources.Rmd
             icon: link-45deg
           - text: "OMOP CDM Presentation"
             href: omop-presentation.qmd

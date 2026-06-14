@@ -2,12 +2,12 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.7.31">
+<meta name="generator" content="quarto-1.8.27">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>DataSHIELD Workshop: Data Science Without Borders – DataSHIELD APHRC Workshop</title>
+<title>DataSHIELD Workshop: Data Science Without Borders – DataSHIELD DSWB Workshop</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -68,13 +68,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="./images/isglobal_logo.jpg" rel="icon" type="image/jpeg">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-b08616ca30bc6986c6ffe4cecfeccd70.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-afdc90b34ebced266e103efb07108d1c.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-d2fec8d93cc0814413f782f2e7a38223.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-ccc22283debd23ef421ac463adf8e61d.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -146,12 +147,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
  <span class="dropdown-text">DataSHIELD Presentation</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./DataSHIELD_workshop_APHRC_tables.html"><i class="bi bi-table" role="img">
+    <a class="dropdown-item" href="./DataSHIELD_workshop_DSWB_tables.html"><i class="bi bi-table" role="img">
 </i> 
  <span class="dropdown-text">DataSHIELD (Tables)</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./DataSHIELD_workshop_APHRC_resources.html"><i class="bi bi-link-45deg" role="img">
+    <a class="dropdown-item" href="./DataSHIELD_workshop_DSWB_resources.html"><i class="bi bi-link-45deg" role="img">
 </i> 
  <span class="dropdown-text">DataSHIELD (Resources)</span></a>
   </li>  
@@ -227,7 +228,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <ul class="collapse">
   <li><a href="#tasks" id="toc-tasks" class="nav-link" data-scroll-target="#tasks">Tasks</a></li>
   </ul></li>
-
   </ul>
 </nav>
     </div>
@@ -253,7 +253,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p><a href="#" onclick="event.preventDefault(); fetch('https://raw.githubusercontent.com/isglobal-brge/workshop_DSWB/main/DataSHIELD_workshop_APHRC_resources.R').then(response => response.blob()).then(blob => { const url = window.URL.createObjectURL(blob); const a = document.createElement('a'); a.style.display = 'none'; a.href = url; a.download = 'DataSHIELD_workshop_APHRC_resources.R'; document.body.appendChild(a); a.click(); window.URL.revokeObjectURL(url); }); return false;" class="btn btn-primary btn-sm"> <i class="bi bi-download"></i> Download this R file </a></p>
+<p><a href="#" onclick="event.preventDefault(); fetch('https://raw.githubusercontent.com/isglobal-brge/workshop_DSWB/main/DataSHIELD_workshop_DSWB_resources.R').then(response => response.blob()).then(blob => { const url = window.URL.createObjectURL(blob); const a = document.createElement('a'); a.style.display = 'none'; a.href = url; a.download = 'DataSHIELD_workshop_DSWB_resources.R'; document.body.appendChild(a); a.click(); window.URL.revokeObjectURL(url); }); return false;" class="btn btn-primary btn-sm"> <i class="bi bi-download"></i> Download this R file </a></p>
 <section id="analysis-using-the-resources" class="level1">
 <h1>Analysis using the <code>resources</code></h1>
 <p>For more examples and detailed information about working with resources in DataSHIELD, please refer to the <a href="https://github.com/obiba/resources-workshop">Resources Workshop Repository</a>.</p>
@@ -435,20 +435,19 @@ GENDER          0.6315685 0.797650197    0.338328242      1.88055787</code></pre
 <li>Summarize the variable <code>IMC</code></li>
 <li>Create a histogram of the variable <code>trig</code></li>
 <li>Assess whether <code>diabetes</code> is associated with <code>hipercol</code>, <code>IMC</code>, <code>hdl</code> and <code>col_tot</code> in separate univariate models</li>
-  <li>Estimate a multivariate model for the variable <code>diabetes</code>, including only those variables that were significant in the univariate models</li>
-  </ol>
+<li>Estimate a multivariate model for the variable <code>diabetes</code>, including only those variables that were significant in the univariate models</li>
+</ol>
 
 
 </section>
 </section>
-
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);
-        var filterRegex = new RegExp("https:\/\/isglobal-brge\.github\.io\/workshop_APHRC");
+        var filterRegex = new RegExp("https:\/\/isglobal-brge\.github\.io\/workshop_DSWB");
       var isInternal = (href) => {
           return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
       }

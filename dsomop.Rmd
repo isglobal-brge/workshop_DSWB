@@ -45,7 +45,7 @@ library(DSOpal)
 library(dsBaseClient)
 library(dsOMOPClient)
 library(dsOMOPHelper)
-library(dsHelper)
+library(dsTidyverseClient)
 ```
 
 We will establish a connection to the demo Opal server. In order to use the OMOP packages and have access to the OMOP database resources, we need to specify the `profile = "omop"` parameter in the login builder:
@@ -225,13 +225,13 @@ As we can see, the `mimiciv` table now contains the `systolic_blood_pressure.val
 ds.summary("mimiciv$systolic_blood_pressure.value_as_number")
 ```
 
-Let's now use the `renameVars` from the `dsHelper` package, which we have seen before, to rename the variable to `sbp` for convenience:
+Let's now use `ds.rename` from the `dsTidyverse` package, which we have seen before, to rename the variable to `sbp` for convenience:
 
 ```{r rename_sbp, warning=FALSE}
-dh.renameVars(
-	df = "mimiciv", 
-  current_names = c("systolic_blood_pressure.value_as_number"),
-  new_names = c("sbp"))
+ds.rename(
+  df.name = "mimiciv",
+  tidy_expr = list(sbp = systolic_blood_pressure.value_as_number),
+  newobj = "mimiciv")
 ```
 
 Let's check whether the changes have been applied by listing the columns of the `mimiciv` table:
@@ -324,10 +324,10 @@ Those were also numerical concept IDs in the database that were matched to their
 Let's start by renaming the `gender_concept_id` column to `gender` for convenience:
 
 ```{r rename_gender, warning=FALSE}
-dh.renameVars(
-	df = "mimiciv", 
-  current_names = c("gender_concept_id"),
-  new_names = c("gender"))
+ds.rename(
+  df.name = "mimiciv",
+  tidy_expr = list(gender = gender_concept_id),
+  newobj = "mimiciv")
 ```
 
 From this point on, all the data is already in the DataSHIELD environment, so we will use DataSHIELD's standard methods to perform the filtering. 
