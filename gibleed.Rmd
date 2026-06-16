@@ -1,0 +1,206 @@
+---
+title: "Federated analysis on GiBleed"
+subtitle: "A larger, boolean-only OMOP dataset — does a prior peptic ulcer raise the odds of GI bleeding?"
+format:
+  html:
+    df-print: kable
+execute:
+  warning: false
+  message: false
+  error: true
+---
+
+<a href="#" onclick="event.preventDefault(); fetch('https://raw.githubusercontent.com/isglobal-brge/workshop_DSWB/main/gibleed.R').then(response => response.blob()).then(blob => { const url = window.URL.createObjectURL(blob); const a = document.createElement('a'); a.style.display = 'none'; a.href = url; a.download = 'gibleed.R'; document.body.appendChild(a); a.click(); window.URL.revokeObjectURL(url); }); return false;" class="btn btn-primary btn-sm">
+<i class="bi bi-download"></i> Download the R script (.R)
+</a>
+<a href="#" onclick="event.preventDefault(); fetch('https://raw.githubusercontent.com/isglobal-brge/workshop_DSWB/main/gibleed.Rmd').then(response => response.blob()).then(blob => { const url = window.URL.createObjectURL(blob); const a = document.createElement('a'); a.style.display = 'none'; a.href = url; a.download = 'gibleed.Rmd'; document.body.appendChild(a); a.click(); window.URL.revokeObjectURL(url); }); return false;" class="btn btn-outline-primary btn-sm">
+<i class="bi bi-download"></i> Source (.Rmd)
+</a>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(comment = "#>", collapse = FALSE)
+```
+
+# Welcome
+
+In the [first tutorial](dsomop.html) you learned the whole dsOMOP workflow on **MIMIC** (~100 ICU patients). Here we take **exactly the same tools** to a second, **larger** dataset — **GiBleed** (~2,700 patients) — for a more powerful study, and reproduce a classic federated finding:
+
+> **Does a prior history of peptic ulcer raise the odds of a gastrointestinal (GI) bleed?**
+
+::: {.callout-important}
+## What's different about GiBleed
+GiBleed is a synthetic OHDSI cohort with **no numeric lab/vital values** — `measurement.value_as_number` is essentially empty. So there is nothing to take a mean or histogram of. Instead, every clinical variable becomes a **boolean** ("does this patient *have* this condition / drug, yes or no?") or a **count** ("how many records?"). Same recipe machinery, different `format`.
+:::
+
+# 1. Connect
+
+```{r libs}
+library(DSI); library(DSOpal); library(dsBaseClient); library(dsOMOPClient)
+```
+
+```{r login}
+builder <- DSI::newDSLoginBuilder()
+builder$append(server = "nairobi", url = "https://nairobi.datashield.live",
+               user = "ethiopia", password = "P@ssw0rd", profile = "omop")
+builder$append(server = "douala",  url = "https://douala.datashield.live",
+               user = "ethiopia", password = "P@ssw0rd", profile = "omop")
+builder$append(server = "dakar",   url = "https://dakar.datashield.live",
+               user = "ethiopia", password = "P@ssw0rd", profile = "omop")
+conns <- DSI::datashield.login(logins = builder$build())
+
+ds.omop.connect(resource = "omop_demo.gibleed", symbol = "omop", conns = conns)
+```
+
+Note the resource is now `omop_demo.gibleed` (not `mimic`).
+
+# 2. Confirm there are no numeric values
+
+Before choosing how to model, **check the data**. Ask for a numeric summary of any measurement — it comes back empty, which is *why* we will treat everything as boolean:
+
+```{r no-numeric}
+ds.omop.column.stats("measurement", "value_as_number",
+                     scope = "pooled", symbol = "omop", conns = conns)$pooled
+```
+
+::: {.callout-note}
+An `NA` mean / zero distinct values confirms `value_as_number` carries no data here. GiBleed records *that* an event happened, not a measured quantity — so our variables will be **presence flags** and **counts**, never means.
+:::
+
+# 3. The population
+
+GiBleed is bigger than MIMIC. Sex, pooled across the three sites:
+
+```{r sex}
+ds.omop.concept.prevalence("person", concept_col = "gender_concept_id",
+                           scope = "pooled", symbol = "omop", conns = conns)$pooled
+```
+
+::: {.callout-note}
+## A reference year for age
+GiBleed is a **frozen ~2019 Synthea snapshot**, so we anchor age to **2019** (`omop_variable_age(year = 2019)`) — the dataset's own era, not "today". (For MIMIC we used 2024; each dataset gets its own collection year.)
+:::
+
+# 4. Explore what was recorded
+
+No numbers to plot — so our "distribution picture" is a **prevalence bar chart**: how many patients have each of the most common conditions.
+
+```{r cond-prev, fig.width=8, fig.height=4.5}
+cond <- ds.omop.concept.prevalence("condition_occurrence", metric = "persons",
+                                   top_n = 12, scope = "pooled", symbol = "omop", conns = conns)$pooled
+cond <- cond[order(cond$n_persons), ]
+par(mar = c(4, 17, 2, 1))
+barplot(cond$n_persons, names.arg = cond$concept_name, horiz = TRUE, las = 1,
+        col = "#4C72B0", border = NA, xlab = "patients",
+        main = "Most common conditions in GiBleed")
+```
+
+The two variables for our question are in there. **Look them up** to confirm their codes and how many patients they touch:
+
+```{r lookup}
+ds.omop.concept.lookup(c(192671, 4027663), symbol = "omop", conns = conns)$pooled
+cond[cond$concept_id %in% c(192671, 4027663), ]
+```
+
+::: {.callout-tip}
+## What we're after
+- **GI hemorrhage** (`192671`) — our outcome.
+- **Peptic ulcer** (`4027663`) — the antecedent condition we think raises the risk.
+
+Both affect enough patients (hundreds each) to model. Notice the long list of near-universal Synthea complaints (osteoarthritis, sinusitis…) — we'll meet one of those again in Section 7.
+:::
+
+# 5. Build the analysis table (all boolean)
+
+A wide person-level table with **sex**, **age** (anchored to 2019), and two **boolean** flags — GI bleed and peptic ulcer:
+
+```{r recipe}
+rec <- omop_recipe(
+  variables = list(
+    omop_variable(table = "person", column = "gender_concept_id", format = "sex_mf", name = "sex"),
+    omop_variable_age(name = "age", year = 2019),
+    omop_variable(table = "condition_occurrence", concept_id = 192671,  format = "binary", name = "gi_bleed"),
+    omop_variable(table = "condition_occurrence", concept_id = 4027663, format = "binary", name = "peptic_ulcer")
+  ),
+  output = omop_output(name = "study", type = "wide")
+)
+recipe_execute(rec, out = c(study = "M"), symbol = "omop", conns = conns)
+```
+
+**Ratify what the server built**, then read off each flag's prevalence with a frequency table:
+
+```{r check}
+ds.colnames("M", datasources = conns)
+ds.dim("M", datasources = conns)
+as.data.frame(ds.table("M$gi_bleed",     datasources = conns)$output.list[["TABLES.COMBINED_all.sources_counts"]])
+as.data.frame(ds.table("M$peptic_ulcer", datasources = conns)$output.list[["TABLES.COMBINED_all.sources_counts"]])
+```
+
+# 6. The model
+
+Now the question, as a logistic regression across all three hospitals:
+
+```{r glm, results='hide'}
+fit <- ds.glm(
+  formula = "M$gi_bleed ~ M$age + M$sex + M$peptic_ulcer",
+  family  = "binomial", datasources = conns)
+```
+
+```{r glm-table}
+co <- fit$coefficients
+data.frame(
+  term    = rownames(co),
+  OR      = round(co[, "P_OR"], 3),
+  CI_low  = round(co[, "low0.95CI.P_OR"], 3),
+  CI_high = round(co[, "high0.95CI.P_OR"], 3),
+  p_value = signif(co[, "p-value"], 3),
+  row.names = NULL
+)
+```
+
+::: {.callout-important}
+## The result
+A prior **peptic ulcer** multiplies the odds of GI bleeding roughly **four-fold** (OR ≈ 3.9, 95% CI well above 1, p astronomically small) — a strong, clinically coherent signal. **Age** and **sex** are not associated here. With ~2,700 patients the confidence interval is tight: this is the power a larger cohort buys you, and it was produced **without any patient record leaving its hospital**.
+:::
+
+::: {.callout-tip collapse="true"}
+## Optional: reproduce the full published model
+The reference study also adjusts for NSAID drugs. dsOMOP can build a **count across several drug concepts in one variable** — `omop_variable(table = "drug_exposure", concept_id = c(19059056, 1118084, 19078461, 1115171, 1124300), format = "count", name = "nsaid_n")` (aspirin, celecoxib, ibuprofen, naproxen, diclofenac) — and a single-drug flag, e.g. `diclofenac` (`1124300`, `format = "binary"`). Adding them (`gi_bleed ~ age + sex + peptic_ulcer + diclofenac + nsaid_n`) leaves **peptic ulcer dominant**; the drug terms are weak/noise in this synthetic cohort, so don't over-interpret them.
+:::
+
+# 7. A cautionary tale: when a model breaks
+
+Not every variable can be modelled. **Osteoarthritis** (`80180`) is recorded for **every single patient** in GiBleed. Try to predict it:
+
+```{r degenerate, warning=TRUE}
+rec_oa <- omop_recipe(
+  variables = list(
+    omop_variable(table = "person", column = "gender_concept_id", format = "sex_mf", name = "sex"),
+    omop_variable_age(name = "age", year = 2019),
+    omop_variable(table = "condition_occurrence", concept_id = 80180, format = "binary", name = "osteoarthritis")
+  ),
+  output = omop_output(name = "study", type = "wide"))
+recipe_execute(rec_oa, out = c(study = "OA"), symbol = "omop", conns = conns)
+
+fit_oa <- ds.glm("OA$osteoarthritis ~ OA$age + OA$sex", family = "binomial", datasources = conns)
+fit_oa$coefficients[, c("Estimate", "p-value")]
+```
+
+::: {.callout-important}
+## Perfect separation
+Because the outcome is **100% prevalent** (no "no" group to contrast against), the logistic regression **cannot converge** — you'll see a *"did not converge"* warning and a wildly inflated intercept. The lesson: **always check an outcome's prevalence before modelling it.** A variable everyone (or no one) has carries no information to fit.
+:::
+
+```{r logout}
+DSI::datashield.logout(conns)
+```
+
+---
+
+# Where to go next
+
+You have now run the full federated workflow on **two** datasets — numeric-rich MIMIC and boolean-only GiBleed — and seen both a strong result and a broken one.
+
+::: {.callout-note}
+## Practise it
+The **[GiBleed exercise sheet](gibleed-exercises.html)** asks you to find a *different* significant association in this cohort (with hints and a worked, executed [solution](gibleed_solution.html)).
+:::

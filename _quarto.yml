@@ -46,6 +46,12 @@ website:
           - text: "OMOP Exercises"
             href: omop-exercises.Rmd
             icon: clipboard-check
+          - text: "GiBleed Workshop"
+            href: gibleed.Rmd
+            icon: droplet-half
+          - text: "GiBleed Exercises"
+            href: gibleed-exercises.Rmd
+            icon: clipboard-check
       - text: "Schedule"
         href: schedule.qmd
         icon: calendar3

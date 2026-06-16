@@ -344,32 +344,35 @@ ds.colnames("CLIN", datasources = conns)
 
 Often you only want a **subpopulation**. The cleanest way is to filter **while extracting** — add a `filters` element so the servers only ever build the rows you asked for. Filters can only ever **shrink** a population (the per-patient disclosure gate still runs on the result), so they are safe.
 
-Here we combine three filters — keep only **females**, **aged 65+**, who **have hypertension**:
+Here we combine three filter *types* — keep only **females**, **aged 50+**, who **have hyperlipidemia** (`432867`):
 
 ```{r recipe-filtered}
 rec_sub <- omop_recipe(
   variables = list(
     omop_variable(table = "person", column = "gender_concept_id", format = "sex_mf", name = "sex"),
-    omop_variable_age(name = "age", year = 2024),
-    omop_variable(table = "condition_occurrence", concept_id = 432867, format = "binary", name = "hyperlipidemia")
+    omop_variable_age(name = "age", year = 2024)
   ),
   filters = list(
-    female   = omop_filter_sex("F"),
-    elderly  = omop_filter_age(min = 65, year = 2024),
-    with_htn = omop_filter_has_concept(concept_id = 320128, table = "condition_occurrence")
+    female        = omop_filter_sex("F"),
+    middle_aged   = omop_filter_age(min = 50, year = 2024),
+    with_hyperlip = omop_filter_has_concept(concept_id = 432867, table = "condition_occurrence")
   ),
   output = omop_output(name = "study", type = "wide")
 )
 recipe_execute(rec_sub, out = c(study = "SUB"), symbol = "omop", conns = conns)
 ```
 
-**Check the filters did what you meant** — the cohort is smaller, everyone is female, and the minimum age respects the 65+ filter:
+**Check the filters did what you meant** — the cohort is much smaller (every patient is female by construction), and the age summary respects the 50+ floor:
 
 ```{r filtered-check}
 ds.dim("SUB", datasources = conns)
-as.data.frame(ds.table("SUB$sex", datasources = conns)$output.list[["TABLES.COMBINED_all.sources_counts"]])
 ds.summary("SUB$age", datasources = conns)[[1]][["quantiles & mean"]]
 ```
+
+::: {.callout-note}
+## Filters compound — fast
+Three filters at once leave only a few dozen patients (and just a handful per site — close to the disclosure floor). That is worth remembering: stack enough filters and a federated cohort can shrink below the threshold and **fail-closed**, returning nothing rather than a disclosive sliver. Filter to the population you need, not narrower.
+:::
 
 ::: {.callout-note}
 These filters are just a demonstration — we built `SUB` to show how filtering narrows a cohort, but we go back to the full table `M` for the model below. The safe filter types are the ones that can only shrink a population: `omop_filter_sex()`, `omop_filter_age()` / age groups, `omop_filter_has_concept()`, and ranges; an over-narrow filter (e.g. a single birth year) is rejected so it cannot fingerprint a person.

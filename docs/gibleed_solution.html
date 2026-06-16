@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>dsOMOP — Exercises (Solutions) – DataSHIELD DSWB Workshop</title>
+<title>GiBleed — Exercises (Solutions) – DataSHIELD DSWB Workshop</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -260,12 +260,10 @@ window.Quarto = {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#exercise-1-find-a-concept-yourself" id="toc-exercise-1-find-a-concept-yourself" class="nav-link active" data-scroll-target="#exercise-1-find-a-concept-yourself">Exercise 1 — Find a concept yourself</a></li>
-  <li><a href="#exercise-2-a-new-numeric-variable" id="toc-exercise-2-a-new-numeric-variable" class="nav-link" data-scroll-target="#exercise-2-a-new-numeric-variable">Exercise 2 — A new numeric variable</a></li>
-  <li><a href="#exercise-3-a-new-categorical-variable" id="toc-exercise-3-a-new-categorical-variable" class="nav-link" data-scroll-target="#exercise-3-a-new-categorical-variable">Exercise 3 — A new categorical variable</a></li>
-  <li><a href="#exercise-4-build-your-own-recipe" id="toc-exercise-4-build-your-own-recipe" class="nav-link" data-scroll-target="#exercise-4-build-your-own-recipe">Exercise 4 — Build your own recipe</a></li>
-  <li><a href="#exercise-5-filter-at-extraction" id="toc-exercise-5-filter-at-extraction" class="nav-link" data-scroll-target="#exercise-5-filter-at-extraction">Exercise 5 — Filter at extraction</a></li>
-  <li><a href="#exercise-6-a-model" id="toc-exercise-6-a-model" class="nav-link" data-scroll-target="#exercise-6-a-model">Exercise 6 — A model</a></li>
+  <li><a href="#exercise-1-explore-the-medications" id="toc-exercise-1-explore-the-medications" class="nav-link active" data-scroll-target="#exercise-1-explore-the-medications">Exercise 1 — Explore the medications</a></li>
+  <li><a href="#exercise-2-build-a-boolean-table" id="toc-exercise-2-build-a-boolean-table" class="nav-link" data-scroll-target="#exercise-2-build-a-boolean-table">Exercise 2 — Build a boolean table</a></li>
+  <li><a href="#exercise-3-is-celecoxib-associated-with-gi-bleeding" id="toc-exercise-3-is-celecoxib-associated-with-gi-bleeding" class="nav-link" data-scroll-target="#exercise-3-is-celecoxib-associated-with-gi-bleeding">Exercise 3 — Is celecoxib associated with GI bleeding?</a></li>
+  <li><a href="#exercise-4-a-different-outcome-does-age-predict-a-fracture" id="toc-exercise-4-a-different-outcome-does-age-predict-a-fracture" class="nav-link" data-scroll-target="#exercise-4-a-different-outcome-does-age-predict-a-fracture">Exercise 4 — A different outcome: does age predict a fracture?</a></li>
   </ul>
 </nav>
     </div>
@@ -274,7 +272,7 @@ window.Quarto = {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">dsOMOP — Exercises (Solutions)</h1>
+<h1 class="title">GiBleed — Exercises (Solutions)</h1>
 <p class="subtitle lead">Worked answers with real federated output</p>
 </div>
 
@@ -292,7 +290,7 @@ window.Quarto = {
 </header>
 
 
-<p><a href="#" onclick="event.preventDefault(); fetch('https://raw.githubusercontent.com/isglobal-brge/workshop_DSWB/main/omop_exercises_solution.R').then(response => response.blob()).then(blob => { const url = window.URL.createObjectURL(blob); const a = document.createElement('a'); a.style.display = 'none'; a.href = url; a.download = 'omop_exercises_solution.R'; document.body.appendChild(a); a.click(); window.URL.revokeObjectURL(url); }); return false;" class="btn btn-primary btn-sm"> <i class="bi bi-download"></i> Download the solutions (.R) </a> <a href="omop-exercises.html" class="btn btn-outline-secondary btn-sm"> <i class="bi bi-arrow-left"></i> Back to the exercises </a></p>
+<p><a href="#" onclick="event.preventDefault(); fetch('https://raw.githubusercontent.com/isglobal-brge/workshop_DSWB/main/gibleed_solution.R').then(response => response.blob()).then(blob => { const url = window.URL.createObjectURL(blob); const a = document.createElement('a'); a.style.display = 'none'; a.href = url; a.download = 'gibleed_solution.R'; document.body.appendChild(a); a.click(); window.URL.revokeObjectURL(url); }); return false;" class="btn btn-primary btn-sm"> <i class="bi bi-download"></i> Download the solutions (.R) </a> <a href="gibleed-exercises.html" class="btn btn-outline-secondary btn-sm"> <i class="bi bi-arrow-left"></i> Back to the exercises </a></p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(DSI); <span class="fu">library</span>(DSOpal); <span class="fu">library</span>(dsBaseClient); <span class="fu">library</span>(dsOMOPClient)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -304,124 +302,33 @@ window.Quarto = {
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>builder<span class="sc">$</span><span class="fu">append</span>(<span class="at">server =</span> <span class="st">"dakar"</span>,   <span class="at">url =</span> <span class="st">"https://dakar.datashield.live"</span>,</span>
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>               <span class="at">user =</span> <span class="st">"ethiopia"</span>, <span class="at">password =</span> <span class="st">"P@ssw0rd"</span>, <span class="at">profile =</span> <span class="st">"omop"</span>)</span>
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>conns <span class="ot">&lt;-</span> DSI<span class="sc">::</span><span class="fu">datashield.login</span>(<span class="at">logins =</span> builder<span class="sc">$</span><span class="fu">build</span>())</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.omop.connect</span>(<span class="at">resource =</span> <span class="st">"omop_demo.mimic"</span>, <span class="at">symbol =</span> <span class="st">"omop"</span>, <span class="at">conns =</span> conns)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.omop.connect</span>(<span class="at">resource =</span> <span class="st">"omop_demo.gibleed"</span>, <span class="at">symbol =</span> <span class="st">"omop"</span>, <span class="at">conns =</span> conns)</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>or_table <span class="ot">&lt;-</span> <span class="cf">function</span>(fit) {</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>  co <span class="ot">&lt;-</span> fit<span class="sc">$</span>coefficients</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data.frame</span>(<span class="at">term =</span> <span class="fu">rownames</span>(co),</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>             <span class="at">OR =</span> <span class="fu">round</span>(co[, <span class="st">"P_OR"</span>], <span class="dv">3</span>),</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>             <span class="at">CI_low =</span> <span class="fu">round</span>(co[, <span class="st">"low0.95CI.P_OR"</span>], <span class="dv">3</span>),</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>             <span class="at">CI_high =</span> <span class="fu">round</span>(co[, <span class="st">"high0.95CI.P_OR"</span>], <span class="dv">3</span>),</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>             <span class="at">p_value =</span> <span class="fu">signif</span>(co[, <span class="st">"p-value"</span>], <span class="dv">3</span>),</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>             <span class="at">row.names =</span> <span class="cn">NULL</span>)</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<section id="exercise-1-find-a-concept-yourself" class="level1">
-<h1>Exercise 1 — Find a concept yourself</h1>
+<section id="exercise-1-explore-the-medications" class="level1">
+<h1>Exercise 1 — Explore the medications</h1>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.omop.concept.search</span>(<span class="st">"alcohol"</span>, <span class="at">domain =</span> <span class="st">"Condition"</span>,</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>                       <span class="at">symbol =</span> <span class="st">"omop"</span>, <span class="at">conns =</span> conns)<span class="sc">$</span>pooled[, <span class="fu">c</span>(<span class="st">"concept_id"</span>, <span class="st">"concept_name"</span>)]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.omop.concept.prevalence</span>(<span class="st">"drug_exposure"</span>, <span class="at">metric =</span> <span class="st">"persons"</span>, <span class="at">top_n =</span> <span class="dv">12</span>,</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>                           <span class="at">scope =</span> <span class="st">"pooled"</span>, <span class="at">symbol =</span> <span class="st">"omop"</span>, <span class="at">conns =</span> conns)<span class="sc">$</span>pooled</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div class="kable-table">
 <table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 8%">
+<col style="width: 7%">
+<col style="width: 84%">
+</colgroup>
 <thead>
 <tr class="header">
-<th style="text-align: right;">concept_id</th>
-<th style="text-align: left;">concept_name</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: right;">194692</td>
-<td style="text-align: left;">Cirrhosis - non-alcoholic</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">196463</td>
-<td style="text-align: left;">Alcoholic cirrhosis</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">201343</td>
-<td style="text-align: left;">Acute alcoholic liver disease</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">201612</td>
-<td style="text-align: left;">Alcoholic liver damage</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">201613</td>
-<td style="text-align: left;">Chronic nonalcoholic liver disease</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">372607</td>
-<td style="text-align: left;">Alcohol hallucinosis</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">375519</td>
-<td style="text-align: left;">Alcohol withdrawal</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">377830</td>
-<td style="text-align: left;">Alcohol withdrawal delirium</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">378421</td>
-<td style="text-align: left;">Alcoholic polyneuropathy</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">433753</td>
-<td style="text-align: left;">Alcohol abuse</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">435243</td>
-<td style="text-align: left;">Alcohol dependence</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">436953</td>
-<td style="text-align: left;">Continuous chronic alcoholism</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">439005</td>
-<td style="text-align: left;">Chronic alcoholism in remission</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">4104431</td>
-<td style="text-align: left;">Alcohol intoxication</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">4340383</td>
-<td style="text-align: left;">Alcoholic hepatitis</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">4340493</td>
-<td style="text-align: left;">Alcohol-induced acute pancreatitis</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">4340386</td>
-<td style="text-align: left;">Alcoholic hepatic failure</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">4340964</td>
-<td style="text-align: left;">Alcohol-induced chronic pancreatitis</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">36714559</td>
-<td style="text-align: left;">Disorder caused by alcohol</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">40484532</td>
-<td style="text-align: left;">Nonalcoholic steatohepatitis</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">46269835</td>
-<td style="text-align: left;">Hepatic ascites due to chronic alcoholic hepatitis</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">46269816</td>
-<td style="text-align: left;">Ascites due to alcoholic cirrhosis</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>prev <span class="ot">&lt;-</span> <span class="fu">ds.omop.concept.prevalence</span>(<span class="st">"condition_occurrence"</span>, <span class="at">metric =</span> <span class="st">"persons"</span>,</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">top_n =</span> <span class="dv">15</span>, <span class="at">scope =</span> <span class="st">"pooled"</span>, <span class="at">symbol =</span> <span class="st">"omop"</span>, <span class="at">conns =</span> conns)<span class="sc">$</span>pooled</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>prev[prev<span class="sc">$</span>concept_id <span class="sc">==</span> <span class="dv">433753</span>, ]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output-display">
-<div class="kable-table">
-<table class="caption-top table table-sm table-striped small">
-<thead>
-<tr class="header">
-<th style="text-align: left;"></th>
 <th style="text-align: right;">concept_id</th>
 <th style="text-align: right;">n_persons</th>
 <th style="text-align: left;">concept_name</th>
@@ -429,84 +336,89 @@ window.Quarto = {
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: left;">3</td>
-<td style="text-align: right;">433753</td>
-<td style="text-align: right;">55</td>
-<td style="text-align: left;">Alcohol abuse</td>
+<td style="text-align: right;">40213227</td>
+<td style="text-align: right;">2655</td>
+<td style="text-align: left;">tetanus and diphtheria toxoids, adsorbed, preservative free, for adult use</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1127433</td>
+<td style="text-align: right;">2575</td>
+<td style="text-align: left;">Acetaminophen 325 MG Oral Tablet</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">40213160</td>
+<td style="text-align: right;">2135</td>
+<td style="text-align: left;">poliovirus vaccine, inactivated</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1713671</td>
+<td style="text-align: right;">2015</td>
+<td style="text-align: left;">Amoxicillin 250 MG / Clavulanate 125 MG Oral Tablet</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">19059056</td>
+<td style="text-align: right;">1920</td>
+<td style="text-align: left;">Aspirin 81 MG Oral Tablet</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1118084</td>
+<td style="text-align: right;">1840</td>
+<td style="text-align: left;">celecoxib</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">40213296</td>
+<td style="text-align: right;">1730</td>
+<td style="text-align: left;">hepatitis A vaccine, adult dosage</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">40213306</td>
+<td style="text-align: right;">1555</td>
+<td style="text-align: left;">hepatitis B vaccine, adult dosage</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1127078</td>
+<td style="text-align: right;">1425</td>
+<td style="text-align: left;">Acetaminophen 160 MG Oral Tablet</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">40229134</td>
+<td style="text-align: right;">1385</td>
+<td style="text-align: left;">Acetaminophen 21.7 MG/ML / Dextromethorphan Hydrobromide 1 MG/ML / doxylamine succinate 0.417 MG/ML Oral Solution</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">19078461</td>
+<td style="text-align: right;">1270</td>
+<td style="text-align: left;">Ibuprofen 200 MG Oral Tablet</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">19133873</td>
+<td style="text-align: right;">1270</td>
+<td style="text-align: left;">Penicillin V Potassium 250 MG Oral Tablet</td>
 </tr>
 </tbody>
 </table>
 </div>
 </div>
-</div>
-<blockquote class="blockquote">
-<p><strong>Answer.</strong> Alcohol abuse is <strong><code>concept_id = 433753</code></strong>, recorded in roughly <strong>55 of the ~100</strong> patients — one of the most common conditions in this ICU extract.</p>
-</blockquote>
-</section>
-<section id="exercise-2-a-new-numeric-variable" class="level1">
-<h1>Exercise 2 — A new numeric variable</h1>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.omop.column.stats</span>(<span class="st">"measurement"</span>, <span class="st">"value_as_number"</span>, <span class="at">concept_id =</span> <span class="dv">21492239</span>,</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>                     <span class="at">scope =</span> <span class="st">"pooled"</span>, <span class="at">symbol =</span> <span class="st">"omop"</span>, <span class="at">conns =</span> conns)<span class="sc">$</span>pooled</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>#&gt; $n_total
-#&gt; [1] 8365
-#&gt; 
-#&gt; $mean
-#&gt; [1] 115.1706
-#&gt; 
-#&gt; $sd
-#&gt; [1] 21.79551</code></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">draw_hist</span>(<span class="dv">21492239</span>, <span class="at">nbins =</span> <span class="dv">9</span>, <span class="at">xlab =</span> <span class="st">"Systolic BP (mmHg)"</span>,</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>          <span class="at">main =</span> <span class="st">"Systolic blood pressure across the federation"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="omop_exercises_solution_files/figure-html/e2-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-<blockquote class="blockquote">
-<p><strong>Answer.</strong> Systolic BP averages ~<strong>115 mmHg</strong>. Its histogram has a central bulk with only a <strong>mild right lean</strong> — much closer to <strong>symmetric</strong> than creatinine’s long tail. Its spread (sd ~22) is wider than heart rate’s relative to its mean.</p>
-</blockquote>
-</section>
-<section id="exercise-3-a-new-categorical-variable" class="level1">
-<h1>Exercise 3 — A new categorical variable</h1>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.omop.value.counts</span>(<span class="st">"observation"</span>, <span class="st">"value_as_concept_id"</span>, <span class="at">concept_id =</span> <span class="dv">40766231</span>,</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>                     <span class="at">scope =</span> <span class="st">"pooled"</span>, <span class="at">symbol =</span> <span class="st">"omop"</span>, <span class="at">conns =</span> conns)<span class="sc">$</span>pooled</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.omop.concept.lookup</span>(<span class="dv">1118084</span>, <span class="at">symbol =</span> <span class="st">"omop"</span>, <span class="at">conns =</span> conns)<span class="sc">$</span>pooled</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div class="kable-table">
 <table class="caption-top table table-sm table-striped small">
 <thead>
 <tr class="header">
-<th style="text-align: right;">n</th>
+<th style="text-align: right;">concept_id</th>
 <th style="text-align: left;">concept_name</th>
-<th style="text-align: left;">value</th>
+<th style="text-align: left;">domain_id</th>
+<th style="text-align: left;">vocabulary_id</th>
+<th style="text-align: left;">standard_concept</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: right;">110</td>
-<td style="text-align: left;">Never married</td>
-<td style="text-align: left;">45881671</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">70</td>
-<td style="text-align: left;">Married</td>
-<td style="text-align: left;">45876756</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">50</td>
-<td style="text-align: left;">Widowed</td>
-<td style="text-align: left;">45883711</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">20</td>
-<td style="text-align: left;">Divorced</td>
-<td style="text-align: left;">45883375</td>
+<td style="text-align: right;">1118084</td>
+<td style="text-align: left;">celecoxib</td>
+<td style="text-align: left;">Drug</td>
+<td style="text-align: left;">RxNorm</td>
+<td style="text-align: left;">S</td>
 </tr>
 </tbody>
 </table>
@@ -514,92 +426,48 @@ window.Quarto = {
 </div>
 </div>
 <blockquote class="blockquote">
-<p><strong>Answer.</strong> The most common marital status is <strong>Never married</strong>, followed by Married, Widowed and Divorced. (Categorical values live in <code>value_as_concept_id</code>, not <code>value_as_number</code>.)</p>
+<p><strong>Answer.</strong> Celecoxib (<code>1118084</code>) is taken by <strong>~1,840</strong> patients — one of the most common drugs in this NSAID-heavy synthetic cohort.</p>
 </blockquote>
 </section>
-<section id="exercise-4-build-your-own-recipe" class="level1">
-<h1>Exercise 4 — Build your own recipe</h1>
+<section id="exercise-2-build-a-boolean-table" class="level1">
+<h1>Exercise 2 — Build a boolean table</h1>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>rec <span class="ot">&lt;-</span> <span class="fu">omop_recipe</span>(</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">variables =</span> <span class="fu">list</span>(</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable</span>(<span class="at">table =</span> <span class="st">"person"</span>, <span class="at">column =</span> <span class="st">"gender_concept_id"</span>, <span class="at">format =</span> <span class="st">"sex_mf"</span>, <span class="at">name =</span> <span class="st">"sex"</span>),</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable_age</span>(<span class="at">name =</span> <span class="st">"age"</span>, <span class="at">year =</span> <span class="dv">2024</span>),</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable</span>(<span class="at">table =</span> <span class="st">"measurement"</span>, <span class="at">concept_id =</span> <span class="dv">21492239</span>, <span class="at">format =</span> <span class="st">"mean"</span>, <span class="at">name =</span> <span class="st">"systolic_bp"</span>),</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable</span>(<span class="at">table =</span> <span class="st">"condition_occurrence"</span>, <span class="at">concept_id =</span> <span class="dv">433753</span>, <span class="at">format =</span> <span class="st">"binary"</span>, <span class="at">name =</span> <span class="st">"alcohol_abuse"</span>),</span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable</span>(<span class="at">table =</span> <span class="st">"visit_occurrence"</span>, <span class="at">format =</span> <span class="st">"count"</span>, <span class="at">name =</span> <span class="st">"n_visits"</span>)</span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  ),</span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">output =</span> <span class="fu">omop_output</span>(<span class="at">name =</span> <span class="st">"study"</span>, <span class="at">type =</span> <span class="st">"wide"</span>))</span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="fu">recipe_execute</span>(rec, <span class="at">out =</span> <span class="fu">c</span>(<span class="at">study =</span> <span class="st">"D"</span>), <span class="at">symbol =</span> <span class="st">"omop"</span>, <span class="at">conns =</span> conns)</span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.colnames</span>(<span class="st">"D"</span>, <span class="at">datasources =</span> conns)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>rec <span class="ot">&lt;-</span> <span class="fu">omop_recipe</span>(</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">variables =</span> <span class="fu">list</span>(</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable</span>(<span class="at">table =</span> <span class="st">"person"</span>, <span class="at">column =</span> <span class="st">"gender_concept_id"</span>, <span class="at">format =</span> <span class="st">"sex_mf"</span>, <span class="at">name =</span> <span class="st">"sex"</span>),</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable_age</span>(<span class="at">name =</span> <span class="st">"age"</span>, <span class="at">year =</span> <span class="dv">2019</span>),</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable</span>(<span class="at">table =</span> <span class="st">"condition_occurrence"</span>, <span class="at">concept_id =</span> <span class="dv">192671</span>, <span class="at">format =</span> <span class="st">"binary"</span>, <span class="at">name =</span> <span class="st">"gi_bleed"</span>),</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable</span>(<span class="at">table =</span> <span class="st">"drug_exposure"</span>, <span class="at">concept_id =</span> <span class="dv">1118084</span>, <span class="at">format =</span> <span class="st">"binary"</span>, <span class="at">name =</span> <span class="st">"celecoxib"</span>)</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">output =</span> <span class="fu">omop_output</span>(<span class="at">name =</span> <span class="st">"study"</span>, <span class="at">type =</span> <span class="st">"wide"</span>))</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="fu">recipe_execute</span>(rec, <span class="at">out =</span> <span class="fu">c</span>(<span class="at">study =</span> <span class="st">"M"</span>), <span class="at">symbol =</span> <span class="st">"omop"</span>, <span class="at">conns =</span> conns)</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.colnames</span>(<span class="st">"M"</span>, <span class="at">datasources =</span> conns)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>#&gt; $nairobi
-#&gt; [1] "person_id"     "systolic_bp"   "alcohol_abuse" "n_visits"     
-#&gt; [5] "sex"           "age"          
+#&gt; [1] "person_id" "gi_bleed"  "celecoxib" "sex"       "age"      
 #&gt; 
 #&gt; $douala
-#&gt; [1] "person_id"     "systolic_bp"   "alcohol_abuse" "n_visits"     
-#&gt; [5] "sex"           "age"          
+#&gt; [1] "person_id" "gi_bleed"  "celecoxib" "sex"       "age"      
 #&gt; 
 #&gt; $dakar
-#&gt; [1] "person_id"     "systolic_bp"   "alcohol_abuse" "n_visits"     
-#&gt; [5] "sex"           "age"</code></pre>
+#&gt; [1] "person_id" "gi_bleed"  "celecoxib" "sex"       "age"</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.dim</span>(<span class="st">"D"</span>, <span class="at">datasources =</span> conns)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.dim</span>(<span class="st">"M"</span>, <span class="at">datasources =</span> conns)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>#&gt; $`dimensions of D in nairobi`
-#&gt; [1] 35  6
+<pre><code>#&gt; $`dimensions of M in nairobi`
+#&gt; [1] 889   5
 #&gt; 
-#&gt; $`dimensions of D in douala`
-#&gt; [1] 25  6
+#&gt; $`dimensions of M in douala`
+#&gt; [1] 878   5
 #&gt; 
-#&gt; $`dimensions of D in dakar`
-#&gt; [1] 40  6
+#&gt; $`dimensions of M in dakar`
+#&gt; [1] 927   5
 #&gt; 
-#&gt; $`dimensions of D in combined studies`
-#&gt; [1] 100   6</code></pre>
+#&gt; $`dimensions of M in combined studies`
+#&gt; [1] 2694    5</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.summary</span>(<span class="st">"D$systolic_bp"</span>, <span class="at">datasources =</span> conns)[[<span class="dv">1</span>]][[<span class="st">"quantiles &amp; mean"</span>]]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>#&gt;        5%       10%       25%       50%       75%       90%       95%      Mean 
-#&gt;  99.72277 104.13354 112.25500 120.19672 128.68355 133.01607 142.95000 120.33293</code></pre>
-</div>
-</div>
-<blockquote class="blockquote">
-<p><strong>Answer.</strong> <code>D</code> has one row per patient with <code>person_id, sex, age, systolic_bp, alcohol_abuse, n_visits</code> (~100 patients combined). The systolic-BP mean is ~115 mmHg — the table the server built matches the recipe.</p>
-</blockquote>
-</section>
-<section id="exercise-5-filter-at-extraction" class="level1">
-<h1>Exercise 5 — Filter at extraction</h1>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>rec_sub <span class="ot">&lt;-</span> <span class="fu">omop_recipe</span>(</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">variables =</span> <span class="fu">list</span>(</span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable</span>(<span class="at">table =</span> <span class="st">"person"</span>, <span class="at">column =</span> <span class="st">"gender_concept_id"</span>, <span class="at">format =</span> <span class="st">"sex_mf"</span>, <span class="at">name =</span> <span class="st">"sex"</span>),</span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable_age</span>(<span class="at">name =</span> <span class="st">"age"</span>, <span class="at">year =</span> <span class="dv">2024</span>),</span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable</span>(<span class="at">table =</span> <span class="st">"condition_occurrence"</span>, <span class="at">concept_id =</span> <span class="dv">433753</span>, <span class="at">format =</span> <span class="st">"binary"</span>, <span class="at">name =</span> <span class="st">"alcohol_abuse"</span>)</span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>  ),</span>
-<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">filters =</span> <span class="fu">list</span>(</span>
-<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">male  =</span> <span class="fu">omop_filter_sex</span>(<span class="st">"M"</span>),</span>
-<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">older =</span> <span class="fu">omop_filter_age</span>(<span class="at">min =</span> <span class="dv">60</span>, <span class="at">year =</span> <span class="dv">2024</span>)</span>
-<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>  ),</span>
-<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">output =</span> <span class="fu">omop_output</span>(<span class="at">name =</span> <span class="st">"study"</span>, <span class="at">type =</span> <span class="st">"wide"</span>))</span>
-<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a><span class="fu">recipe_execute</span>(rec_sub, <span class="at">out =</span> <span class="fu">c</span>(<span class="at">study =</span> <span class="st">"DSUB"</span>), <span class="at">symbol =</span> <span class="st">"omop"</span>, <span class="at">conns =</span> conns)</span>
-<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.dim</span>(<span class="st">"DSUB"</span>, <span class="at">datasources =</span> conns)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>#&gt; $`dimensions of DSUB in nairobi`
-#&gt; [1] 9 4
-#&gt; 
-#&gt; $`dimensions of DSUB in douala`
-#&gt; [1] 9 4
-#&gt; 
-#&gt; $`dimensions of DSUB in dakar`
-#&gt; [1] 19  4
-#&gt; 
-#&gt; $`dimensions of DSUB in combined studies`
-#&gt; [1] 37  4</code></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">as.data.frame</span>(<span class="fu">ds.table</span>(<span class="st">"DSUB$sex"</span>, <span class="at">datasources =</span> conns)<span class="sc">$</span>output.list[[<span class="st">"TABLES.COMBINED_all.sources_counts"</span>]])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">as.data.frame</span>(<span class="fu">ds.table</span>(<span class="st">"M$celecoxib"</span>, <span class="at">datasources =</span> conns)<span class="sc">$</span>output.list[[<span class="st">"TABLES.COMBINED_all.sources_counts"</span>]])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>#&gt; 
 #&gt;  Data in all studies were valid 
@@ -613,20 +481,24 @@ window.Quarto = {
 <table class="caption-top table table-sm table-striped small">
 <colgroup>
 <col style="width: 3%">
-<col style="width: 96%">
+<col style="width: 97%">
 </colgroup>
 <thead>
 <tr class="header">
 <th style="text-align: left;"></th>
-<th style="text-align: right;">ds.table(“DSUB<span class="math inline">\(sex", datasources = conns)\)</span>output.list[[“TABLES.COMBINED_all.sources_counts”]]</th>
+<th style="text-align: right;">ds.table(“M<span class="math inline">\(celecoxib", datasources = conns)\)</span>output.list[[“TABLES.COMBINED_all.sources_counts”]]</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: left;">M</td>
-<td style="text-align: right;">37</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">850</td>
 </tr>
 <tr class="even">
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">1844</td>
+</tr>
+<tr class="odd">
 <td style="text-align: left;">NA</td>
 <td style="text-align: right;">0</td>
 </tr>
@@ -636,41 +508,26 @@ window.Quarto = {
 </div>
 </div>
 <blockquote class="blockquote">
-<p><strong>Answer.</strong> The cohort shrinks (the filters are applied <strong>during</strong> extraction, so the servers only ever build males aged 60+), and the <code>sex</code> table confirms every remaining patient is <strong>male</strong>.</p>
+<p><strong>Answer.</strong> <code>M</code> has one row per patient (~2,700 combined) with <code>person_id, sex, age, gi_bleed, celecoxib</code>. Both clinical columns are <code>binary</code> (0/1 presence); the server built exactly the table the recipe described.</p>
 </blockquote>
 </section>
-<section id="exercise-6-a-model" class="level1">
-<h1>Exercise 6 — A model</h1>
+<section id="exercise-3-is-celecoxib-associated-with-gi-bleeding" class="level1">
+<h1>Exercise 3 — Is celecoxib associated with GI bleeding?</h1>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>rec_h <span class="ot">&lt;-</span> <span class="fu">omop_recipe</span>(</span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">variables =</span> <span class="fu">list</span>(</span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable</span>(<span class="at">table =</span> <span class="st">"person"</span>, <span class="at">column =</span> <span class="st">"gender_concept_id"</span>, <span class="at">format =</span> <span class="st">"sex_mf"</span>, <span class="at">name =</span> <span class="st">"sex"</span>),</span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable_age</span>(<span class="at">name =</span> <span class="st">"age"</span>, <span class="at">year =</span> <span class="dv">2024</span>),</span>
-<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable</span>(<span class="at">table =</span> <span class="st">"condition_occurrence"</span>, <span class="at">concept_id =</span> <span class="dv">320128</span>, <span class="at">format =</span> <span class="st">"binary"</span>, <span class="at">name =</span> <span class="st">"hypertension"</span>)</span>
-<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>  ),</span>
-<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">output =</span> <span class="fu">omop_output</span>(<span class="at">name =</span> <span class="st">"study"</span>, <span class="at">type =</span> <span class="st">"wide"</span>))</span>
-<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a><span class="fu">recipe_execute</span>(rec_h, <span class="at">out =</span> <span class="fu">c</span>(<span class="at">study =</span> <span class="st">"H"</span>), <span class="at">symbol =</span> <span class="st">"omop"</span>, <span class="at">conns =</span> conns)</span>
-<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">ds.glm</span>(<span class="at">formula =</span> <span class="st">"H$hypertension ~ H$age + H$sex"</span>, <span class="at">family =</span> <span class="st">"binomial"</span>, <span class="at">datasources =</span> conns)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">ds.glm</span>(<span class="at">formula =</span> <span class="st">"M$gi_bleed ~ M$age + M$sex + M$celecoxib"</span>,</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>              <span class="at">family =</span> <span class="st">"binomial"</span>, <span class="at">datasources =</span> conns)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>co <span class="ot">&lt;-</span> fit<span class="sc">$</span>coefficients</span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(</span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">term    =</span> <span class="fu">rownames</span>(co),</span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">OR      =</span> <span class="fu">round</span>(co[, <span class="st">"P_OR"</span>], <span class="dv">3</span>),</span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">CI_low  =</span> <span class="fu">round</span>(co[, <span class="st">"low0.95CI.P_OR"</span>], <span class="dv">3</span>),</span>
-<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">CI_high =</span> <span class="fu">round</span>(co[, <span class="st">"high0.95CI.P_OR"</span>], <span class="dv">3</span>),</span>
-<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">p_value =</span> <span class="fu">signif</span>(co[, <span class="st">"p-value"</span>], <span class="dv">3</span>),</span>
-<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">row.names =</span> <span class="cn">NULL</span></span>
-<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">or_table</span>(fit)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div class="kable-table">
 <table class="caption-top table table-sm table-striped small">
 <colgroup>
-<col style="width: 28%">
+<col style="width: 29%">
 <col style="width: 14%">
-<col style="width: 16%">
+<col style="width: 17%">
 <col style="width: 19%">
-<col style="width: 21%">
+<col style="width: 19%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -684,18 +541,25 @@ window.Quarto = {
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">(Intercept)</td>
-<td style="text-align: right;">0.076</td>
-<td style="text-align: right;">0.012</td>
-<td style="text-align: right;">0.351</td>
-<td style="text-align: right;">0.009350</td>
+<td style="text-align: right;">0.132</td>
+<td style="text-align: right;">0.090</td>
+<td style="text-align: right;">0.190</td>
+<td style="text-align: right;">0.00000</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">H<span class="math inline">\(age       | 1.051|  1.020|   1.083| 0.000982|
-|H\)</span>sexM</td>
-<td style="text-align: right;">0.421</td>
-<td style="text-align: right;">0.175</td>
-<td style="text-align: right;">1.017</td>
-<td style="text-align: right;">0.054500</td>
+<td style="text-align: left;">M<span class="math inline">\(age       | 1.002|  0.996|   1.008| 0.57200|
+|M\)</span>sexM</td>
+<td style="text-align: right;">1.018</td>
+<td style="text-align: right;">0.835</td>
+<td style="text-align: right;">1.241</td>
+<td style="text-align: right;">0.86000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">M$celecoxib</td>
+<td style="text-align: right;">1.397</td>
+<td style="text-align: right;">1.118</td>
+<td style="text-align: right;">1.746</td>
+<td style="text-align: right;">0.00327</td>
 </tr>
 </tbody>
 </table>
@@ -703,10 +567,69 @@ window.Quarto = {
 </div>
 </div>
 <blockquote class="blockquote">
-<p><strong>Answer.</strong> <strong>Age</strong> is the significant predictor — the odds of hypertension rise a few percent per year (OR &gt; 1, p &lt; 0.05, CI above 1) — which is clinically sensible. <strong>Sex</strong> is not significant (CI crossing 1). On ~100 patients, confidence intervals are wide; the lesson is the <em>method</em>, not a definitive effect size.</p>
+<p><strong>Answer.</strong> <strong>Celecoxib is a significant predictor</strong> — its odds ratio is <strong>above 1</strong> (≈ 1.4, p ≈ 0.003): patients on this NSAID have higher odds of a GI bleed, which is clinically sensible. Age and sex are not significant. (This is a <em>different</em> signal from the tutorial’s peptic-ulcer model — a drug exposure rather than a prior condition.)</p>
+</blockquote>
+</section>
+<section id="exercise-4-a-different-outcome-does-age-predict-a-fracture" class="level1">
+<h1>Exercise 4 — A different outcome: does age predict a fracture?</h1>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>rec_fx <span class="ot">&lt;-</span> <span class="fu">omop_recipe</span>(</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">variables =</span> <span class="fu">list</span>(</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable</span>(<span class="at">table =</span> <span class="st">"person"</span>, <span class="at">column =</span> <span class="st">"gender_concept_id"</span>, <span class="at">format =</span> <span class="st">"sex_mf"</span>, <span class="at">name =</span> <span class="st">"sex"</span>),</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable_age</span>(<span class="at">name =</span> <span class="st">"age"</span>, <span class="at">year =</span> <span class="dv">2019</span>),</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable</span>(<span class="at">table =</span> <span class="st">"condition_occurrence"</span>, <span class="at">concept_id =</span> <span class="dv">4278672</span>, <span class="at">format =</span> <span class="st">"binary"</span>, <span class="at">name =</span> <span class="st">"fx_forearm"</span>)</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">output =</span> <span class="fu">omop_output</span>(<span class="at">name =</span> <span class="st">"study"</span>, <span class="at">type =</span> <span class="st">"wide"</span>))</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a><span class="fu">recipe_execute</span>(rec_fx, <span class="at">out =</span> <span class="fu">c</span>(<span class="at">study =</span> <span class="st">"FX"</span>), <span class="at">symbol =</span> <span class="st">"omop"</span>, <span class="at">conns =</span> conns)</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>fit_fx <span class="ot">&lt;-</span> <span class="fu">ds.glm</span>(<span class="at">formula =</span> <span class="st">"FX$fx_forearm ~ FX$age + FX$sex"</span>, <span class="at">family =</span> <span class="st">"binomial"</span>, <span class="at">datasources =</span> conns)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">or_table</span>(fit_fx)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 29%">
+<col style="width: 14%">
+<col style="width: 17%">
+<col style="width: 19%">
+<col style="width: 19%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">term</th>
+<th style="text-align: right;">OR</th>
+<th style="text-align: right;">CI_low</th>
+<th style="text-align: right;">CI_high</th>
+<th style="text-align: right;">p_value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">(Intercept)</td>
+<td style="text-align: right;">0.064</td>
+<td style="text-align: right;">0.044</td>
+<td style="text-align: right;">0.091</td>
+<td style="text-align: right;">0.000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">FX<span class="math inline">\(age      | 1.020|  1.014|   1.025|   0.000|
+|FX\)</span>sexM</td>
+<td style="text-align: right;">1.033</td>
+<td style="text-align: right;">0.851</td>
+<td style="text-align: right;">1.255</td>
+<td style="text-align: right;">0.741</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<blockquote class="blockquote">
+<p><strong>Answer.</strong> Now <strong>age</strong> is the significant predictor (OR slightly above 1 per year — older patients fracture more), while sex is not. The contrast with Exercise 3 is the lesson: <em>which</em> predictor matters depends on the outcome — a comorbidity drove GI bleeding, age drives fractures.</p>
 </blockquote>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>DSI<span class="sc">::</span><span class="fu">datashield.logout</span>(conns)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>DSI<span class="sc">::</span><span class="fu">datashield.logout</span>(conns)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 
 

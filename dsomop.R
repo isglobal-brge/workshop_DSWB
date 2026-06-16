@@ -163,13 +163,12 @@ ds.colnames("CLIN", datasources = conns)
 rec_sub <- omop_recipe(
   variables = list(
     omop_variable(table = "person", column = "gender_concept_id", format = "sex_mf", name = "sex"),
-    omop_variable_age(name = "age", year = 2024),
-    omop_variable(table = "condition_occurrence", concept_id = 432867, format = "binary", name = "hyperlipidemia")
+    omop_variable_age(name = "age", year = 2024)
   ),
   filters = list(
-    female   = omop_filter_sex("F"),
-    elderly  = omop_filter_age(min = 65, year = 2024),
-    with_htn = omop_filter_has_concept(concept_id = 320128, table = "condition_occurrence")
+    female        = omop_filter_sex("F"),
+    middle_aged   = omop_filter_age(min = 50, year = 2024),
+    with_hyperlip = omop_filter_has_concept(concept_id = 432867, table = "condition_occurrence")
   ),
   output = omop_output(name = "study", type = "wide")
 )
@@ -178,7 +177,6 @@ recipe_execute(rec_sub, out = c(study = "SUB"), symbol = "omop", conns = conns)
 
 ## ----filtered-check-----------------------------------------------------------
 ds.dim("SUB", datasources = conns)
-as.data.frame(ds.table("SUB$sex", datasources = conns)$output.list[["TABLES.COMBINED_all.sources_counts"]])
 ds.summary("SUB$age", datasources = conns)[[1]][["quantiles & mean"]]
 
 
