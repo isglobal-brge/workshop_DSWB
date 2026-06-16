@@ -1,5 +1,6 @@
 ## ----setup, include=FALSE-----------------------------------------------------
 knitr::opts_chunk$set(comment = "#>", collapse = FALSE)
+options(width = 200)   # print wide output on one line; the page scrolls it horizontally
 
 
 ## ----libs---------------------------------------------------------------------
@@ -21,12 +22,12 @@ ds.omop.connect(resource = "omop_demo.gibleed", symbol = "omop", conns = conns)
 
 ## ----no-numeric---------------------------------------------------------------
 ds.omop.column.stats("measurement", "value_as_number",
-                     scope = "pooled", symbol = "omop", conns = conns)$pooled
+                     scope = "pooled", symbol = "omop", conns = conns)
 
 
 ## ----sex----------------------------------------------------------------------
 ds.omop.concept.prevalence("person", concept_col = "gender_concept_id",
-                           scope = "pooled", symbol = "omop", conns = conns)$pooled
+                           scope = "pooled", symbol = "omop", conns = conns)
 
 
 ## ----cond-prev, fig.width=8, fig.height=4.5-----------------------------------
@@ -39,9 +40,11 @@ barplot(cond$n_persons, names.arg = cond$concept_name, horiz = TRUE, las = 1,
         main = "Most common conditions in GiBleed")
 
 
-## ----lookup-------------------------------------------------------------------
-ds.omop.concept.lookup(c(192671, 4027663), symbol = "omop", conns = conns)$pooled
-cond[cond$concept_id %in% c(192671, 4027663), ]
+## ----find-concepts------------------------------------------------------------
+ds.omop.concept.search("gastrointestinal hemorrhage", domain = "Condition",
+                       symbol = "omop", conns = conns)
+ds.omop.concept.search("peptic ulcer", domain = "Condition",
+                       symbol = "omop", conns = conns)
 
 
 ## ----recipe-------------------------------------------------------------------
@@ -60,8 +63,8 @@ recipe_execute(rec, out = c(study = "M"), symbol = "omop", conns = conns)
 ## ----check--------------------------------------------------------------------
 ds.colnames("M", datasources = conns)
 ds.dim("M", datasources = conns)
-as.data.frame(ds.table("M$gi_bleed",     datasources = conns)$output.list[["TABLES.COMBINED_all.sources_counts"]])
-as.data.frame(ds.table("M$peptic_ulcer", datasources = conns)$output.list[["TABLES.COMBINED_all.sources_counts"]])
+ds.table("M$gi_bleed",     datasources = conns)
+ds.table("M$peptic_ulcer", datasources = conns)
 
 
 ## ----glm, results='hide'------------------------------------------------------
@@ -71,15 +74,7 @@ fit <- ds.glm(
 
 
 ## ----glm-table----------------------------------------------------------------
-co <- fit$coefficients
-data.frame(
-  term    = rownames(co),
-  OR      = round(co[, "P_OR"], 3),
-  CI_low  = round(co[, "low0.95CI.P_OR"], 3),
-  CI_high = round(co[, "high0.95CI.P_OR"], 3),
-  p_value = signif(co[, "p-value"], 3),
-  row.names = NULL
-)
+fit$coefficients
 
 
 ## ----degenerate, warning=TRUE-------------------------------------------------

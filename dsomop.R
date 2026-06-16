@@ -1,5 +1,10 @@
 ## ----setup, include=FALSE-----------------------------------------------------
 knitr::opts_chunk$set(comment = "#>", collapse = FALSE)
+options(width = 200)   # print wide output on one line; the page scrolls it horizontally
+
+
+## ----install, eval=FALSE------------------------------------------------------
+# devtools::install_github("isglobal-brge/dsOMOPClient", force = TRUE)
 
 
 ## ----libs---------------------------------------------------------------------
@@ -33,7 +38,7 @@ ds.omop.columns("measurement", symbol = "omop", conns = conns)[[1]]
 
 ## ----gender-------------------------------------------------------------------
 ds.omop.concept.prevalence("person", concept_col = "gender_concept_id",
-                           scope = "pooled", symbol = "omop", conns = conns)$pooled
+                           scope = "pooled", symbol = "omop", conns = conns)
 
 
 ## ----birth-hist, fig.width=7, fig.height=4------------------------------------
@@ -44,21 +49,21 @@ ds.omop.value.histogram("person", value_col = "year_of_birth", nbins = 6, plot =
 
 ## ----topcond------------------------------------------------------------------
 ds.omop.concept.prevalence("condition_occurrence", metric = "persons",
-                           top_n = 10, scope = "pooled", symbol = "omop", conns = conns)$pooled
+                           top_n = 10, scope = "pooled", symbol = "omop", conns = conns)
 
 
 ## ----search-------------------------------------------------------------------
 ds.omop.concept.search("hyperlipidemia", domain = "Condition",
-                       limit = 5, symbol = "omop", conns = conns)$pooled
+                       limit = 5, symbol = "omop", conns = conns)
 
 
 ## ----lookup-------------------------------------------------------------------
-ds.omop.concept.lookup(c(320128, 432867, 3027018), symbol = "omop", conns = conns)$pooled
+ds.omop.concept.lookup(c(320128, 432867, 3027018), symbol = "omop", conns = conns)
 
 
 ## ----hr-stats-----------------------------------------------------------------
 ds.omop.column.stats("measurement", "value_as_number", concept_id = 3027018,
-                     scope = "pooled", symbol = "omop", conns = conns)$pooled
+                     scope = "pooled", symbol = "omop", conns = conns)
 
 
 ## ----hr-hist, fig.width=7, fig.height=4---------------------------------------
@@ -77,7 +82,7 @@ ds.omop.value.histogram("measurement", value_col = "value_as_number", concept_id
 
 ## ----rhythm-------------------------------------------------------------------
 ds.omop.value.counts("measurement", "value_as_concept_id", concept_id = 3022318,
-                     scope = "pooled", symbol = "omop", conns = conns)$pooled
+                     scope = "pooled", symbol = "omop", conns = conns)
 
 
 ## ----recipe-skeleton, eval=FALSE----------------------------------------------
@@ -110,11 +115,11 @@ ds.dim("M0", datasources = conns)
 
 
 ## ----m0-sex-------------------------------------------------------------------
-ds.table("M0$sex", datasources = conns)$output.list[["TABLES.COMBINED_all.sources_counts"]]
+ds.table("M0$sex", datasources = conns)
 
 
 ## ----m0-age-------------------------------------------------------------------
-ds.summary("M0$age", datasources = conns)[[1]][["quantiles & mean"]]
+ds.summary("M0$age", datasources = conns)
 
 
 ## ----recipe-rich--------------------------------------------------------------
@@ -135,21 +140,21 @@ ds.dim("M", datasources = conns)
 
 
 ## ----check-num----------------------------------------------------------------
-ds.summary("M$age",        datasources = conns)[[1]][["quantiles & mean"]]
-ds.summary("M$heart_rate", datasources = conns)[[1]][["quantiles & mean"]]
-ds.summary("M$n_visits",   datasources = conns)[[1]][["quantiles & mean"]]
+ds.summary("M$age",        datasources = conns)
+ds.summary("M$heart_rate", datasources = conns)
+ds.summary("M$n_visits",   datasources = conns)
 
 
 ## ----check-sex----------------------------------------------------------------
-ds.table("M$sex",            datasources = conns)$output.list[["TABLES.COMBINED_all.sources_counts"]]
+ds.table("M$sex",            datasources = conns)
 
 
 ## ----check-htn----------------------------------------------------------------
-ds.table("M$hypertension",   datasources = conns)$output.list[["TABLES.COMBINED_all.sources_counts"]]
+ds.table("M$hypertension",   datasources = conns)
 
 
 ## ----check-hyperlip-----------------------------------------------------------
-ds.table("M$hyperlipidemia", datasources = conns)$output.list[["TABLES.COMBINED_all.sources_counts"]]
+ds.table("M$hyperlipidemia", datasources = conns)
 
 
 ## ----recipe-multi-------------------------------------------------------------
@@ -188,7 +193,26 @@ recipe_execute(rec_sub, out = c(study = "SUB"), symbol = "omop", conns = conns)
 
 ## ----filtered-check-----------------------------------------------------------
 ds.dim("SUB", datasources = conns)
-ds.summary("SUB$age", datasources = conns)[[1]][["quantiles & mean"]]
+ds.summary("SUB$age", datasources = conns)
+
+
+## ----recipe-or----------------------------------------------------------------
+rec_or <- omop_recipe(
+  variables = list(
+    omop_variable(table = "person", column = "gender_concept_id", format = "sex_mf", name = "sex"),
+    omop_variable_age(name = "age", year = 2024)
+  ),
+  filters = list(
+    cardiometabolic = omop_filter_group(
+      omop_filter_has_concept(concept_id = 320128, table = "condition_occurrence"),  # hypertension
+      omop_filter_has_concept(concept_id = 432867, table = "condition_occurrence"),  # hyperlipidemia
+      operator = "OR"
+    )
+  ),
+  output = omop_output(name = "study", type = "wide")
+)
+recipe_execute(rec_or, out = c(study = "ORC"), symbol = "omop", conns = conns)
+ds.dim("ORC", datasources = conns)
 
 
 ## ----glm1---------------------------------------------------------------------

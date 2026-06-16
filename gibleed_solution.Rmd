@@ -1,9 +1,7 @@
 ---
 title: "GiBleed — Exercises (Solutions)"
-subtitle: "Worked answers with real federated output"
-format:
-  html:
-    df-print: kable
+subtitle: "One worked path through each exercise, with real federated output"
+format: html
 execute:
   warning: false
   message: false
@@ -19,6 +17,7 @@ execute:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(comment = "#>")
+options(width = 200)   # print wide output on one line; the page scrolls it horizontally
 ```
 
 ```{r connect}
@@ -33,32 +32,28 @@ builder$append(server = "dakar",   url = "https://dakar.datashield.live",
                user = "ethiopia", password = "P@ssw0rd", profile = "omop")
 conns <- DSI::datashield.login(logins = builder$build())
 ds.omop.connect(resource = "omop_demo.gibleed", symbol = "omop", conns = conns)
-
-or_table <- function(fit) {
-  co <- fit$coefficients
-  data.frame(term = rownames(co),
-             OR = round(co[, "P_OR"], 3),
-             CI_low = round(co[, "low0.95CI.P_OR"], 3),
-             CI_high = round(co[, "high0.95CI.P_OR"], 3),
-             p_value = signif(co[, "p-value"], 3),
-             row.names = NULL)
-}
 ```
 
-# Exercise 1 — Explore the medications
+These are *one* valid path; your concepts/variables may differ. (GiBleed has no numeric values, so everything is a boolean flag; age is anchored to 2019.)
 
-```{r ge1}
+# Exercise 1 — Find a medication
+
+```{r ex1}
+ds.omop.concept.search("celecoxib", domain = "Drug",
+                       symbol = "omop", conns = conns)
+
 ds.omop.concept.prevalence("drug_exposure", metric = "persons", top_n = 12,
-                           scope = "pooled", symbol = "omop", conns = conns)$pooled
-
-ds.omop.concept.lookup(1118084, symbol = "omop", conns = conns)$pooled
+                           scope = "pooled", symbol = "omop", conns = conns)
 ```
 
-> **Answer.** Celecoxib (`1118084`) is taken by **~1,840** patients — one of the most common drugs in this NSAID-heavy synthetic cohort.
+> Celecoxib (an NSAID) is concept **1118084**, taken by ~1,840 patients.
 
-# Exercise 2 — Build a boolean table
+# Exercise 2 — Does that drug relate to GI bleeding?
 
-```{r ge2}
+```{r ex2}
+ds.omop.concept.search("gastrointestinal hemorrhage", domain = "Condition",
+                       symbol = "omop", conns = conns)
+
 rec <- omop_recipe(
   variables = list(
     omop_variable(table = "person", column = "gender_concept_id", format = "sex_mf", name = "sex"),
@@ -67,31 +62,21 @@ rec <- omop_recipe(
     omop_variable(table = "drug_exposure", concept_id = 1118084, format = "binary", name = "celecoxib")
   ),
   output = omop_output(name = "study", type = "wide"))
-
 recipe_execute(rec, out = c(study = "M"), symbol = "omop", conns = conns)
-ds.colnames("M", datasources = conns)
-ds.dim("M", datasources = conns)
-as.data.frame(ds.table("M$celecoxib", datasources = conns)$output.list[["TABLES.COMBINED_all.sources_counts"]])
-```
 
-> **Answer.** `M` has one row per patient (~2,700 combined) with `person_id, sex, age, gi_bleed, celecoxib`. Both clinical columns are `binary` (0/1 presence); the server built exactly the table the recipe described.
-
-# Exercise 3 — Is celecoxib associated with GI bleeding?
-
-```{r ge3, results='hide'}
 fit <- ds.glm(formula = "M$gi_bleed ~ M$age + M$sex + M$celecoxib",
               family = "binomial", datasources = conns)
+fit$coefficients
 ```
 
-```{r ge3-table}
-or_table(fit)
-```
+> GI haemorrhage is concept **192671**. Celecoxib is a **significant** predictor: its `P_OR` is above 1 (~1.4, `p` ≈ 0.003) — an NSAID raising GI-bleed odds. Age and sex are not significant.
 
-> **Answer.** **Celecoxib is a significant predictor** — its odds ratio is **above 1** (≈ 1.4, p ≈ 0.003): patients on this NSAID have higher odds of a GI bleed, which is clinically sensible. Age and sex are not significant. (This is a *different* signal from the tutorial's peptic-ulcer model — a drug exposure rather than a prior condition.)
+# Exercise 3 — Does age predict a fracture?
 
-# Exercise 4 — A different outcome: does age predict a fracture?
+```{r ex3}
+ds.omop.concept.search("fracture of forearm", domain = "Condition",
+                       symbol = "omop", conns = conns)
 
-```{r ge4, results='hide'}
 rec_fx <- omop_recipe(
   variables = list(
     omop_variable(table = "person", column = "gender_concept_id", format = "sex_mf", name = "sex"),
@@ -100,14 +85,12 @@ rec_fx <- omop_recipe(
   ),
   output = omop_output(name = "study", type = "wide"))
 recipe_execute(rec_fx, out = c(study = "FX"), symbol = "omop", conns = conns)
+
 fit_fx <- ds.glm(formula = "FX$fx_forearm ~ FX$age + FX$sex", family = "binomial", datasources = conns)
+fit_fx$coefficients
 ```
 
-```{r ge4-table}
-or_table(fit_fx)
-```
-
-> **Answer.** Now **age** is the significant predictor (OR slightly above 1 per year — older patients fracture more), while sex is not. The contrast with Exercise 3 is the lesson: *which* predictor matters depends on the outcome — a comorbidity drove GI bleeding, age drives fractures.
+> Forearm fracture is concept **4278672**. Now **age** is the significant predictor (`P_OR` slightly above 1 — older patients fracture more), while sex is not. The contrast with Exercise 2 is the point: which predictor matters depends on the outcome.
 
 ```{r logout}
 DSI::datashield.logout(conns)

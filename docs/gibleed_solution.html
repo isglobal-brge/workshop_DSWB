@@ -107,35 +107,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
-
-<script type="text/javascript">
-const typesetMath = (el) => {
-  if (window.MathJax) {
-    // MathJax Typeset
-    window.MathJax.typeset([el]);
-  } else if (window.katex) {
-    // KaTeX Render
-    var mathElements = el.getElementsByClassName("math");
-    var macros = [];
-    for (var i = 0; i < mathElements.length; i++) {
-      var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
-        window.katex.render(texText.data, mathElements[i], {
-          displayMode: mathElements[i].classList.contains('display'),
-          throwOnError: false,
-          macros: macros,
-          fleqn: false
-        });
-      }
-    }
-  }
-}
-window.Quarto = {
-  typesetMath
-};
-</script>
 
 <link rel="stylesheet" href="styles.css">
 <link rel="stylesheet" href="navbar-fix.css">
@@ -260,10 +231,9 @@ window.Quarto = {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#exercise-1-explore-the-medications" id="toc-exercise-1-explore-the-medications" class="nav-link active" data-scroll-target="#exercise-1-explore-the-medications">Exercise 1 — Explore the medications</a></li>
-  <li><a href="#exercise-2-build-a-boolean-table" id="toc-exercise-2-build-a-boolean-table" class="nav-link" data-scroll-target="#exercise-2-build-a-boolean-table">Exercise 2 — Build a boolean table</a></li>
-  <li><a href="#exercise-3-is-celecoxib-associated-with-gi-bleeding" id="toc-exercise-3-is-celecoxib-associated-with-gi-bleeding" class="nav-link" data-scroll-target="#exercise-3-is-celecoxib-associated-with-gi-bleeding">Exercise 3 — Is celecoxib associated with GI bleeding?</a></li>
-  <li><a href="#exercise-4-a-different-outcome-does-age-predict-a-fracture" id="toc-exercise-4-a-different-outcome-does-age-predict-a-fracture" class="nav-link" data-scroll-target="#exercise-4-a-different-outcome-does-age-predict-a-fracture">Exercise 4 — A different outcome: does age predict a fracture?</a></li>
+  <li><a href="#exercise-1-find-a-medication" id="toc-exercise-1-find-a-medication" class="nav-link active" data-scroll-target="#exercise-1-find-a-medication">Exercise 1 — Find a medication</a></li>
+  <li><a href="#exercise-2-does-that-drug-relate-to-gi-bleeding" id="toc-exercise-2-does-that-drug-relate-to-gi-bleeding" class="nav-link" data-scroll-target="#exercise-2-does-that-drug-relate-to-gi-bleeding">Exercise 2 — Does that drug relate to GI bleeding?</a></li>
+  <li><a href="#exercise-3-does-age-predict-a-fracture" id="toc-exercise-3-does-age-predict-a-fracture" class="nav-link" data-scroll-target="#exercise-3-does-age-predict-a-fracture">Exercise 3 — Does age predict a fracture?</a></li>
   </ul>
 </nav>
     </div>
@@ -273,7 +243,7 @@ window.Quarto = {
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
 <h1 class="title">GiBleed — Exercises (Solutions)</h1>
-<p class="subtitle lead">Worked answers with real federated output</p>
+<p class="subtitle lead">One worked path through each exercise, with real federated output</p>
 </div>
 
 
@@ -302,334 +272,163 @@ window.Quarto = {
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>builder<span class="sc">$</span><span class="fu">append</span>(<span class="at">server =</span> <span class="st">"dakar"</span>,   <span class="at">url =</span> <span class="st">"https://dakar.datashield.live"</span>,</span>
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>               <span class="at">user =</span> <span class="st">"ethiopia"</span>, <span class="at">password =</span> <span class="st">"P@ssw0rd"</span>, <span class="at">profile =</span> <span class="st">"omop"</span>)</span>
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>conns <span class="ot">&lt;-</span> DSI<span class="sc">::</span><span class="fu">datashield.login</span>(<span class="at">logins =</span> builder<span class="sc">$</span><span class="fu">build</span>())</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.omop.connect</span>(<span class="at">resource =</span> <span class="st">"omop_demo.gibleed"</span>, <span class="at">symbol =</span> <span class="st">"omop"</span>, <span class="at">conns =</span> conns)</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>or_table <span class="ot">&lt;-</span> <span class="cf">function</span>(fit) {</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>  co <span class="ot">&lt;-</span> fit<span class="sc">$</span>coefficients</span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data.frame</span>(<span class="at">term =</span> <span class="fu">rownames</span>(co),</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>             <span class="at">OR =</span> <span class="fu">round</span>(co[, <span class="st">"P_OR"</span>], <span class="dv">3</span>),</span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>             <span class="at">CI_low =</span> <span class="fu">round</span>(co[, <span class="st">"low0.95CI.P_OR"</span>], <span class="dv">3</span>),</span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>             <span class="at">CI_high =</span> <span class="fu">round</span>(co[, <span class="st">"high0.95CI.P_OR"</span>], <span class="dv">3</span>),</span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>             <span class="at">p_value =</span> <span class="fu">signif</span>(co[, <span class="st">"p-value"</span>], <span class="dv">3</span>),</span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>             <span class="at">row.names =</span> <span class="cn">NULL</span>)</span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.omop.connect</span>(<span class="at">resource =</span> <span class="st">"omop_demo.gibleed"</span>, <span class="at">symbol =</span> <span class="st">"omop"</span>, <span class="at">conns =</span> conns)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<section id="exercise-1-explore-the-medications" class="level1">
-<h1>Exercise 1 — Explore the medications</h1>
+<p>These are <em>one</em> valid path; your concepts/variables may differ. (GiBleed has no numeric values, so everything is a boolean flag; age is anchored to 2019.)</p>
+<section id="exercise-1-find-a-medication" class="level1">
+<h1>Exercise 1 — Find a medication</h1>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.omop.concept.prevalence</span>(<span class="st">"drug_exposure"</span>, <span class="at">metric =</span> <span class="st">"persons"</span>, <span class="at">top_n =</span> <span class="dv">12</span>,</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>                           <span class="at">scope =</span> <span class="st">"pooled"</span>, <span class="at">symbol =</span> <span class="st">"omop"</span>, <span class="at">conns =</span> conns)<span class="sc">$</span>pooled</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output-display">
-<div class="kable-table">
-<table class="caption-top table table-sm table-striped small">
-<colgroup>
-<col style="width: 8%">
-<col style="width: 7%">
-<col style="width: 84%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: right;">concept_id</th>
-<th style="text-align: right;">n_persons</th>
-<th style="text-align: left;">concept_name</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: right;">40213227</td>
-<td style="text-align: right;">2655</td>
-<td style="text-align: left;">tetanus and diphtheria toxoids, adsorbed, preservative free, for adult use</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">1127433</td>
-<td style="text-align: right;">2575</td>
-<td style="text-align: left;">Acetaminophen 325 MG Oral Tablet</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">40213160</td>
-<td style="text-align: right;">2135</td>
-<td style="text-align: left;">poliovirus vaccine, inactivated</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">1713671</td>
-<td style="text-align: right;">2015</td>
-<td style="text-align: left;">Amoxicillin 250 MG / Clavulanate 125 MG Oral Tablet</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">19059056</td>
-<td style="text-align: right;">1920</td>
-<td style="text-align: left;">Aspirin 81 MG Oral Tablet</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">1118084</td>
-<td style="text-align: right;">1840</td>
-<td style="text-align: left;">celecoxib</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">40213296</td>
-<td style="text-align: right;">1730</td>
-<td style="text-align: left;">hepatitis A vaccine, adult dosage</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">40213306</td>
-<td style="text-align: right;">1555</td>
-<td style="text-align: left;">hepatitis B vaccine, adult dosage</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">1127078</td>
-<td style="text-align: right;">1425</td>
-<td style="text-align: left;">Acetaminophen 160 MG Oral Tablet</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">40229134</td>
-<td style="text-align: right;">1385</td>
-<td style="text-align: left;">Acetaminophen 21.7 MG/ML / Dextromethorphan Hydrobromide 1 MG/ML / doxylamine succinate 0.417 MG/ML Oral Solution</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">19078461</td>
-<td style="text-align: right;">1270</td>
-<td style="text-align: left;">Ibuprofen 200 MG Oral Tablet</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">19133873</td>
-<td style="text-align: right;">1270</td>
-<td style="text-align: left;">Penicillin V Potassium 250 MG Oral Tablet</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.omop.concept.lookup</span>(<span class="dv">1118084</span>, <span class="at">symbol =</span> <span class="st">"omop"</span>, <span class="at">conns =</span> conns)<span class="sc">$</span>pooled</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output-display">
-<div class="kable-table">
-<table class="caption-top table table-sm table-striped small">
-<thead>
-<tr class="header">
-<th style="text-align: right;">concept_id</th>
-<th style="text-align: left;">concept_name</th>
-<th style="text-align: left;">domain_id</th>
-<th style="text-align: left;">vocabulary_id</th>
-<th style="text-align: left;">standard_concept</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: right;">1118084</td>
-<td style="text-align: left;">celecoxib</td>
-<td style="text-align: left;">Drug</td>
-<td style="text-align: left;">RxNorm</td>
-<td style="text-align: left;">S</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<blockquote class="blockquote">
-<p><strong>Answer.</strong> Celecoxib (<code>1118084</code>) is taken by <strong>~1,840</strong> patients — one of the most common drugs in this NSAID-heavy synthetic cohort.</p>
-</blockquote>
-</section>
-<section id="exercise-2-build-a-boolean-table" class="level1">
-<h1>Exercise 2 — Build a boolean table</h1>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>rec <span class="ot">&lt;-</span> <span class="fu">omop_recipe</span>(</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">variables =</span> <span class="fu">list</span>(</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable</span>(<span class="at">table =</span> <span class="st">"person"</span>, <span class="at">column =</span> <span class="st">"gender_concept_id"</span>, <span class="at">format =</span> <span class="st">"sex_mf"</span>, <span class="at">name =</span> <span class="st">"sex"</span>),</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable_age</span>(<span class="at">name =</span> <span class="st">"age"</span>, <span class="at">year =</span> <span class="dv">2019</span>),</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable</span>(<span class="at">table =</span> <span class="st">"condition_occurrence"</span>, <span class="at">concept_id =</span> <span class="dv">192671</span>, <span class="at">format =</span> <span class="st">"binary"</span>, <span class="at">name =</span> <span class="st">"gi_bleed"</span>),</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable</span>(<span class="at">table =</span> <span class="st">"drug_exposure"</span>, <span class="at">concept_id =</span> <span class="dv">1118084</span>, <span class="at">format =</span> <span class="st">"binary"</span>, <span class="at">name =</span> <span class="st">"celecoxib"</span>)</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  ),</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">output =</span> <span class="fu">omop_output</span>(<span class="at">name =</span> <span class="st">"study"</span>, <span class="at">type =</span> <span class="st">"wide"</span>))</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="fu">recipe_execute</span>(rec, <span class="at">out =</span> <span class="fu">c</span>(<span class="at">study =</span> <span class="st">"M"</span>), <span class="at">symbol =</span> <span class="st">"omop"</span>, <span class="at">conns =</span> conns)</span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.colnames</span>(<span class="st">"M"</span>, <span class="at">datasources =</span> conns)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.omop.concept.search</span>(<span class="st">"celecoxib"</span>, <span class="at">domain =</span> <span class="st">"Drug"</span>,</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>                       <span class="at">symbol =</span> <span class="st">"omop"</span>, <span class="at">conns =</span> conns)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>#&gt; $nairobi
-#&gt; [1] "person_id" "gi_bleed"  "celecoxib" "sex"       "age"      
+#&gt;   concept_id                             concept_name domain_id vocabulary_id standard_concept concept_class_id concept_code valid_start_date valid_end_date invalid_reason
+#&gt; 1    1118088 celecoxib 200 MG Oral Capsule [Celebrex]      Drug        RxNorm                S     Branded Drug       213469       1970-01-01     2099-12-31           &lt;NA&gt;
+#&gt; 2    1118084                                celecoxib      Drug        RxNorm                S       Ingredient       140587       1970-01-01     2099-12-31           &lt;NA&gt;
 #&gt; 
 #&gt; $douala
-#&gt; [1] "person_id" "gi_bleed"  "celecoxib" "sex"       "age"      
+#&gt;   concept_id                             concept_name domain_id vocabulary_id standard_concept concept_class_id concept_code valid_start_date valid_end_date invalid_reason
+#&gt; 1    1118088 celecoxib 200 MG Oral Capsule [Celebrex]      Drug        RxNorm                S     Branded Drug       213469       1970-01-01     2099-12-31           &lt;NA&gt;
+#&gt; 2    1118084                                celecoxib      Drug        RxNorm                S       Ingredient       140587       1970-01-01     2099-12-31           &lt;NA&gt;
 #&gt; 
 #&gt; $dakar
-#&gt; [1] "person_id" "gi_bleed"  "celecoxib" "sex"       "age"</code></pre>
+#&gt;   concept_id                             concept_name domain_id vocabulary_id standard_concept concept_class_id concept_code valid_start_date valid_end_date invalid_reason
+#&gt; 1    1118088 celecoxib 200 MG Oral Capsule [Celebrex]      Drug        RxNorm                S     Branded Drug       213469       1970-01-01     2099-12-31           &lt;NA&gt;
+#&gt; 2    1118084                                celecoxib      Drug        RxNorm                S       Ingredient       140587       1970-01-01     2099-12-31           &lt;NA&gt;
+#&gt; 
+#&gt; $pooled
+#&gt;   concept_id                             concept_name domain_id vocabulary_id standard_concept concept_class_id concept_code valid_start_date valid_end_date invalid_reason
+#&gt; 1    1118088 celecoxib 200 MG Oral Capsule [Celebrex]      Drug        RxNorm                S     Branded Drug       213469       1970-01-01     2099-12-31           &lt;NA&gt;
+#&gt; 2    1118084                                celecoxib      Drug        RxNorm                S       Ingredient       140587       1970-01-01     2099-12-31           &lt;NA&gt;</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.dim</span>(<span class="st">"M"</span>, <span class="at">datasources =</span> conns)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.omop.concept.prevalence</span>(<span class="st">"drug_exposure"</span>, <span class="at">metric =</span> <span class="st">"persons"</span>, <span class="at">top_n =</span> <span class="dv">12</span>,</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>                           <span class="at">scope =</span> <span class="st">"pooled"</span>, <span class="at">symbol =</span> <span class="st">"omop"</span>, <span class="at">conns =</span> conns)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>#&gt; $`dimensions of M in nairobi`
-#&gt; [1] 889   5
+<pre><code>#&gt; $nairobi
+#&gt;    concept_id                                                                                                      concept_name n_persons n_records
+#&gt; 1    40213227                                        tetanus and diphtheria toxoids, adsorbed, preservative free, for adult use       875      2470
+#&gt; 2     1127433                                                                                  Acetaminophen 325 MG Oral Tablet       850      3070
+#&gt; 3    40213160                                                                                   poliovirus vaccine, inactivated       715      2700
+#&gt; 4     1713671                                                               Amoxicillin 250 MG / Clavulanate 125 MG Oral Tablet       655      1250
+#&gt; 5    19059056                                                                                         Aspirin 81 MG Oral Tablet       615      1410
+#&gt; 6     1118084                                                                                                         celecoxib       595       595
+#&gt; 7    40213296                                                                                 hepatitis A vaccine, adult dosage       590      1100
+#&gt; 8    40213306                                                                                 hepatitis B vaccine, adult dosage       530       645
+#&gt; 9     1127078                                                                                  Acetaminophen 160 MG Oral Tablet       470       695
+#&gt; 10   19078461                                                                                      Ibuprofen 200 MG Oral Tablet       445       590
+#&gt; 11   40229134 Acetaminophen 21.7 MG/ML / Dextromethorphan Hydrobromide 1 MG/ML / doxylamine succinate 0.417 MG/ML Oral Solution       425       600
+#&gt; 12   19133873                                                                         Penicillin V Potassium 250 MG Oral Tablet       425       565
 #&gt; 
-#&gt; $`dimensions of M in douala`
-#&gt; [1] 878   5
+#&gt; $douala
+#&gt;    concept_id                                                                                                      concept_name n_persons n_records
+#&gt; 1    40213227                                        tetanus and diphtheria toxoids, adsorbed, preservative free, for adult use       870      2425
+#&gt; 2     1127433                                                                                  Acetaminophen 325 MG Oral Tablet       845      2985
+#&gt; 3    40213160                                                                                   poliovirus vaccine, inactivated       700      2620
+#&gt; 4     1713671                                                               Amoxicillin 250 MG / Clavulanate 125 MG Oral Tablet       665      1260
+#&gt; 5    19059056                                                                                         Aspirin 81 MG Oral Tablet       630      1345
+#&gt; 6     1118084                                                                                                         celecoxib       615       615
+#&gt; 7    40213296                                                                                 hepatitis A vaccine, adult dosage       565      1050
+#&gt; 8    40213306                                                                                 hepatitis B vaccine, adult dosage       515       635
+#&gt; 9     1127078                                                                                  Acetaminophen 160 MG Oral Tablet       480       740
+#&gt; 10   40229134 Acetaminophen 21.7 MG/ML / Dextromethorphan Hydrobromide 1 MG/ML / doxylamine succinate 0.417 MG/ML Oral Solution       455       645
+#&gt; 11   19078461                                                                                      Ibuprofen 200 MG Oral Tablet       380       540
+#&gt; 12   19133873                                                                         Penicillin V Potassium 250 MG Oral Tablet       380       530
 #&gt; 
-#&gt; $`dimensions of M in dakar`
-#&gt; [1] 927   5
+#&gt; $dakar
+#&gt;    concept_id                                                                                                      concept_name n_persons n_records
+#&gt; 1    40213227                                        tetanus and diphtheria toxoids, adsorbed, preservative free, for adult use       910      2525
+#&gt; 2     1127433                                                                                  Acetaminophen 325 MG Oral Tablet       880      3305
+#&gt; 3    40213160                                                                                   poliovirus vaccine, inactivated       720      2655
+#&gt; 4     1713671                                                               Amoxicillin 250 MG / Clavulanate 125 MG Oral Tablet       695      1335
+#&gt; 5    19059056                                                                                         Aspirin 81 MG Oral Tablet       675      1615
+#&gt; 6     1118084                                                                                                         celecoxib       630       630
+#&gt; 7    40213296                                                                                 hepatitis A vaccine, adult dosage       575      1055
+#&gt; 8    40213306                                                                                 hepatitis B vaccine, adult dosage       510       630
+#&gt; 9    40229134 Acetaminophen 21.7 MG/ML / Dextromethorphan Hydrobromide 1 MG/ML / doxylamine succinate 0.417 MG/ML Oral Solution       505       745
+#&gt; 10    1127078                                                                                  Acetaminophen 160 MG Oral Tablet       475       715
+#&gt; 11   19133873                                                                         Penicillin V Potassium 250 MG Oral Tablet       465       620
+#&gt; 12   19078461                                                                                      Ibuprofen 200 MG Oral Tablet       445       630
 #&gt; 
-#&gt; $`dimensions of M in combined studies`
-#&gt; [1] 2694    5</code></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">as.data.frame</span>(<span class="fu">ds.table</span>(<span class="st">"M$celecoxib"</span>, <span class="at">datasources =</span> conns)<span class="sc">$</span>output.list[[<span class="st">"TABLES.COMBINED_all.sources_counts"</span>]])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>#&gt; 
-#&gt;  Data in all studies were valid 
-#&gt; 
-#&gt; Study 1 :  No errors reported from this study
-#&gt; Study 2 :  No errors reported from this study
-#&gt; Study 3 :  No errors reported from this study</code></pre>
-</div>
-<div class="cell-output-display">
-<div class="kable-table">
-<table class="caption-top table table-sm table-striped small">
-<colgroup>
-<col style="width: 3%">
-<col style="width: 97%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: left;"></th>
-<th style="text-align: right;">ds.table(“M<span class="math inline">\(celecoxib", datasources = conns)\)</span>output.list[[“TABLES.COMBINED_all.sources_counts”]]</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">0</td>
-<td style="text-align: right;">850</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">1</td>
-<td style="text-align: right;">1844</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">NA</td>
-<td style="text-align: right;">0</td>
-</tr>
-</tbody>
-</table>
-</div>
+#&gt; $pooled
+#&gt;    concept_id n_persons                                                                                                      concept_name
+#&gt; 1    40213227      2655                                        tetanus and diphtheria toxoids, adsorbed, preservative free, for adult use
+#&gt; 2     1127433      2575                                                                                  Acetaminophen 325 MG Oral Tablet
+#&gt; 3    40213160      2135                                                                                   poliovirus vaccine, inactivated
+#&gt; 4     1713671      2015                                                               Amoxicillin 250 MG / Clavulanate 125 MG Oral Tablet
+#&gt; 5    19059056      1920                                                                                         Aspirin 81 MG Oral Tablet
+#&gt; 6     1118084      1840                                                                                                         celecoxib
+#&gt; 7    40213296      1730                                                                                 hepatitis A vaccine, adult dosage
+#&gt; 8    40213306      1555                                                                                 hepatitis B vaccine, adult dosage
+#&gt; 9     1127078      1425                                                                                  Acetaminophen 160 MG Oral Tablet
+#&gt; 10   40229134      1385 Acetaminophen 21.7 MG/ML / Dextromethorphan Hydrobromide 1 MG/ML / doxylamine succinate 0.417 MG/ML Oral Solution
+#&gt; 11   19078461      1270                                                                                      Ibuprofen 200 MG Oral Tablet
+#&gt; 12   19133873      1270                                                                         Penicillin V Potassium 250 MG Oral Tablet</code></pre>
 </div>
 </div>
 <blockquote class="blockquote">
-<p><strong>Answer.</strong> <code>M</code> has one row per patient (~2,700 combined) with <code>person_id, sex, age, gi_bleed, celecoxib</code>. Both clinical columns are <code>binary</code> (0/1 presence); the server built exactly the table the recipe described.</p>
+<p>Celecoxib (an NSAID) is concept <strong>1118084</strong>, taken by ~1,840 patients.</p>
 </blockquote>
 </section>
-<section id="exercise-3-is-celecoxib-associated-with-gi-bleeding" class="level1">
-<h1>Exercise 3 — Is celecoxib associated with GI bleeding?</h1>
+<section id="exercise-2-does-that-drug-relate-to-gi-bleeding" class="level1">
+<h1>Exercise 2 — Does that drug relate to GI bleeding?</h1>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">ds.glm</span>(<span class="at">formula =</span> <span class="st">"M$gi_bleed ~ M$age + M$sex + M$celecoxib"</span>,</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>              <span class="at">family =</span> <span class="st">"binomial"</span>, <span class="at">datasources =</span> conns)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">or_table</span>(fit)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output-display">
-<div class="kable-table">
-<table class="caption-top table table-sm table-striped small">
-<colgroup>
-<col style="width: 29%">
-<col style="width: 14%">
-<col style="width: 17%">
-<col style="width: 19%">
-<col style="width: 19%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: left;">term</th>
-<th style="text-align: right;">OR</th>
-<th style="text-align: right;">CI_low</th>
-<th style="text-align: right;">CI_high</th>
-<th style="text-align: right;">p_value</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">(Intercept)</td>
-<td style="text-align: right;">0.132</td>
-<td style="text-align: right;">0.090</td>
-<td style="text-align: right;">0.190</td>
-<td style="text-align: right;">0.00000</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">M<span class="math inline">\(age       | 1.002|  0.996|   1.008| 0.57200|
-|M\)</span>sexM</td>
-<td style="text-align: right;">1.018</td>
-<td style="text-align: right;">0.835</td>
-<td style="text-align: right;">1.241</td>
-<td style="text-align: right;">0.86000</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">M$celecoxib</td>
-<td style="text-align: right;">1.397</td>
-<td style="text-align: right;">1.118</td>
-<td style="text-align: right;">1.746</td>
-<td style="text-align: right;">0.00327</td>
-</tr>
-</tbody>
-</table>
-</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.omop.concept.search</span>(<span class="st">"gastrointestinal hemorrhage"</span>, <span class="at">domain =</span> <span class="st">"Condition"</span>,</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>                       <span class="at">symbol =</span> <span class="st">"omop"</span>, <span class="at">conns =</span> conns)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>rec <span class="ot">&lt;-</span> <span class="fu">omop_recipe</span>(</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">variables =</span> <span class="fu">list</span>(</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable</span>(<span class="at">table =</span> <span class="st">"person"</span>, <span class="at">column =</span> <span class="st">"gender_concept_id"</span>, <span class="at">format =</span> <span class="st">"sex_mf"</span>, <span class="at">name =</span> <span class="st">"sex"</span>),</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable_age</span>(<span class="at">name =</span> <span class="st">"age"</span>, <span class="at">year =</span> <span class="dv">2019</span>),</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable</span>(<span class="at">table =</span> <span class="st">"condition_occurrence"</span>, <span class="at">concept_id =</span> <span class="dv">192671</span>, <span class="at">format =</span> <span class="st">"binary"</span>, <span class="at">name =</span> <span class="st">"gi_bleed"</span>),</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable</span>(<span class="at">table =</span> <span class="st">"drug_exposure"</span>, <span class="at">concept_id =</span> <span class="dv">1118084</span>, <span class="at">format =</span> <span class="st">"binary"</span>, <span class="at">name =</span> <span class="st">"celecoxib"</span>)</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">output =</span> <span class="fu">omop_output</span>(<span class="at">name =</span> <span class="st">"study"</span>, <span class="at">type =</span> <span class="st">"wide"</span>))</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="fu">recipe_execute</span>(rec, <span class="at">out =</span> <span class="fu">c</span>(<span class="at">study =</span> <span class="st">"M"</span>), <span class="at">symbol =</span> <span class="st">"omop"</span>, <span class="at">conns =</span> conns)</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">ds.glm</span>(<span class="at">formula =</span> <span class="st">"M$gi_bleed ~ M$age + M$sex + M$celecoxib"</span>,</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>              <span class="at">family =</span> <span class="st">"binomial"</span>, <span class="at">datasources =</span> conns)</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>fit<span class="sc">$</span>coefficients</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>#&gt;                Estimate  Std. Error    z-value      p-value low0.95CI.LP high0.95CI.LP      P_OR low0.95CI.P_OR high0.95CI.P_OR
+#&gt; (Intercept) -1.88391772 0.220939678 -8.5268420 1.503971e-17 -2.316951532  -1.450883909 0.1319395     0.08972874       0.1898656
+#&gt; M$age        0.00175471 0.003102217  0.5656310 5.716446e-01 -0.004325523   0.007834943 1.0017563     0.99568382       1.0078657
+#&gt; M$sexM       0.01777466 0.100978142  0.1760248 8.602744e-01 -0.180138860   0.215688183 1.0179336     0.83515423       1.2407154
+#&gt; M$celecoxib  0.33459251 0.113757828  2.9412702 3.268693e-03  0.111631264   0.557553755 1.3973709     1.11810050       1.7463952</code></pre>
 </div>
 </div>
 <blockquote class="blockquote">
-<p><strong>Answer.</strong> <strong>Celecoxib is a significant predictor</strong> — its odds ratio is <strong>above 1</strong> (≈ 1.4, p ≈ 0.003): patients on this NSAID have higher odds of a GI bleed, which is clinically sensible. Age and sex are not significant. (This is a <em>different</em> signal from the tutorial’s peptic-ulcer model — a drug exposure rather than a prior condition.)</p>
+<p>GI haemorrhage is concept <strong>192671</strong>. Celecoxib is a <strong>significant</strong> predictor: its <code>P_OR</code> is above 1 (~1.4, <code>p</code> ≈ 0.003) — an NSAID raising GI-bleed odds. Age and sex are not significant.</p>
 </blockquote>
 </section>
-<section id="exercise-4-a-different-outcome-does-age-predict-a-fracture" class="level1">
-<h1>Exercise 4 — A different outcome: does age predict a fracture?</h1>
+<section id="exercise-3-does-age-predict-a-fracture" class="level1">
+<h1>Exercise 3 — Does age predict a fracture?</h1>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>rec_fx <span class="ot">&lt;-</span> <span class="fu">omop_recipe</span>(</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">variables =</span> <span class="fu">list</span>(</span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable</span>(<span class="at">table =</span> <span class="st">"person"</span>, <span class="at">column =</span> <span class="st">"gender_concept_id"</span>, <span class="at">format =</span> <span class="st">"sex_mf"</span>, <span class="at">name =</span> <span class="st">"sex"</span>),</span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable_age</span>(<span class="at">name =</span> <span class="st">"age"</span>, <span class="at">year =</span> <span class="dv">2019</span>),</span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable</span>(<span class="at">table =</span> <span class="st">"condition_occurrence"</span>, <span class="at">concept_id =</span> <span class="dv">4278672</span>, <span class="at">format =</span> <span class="st">"binary"</span>, <span class="at">name =</span> <span class="st">"fx_forearm"</span>)</span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>  ),</span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">output =</span> <span class="fu">omop_output</span>(<span class="at">name =</span> <span class="st">"study"</span>, <span class="at">type =</span> <span class="st">"wide"</span>))</span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a><span class="fu">recipe_execute</span>(rec_fx, <span class="at">out =</span> <span class="fu">c</span>(<span class="at">study =</span> <span class="st">"FX"</span>), <span class="at">symbol =</span> <span class="st">"omop"</span>, <span class="at">conns =</span> conns)</span>
-<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>fit_fx <span class="ot">&lt;-</span> <span class="fu">ds.glm</span>(<span class="at">formula =</span> <span class="st">"FX$fx_forearm ~ FX$age + FX$sex"</span>, <span class="at">family =</span> <span class="st">"binomial"</span>, <span class="at">datasources =</span> conns)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">or_table</span>(fit_fx)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output-display">
-<div class="kable-table">
-<table class="caption-top table table-sm table-striped small">
-<colgroup>
-<col style="width: 29%">
-<col style="width: 14%">
-<col style="width: 17%">
-<col style="width: 19%">
-<col style="width: 19%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: left;">term</th>
-<th style="text-align: right;">OR</th>
-<th style="text-align: right;">CI_low</th>
-<th style="text-align: right;">CI_high</th>
-<th style="text-align: right;">p_value</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">(Intercept)</td>
-<td style="text-align: right;">0.064</td>
-<td style="text-align: right;">0.044</td>
-<td style="text-align: right;">0.091</td>
-<td style="text-align: right;">0.000</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">FX<span class="math inline">\(age      | 1.020|  1.014|   1.025|   0.000|
-|FX\)</span>sexM</td>
-<td style="text-align: right;">1.033</td>
-<td style="text-align: right;">0.851</td>
-<td style="text-align: right;">1.255</td>
-<td style="text-align: right;">0.741</td>
-</tr>
-</tbody>
-</table>
-</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.omop.concept.search</span>(<span class="st">"fracture of forearm"</span>, <span class="at">domain =</span> <span class="st">"Condition"</span>,</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>                       <span class="at">symbol =</span> <span class="st">"omop"</span>, <span class="at">conns =</span> conns)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>rec_fx <span class="ot">&lt;-</span> <span class="fu">omop_recipe</span>(</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">variables =</span> <span class="fu">list</span>(</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable</span>(<span class="at">table =</span> <span class="st">"person"</span>, <span class="at">column =</span> <span class="st">"gender_concept_id"</span>, <span class="at">format =</span> <span class="st">"sex_mf"</span>, <span class="at">name =</span> <span class="st">"sex"</span>),</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable_age</span>(<span class="at">name =</span> <span class="st">"age"</span>, <span class="at">year =</span> <span class="dv">2019</span>),</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable</span>(<span class="at">table =</span> <span class="st">"condition_occurrence"</span>, <span class="at">concept_id =</span> <span class="dv">4278672</span>, <span class="at">format =</span> <span class="st">"binary"</span>, <span class="at">name =</span> <span class="st">"fx_forearm"</span>)</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">output =</span> <span class="fu">omop_output</span>(<span class="at">name =</span> <span class="st">"study"</span>, <span class="at">type =</span> <span class="st">"wide"</span>))</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="fu">recipe_execute</span>(rec_fx, <span class="at">out =</span> <span class="fu">c</span>(<span class="at">study =</span> <span class="st">"FX"</span>), <span class="at">symbol =</span> <span class="st">"omop"</span>, <span class="at">conns =</span> conns)</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>fit_fx <span class="ot">&lt;-</span> <span class="fu">ds.glm</span>(<span class="at">formula =</span> <span class="st">"FX$fx_forearm ~ FX$age + FX$sex"</span>, <span class="at">family =</span> <span class="st">"binomial"</span>, <span class="at">datasources =</span> conns)</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>fit_fx<span class="sc">$</span>coefficients</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>#&gt;                Estimate  Std. Error     z-value      p-value low0.95CI.LP high0.95CI.LP      P_OR low0.95CI.P_OR high0.95CI.P_OR
+#&gt; (Intercept) -2.69070113 0.198348029 -13.5655551 6.409258e-42  -3.07945612   -2.30194613 0.0635243     0.04396267      0.09096191
+#&gt; FX$age       0.01952019 0.002877867   6.7828678 1.178135e-11   0.01387968    0.02516071 1.0197120     1.01397644      1.02547991
+#&gt; FX$sexM      0.03280358 0.099295238   0.3303641 7.411248e-01  -0.16181151    0.22741867 1.0333476     0.85060152      1.25535534</code></pre>
 </div>
 </div>
 <blockquote class="blockquote">
-<p><strong>Answer.</strong> Now <strong>age</strong> is the significant predictor (OR slightly above 1 per year — older patients fracture more), while sex is not. The contrast with Exercise 3 is the lesson: <em>which</em> predictor matters depends on the outcome — a comorbidity drove GI bleeding, age drives fractures.</p>
+<p>Forearm fracture is concept <strong>4278672</strong>. Now <strong>age</strong> is the significant predictor (<code>P_OR</code> slightly above 1 — older patients fracture more), while sex is not. The contrast with Exercise 2 is the point: which predictor matters depends on the outcome.</p>
 </blockquote>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>DSI<span class="sc">::</span><span class="fu">datashield.logout</span>(conns)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>DSI<span class="sc">::</span><span class="fu">datashield.logout</span>(conns)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 
 

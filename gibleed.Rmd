@@ -1,9 +1,7 @@
 ---
 title: "Federated analysis on GiBleed"
 subtitle: "A larger, boolean-only OMOP dataset — does a prior peptic ulcer raise the odds of GI bleeding?"
-format:
-  html:
-    df-print: kable
+format: html
 execute:
   warning: false
   message: false
@@ -19,6 +17,7 @@ execute:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(comment = "#>", collapse = FALSE)
+options(width = 200)   # print wide output on one line; the page scrolls it horizontally
 ```
 
 # Welcome
@@ -59,7 +58,7 @@ Before choosing how to model, **check the data**. Ask for a numeric summary of a
 
 ```{r no-numeric}
 ds.omop.column.stats("measurement", "value_as_number",
-                     scope = "pooled", symbol = "omop", conns = conns)$pooled
+                     scope = "pooled", symbol = "omop", conns = conns)
 ```
 
 ::: {.callout-note}
@@ -72,7 +71,7 @@ GiBleed is bigger than MIMIC. Sex, pooled across the three sites:
 
 ```{r sex}
 ds.omop.concept.prevalence("person", concept_col = "gender_concept_id",
-                           scope = "pooled", symbol = "omop", conns = conns)$pooled
+                           scope = "pooled", symbol = "omop", conns = conns)
 ```
 
 ::: {.callout-note}
@@ -94,11 +93,13 @@ barplot(cond$n_persons, names.arg = cond$concept_name, horiz = TRUE, las = 1,
         main = "Most common conditions in GiBleed")
 ```
 
-The two variables for our question are in there. **Look them up** to confirm their codes and how many patients they touch:
+The two conditions for our question are in that list, but we don't have their codes yet — we only know their **names**. Turn a name into a concept_id with `concept.search`:
 
-```{r lookup}
-ds.omop.concept.lookup(c(192671, 4027663), symbol = "omop", conns = conns)$pooled
-cond[cond$concept_id %in% c(192671, 4027663), ]
+```{r find-concepts}
+ds.omop.concept.search("gastrointestinal hemorrhage", domain = "Condition",
+                       symbol = "omop", conns = conns)
+ds.omop.concept.search("peptic ulcer", domain = "Condition",
+                       symbol = "omop", conns = conns)
 ```
 
 ::: {.callout-tip}
@@ -131,8 +132,8 @@ recipe_execute(rec, out = c(study = "M"), symbol = "omop", conns = conns)
 ```{r check}
 ds.colnames("M", datasources = conns)
 ds.dim("M", datasources = conns)
-as.data.frame(ds.table("M$gi_bleed",     datasources = conns)$output.list[["TABLES.COMBINED_all.sources_counts"]])
-as.data.frame(ds.table("M$peptic_ulcer", datasources = conns)$output.list[["TABLES.COMBINED_all.sources_counts"]])
+ds.table("M$gi_bleed",     datasources = conns)
+ds.table("M$peptic_ulcer", datasources = conns)
 ```
 
 # 6. The model
@@ -146,15 +147,7 @@ fit <- ds.glm(
 ```
 
 ```{r glm-table}
-co <- fit$coefficients
-data.frame(
-  term    = rownames(co),
-  OR      = round(co[, "P_OR"], 3),
-  CI_low  = round(co[, "low0.95CI.P_OR"], 3),
-  CI_high = round(co[, "high0.95CI.P_OR"], 3),
-  p_value = signif(co[, "p-value"], 3),
-  row.names = NULL
-)
+fit$coefficients
 ```
 
 ::: {.callout-important}
