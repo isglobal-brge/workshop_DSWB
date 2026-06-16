@@ -621,6 +621,7 @@ a:hover {
 /* Normalize input code block spacing */
 div.sourceCode, pre.sourceCode {
   margin: 0 !important;
+  overflow-x: auto; /* long code lines scroll horizontally instead of wrapping/cutting */
 }
 
 /* Output containers: consistent margins and no container padding */
@@ -647,6 +648,7 @@ div.sourceCode, pre.sourceCode {
   border: none;
   margin: 0; /* remove default pre margins */
   padding: 0.75rem 1rem; /* readable padding inside output */
+  white-space: pre; /* don't wrap raw output; let the container scroll horizontally */
 }
 
 /* Output images/plots/tables should align flush with container edges */

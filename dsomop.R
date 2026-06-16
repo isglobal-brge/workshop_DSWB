@@ -36,20 +36,24 @@ ds.omop.concept.prevalence("person", concept_col = "gender_concept_id",
                            scope = "pooled", symbol = "omop", conns = conns)$pooled
 
 
+## ----birth-hist, fig.width=7, fig.height=4------------------------------------
+ds.omop.value.histogram("person", value_col = "year_of_birth", nbins = 6, plot = TRUE,
+                        xlab = "Year of birth", main = "Patient birth years (pooled)",
+                        symbol = "omop", conns = conns)
+
+
 ## ----topcond------------------------------------------------------------------
 ds.omop.concept.prevalence("condition_occurrence", metric = "persons",
                            top_n = 10, scope = "pooled", symbol = "omop", conns = conns)$pooled
 
 
 ## ----search-------------------------------------------------------------------
-hits <- ds.omop.concept.search("hyperlipidemia", domain = "Condition",
-                               limit = 5, symbol = "omop", conns = conns)$pooled
-hits[, c("concept_id", "concept_name", "domain_id", "vocabulary_id")]
+ds.omop.concept.search("hyperlipidemia", domain = "Condition",
+                       limit = 5, symbol = "omop", conns = conns)$pooled
 
 
 ## ----lookup-------------------------------------------------------------------
-ds.omop.concept.lookup(c(320128, 432867, 3027018),
-                       symbol = "omop", conns = conns)$pooled
+ds.omop.concept.lookup(c(320128, 432867, 3027018), symbol = "omop", conns = conns)$pooled
 
 
 ## ----hr-stats-----------------------------------------------------------------
@@ -58,37 +62,35 @@ ds.omop.column.stats("measurement", "value_as_number", concept_id = 3027018,
 
 
 ## ----hr-hist, fig.width=7, fig.height=4---------------------------------------
-draw_hist <- function(concept_id, nbins, xlab, main, col = "#4C72B0", digits = 0) {
-  h <- ds.omop.value.histogram("measurement", value_col = "value_as_number",
-                               concept_id = concept_id, symbol = "omop", conns = conns)
-  bins <- do.call(rbind, h$per_site)
-  bins <- subset(bins, !is.na(count))
-  mid  <- (bins$bin_start + bins$bin_end) / 2
-  br   <- seq(min(mid), max(mid), length.out = nbins + 1)   # common equal-width bins
-  grp  <- cut(mid, breaks = br, include.lowest = TRUE)      # re-bin each site onto them
-  agg  <- tapply(bins$count, grp, sum); agg[is.na(agg)] <- 0
-  ctr  <- round((head(br, -1) + tail(br, -1)) / 2, digits)
-  barplot(as.numeric(agg), names.arg = ctr, las = 2, col = col, border = NA,
-          xlab = xlab, ylab = "records", main = main)
-}
-draw_hist(3027018, nbins = 7, xlab = "Heart rate (bpm)",
-          main = "Heart rate across the federation")
-
-
-## ----creat-stats--------------------------------------------------------------
-ds.omop.column.stats("measurement", "value_as_number", concept_id = 3016723,
-                     scope = "pooled", symbol = "omop", conns = conns)$pooled
+ds.omop.value.histogram("measurement", value_col = "value_as_number", concept_id = 3027018,
+                        nbins = 7, plot = TRUE, xlab = "Heart rate (bpm)",
+                        main = "Heart rate (pooled across sites)",
+                        symbol = "omop", conns = conns)
 
 
 ## ----creat-hist, fig.width=7, fig.height=4------------------------------------
-draw_hist(3016723, nbins = 9, xlab = "Creatinine (mg/dL)",
-          main = "Serum creatinine across the federation", col = "#C44E52", digits = 1)
+ds.omop.value.histogram("measurement", value_col = "value_as_number", concept_id = 3016723,
+                        nbins = 9, plot = TRUE, col = "#C44E52", xlab = "Creatinine (mg/dL)",
+                        main = "Serum creatinine (pooled across sites)",
+                        symbol = "omop", conns = conns)
 
 
 ## ----rhythm-------------------------------------------------------------------
-ds.omop.value.counts("measurement", "value_as_concept_id",
-                     concept_id = 3022318, scope = "pooled",
-                     symbol = "omop", conns = conns)$pooled
+ds.omop.value.counts("measurement", "value_as_concept_id", concept_id = 3022318,
+                     scope = "pooled", symbol = "omop", conns = conns)$pooled
+
+
+## ----recipe-skeleton, eval=FALSE----------------------------------------------
+# omop_recipe(
+#   variables = list(    # WHAT columns you want
+#     omop_variable(),       # a person column, or something built from a concept_id
+#     omop_variable_age(),   # the patient's age
+#     omop_variable()        # ...add as many as you need
+#   ),
+#   filters = list(),    # OPTIONAL: restrict the population (Section 8)
+#   output  = omop_output()  # the table SHAPE you want (usually wide = one row/patient)
+# )
+# recipe_execute()       # build it on each server into a named symbol
 
 
 ## ----recipe-simple------------------------------------------------------------
@@ -105,6 +107,14 @@ recipe_execute(rec0, out = c(study = "M0"), symbol = "omop", conns = conns)
 ## ----ratify-simple------------------------------------------------------------
 ds.colnames("M0", datasources = conns)
 ds.dim("M0", datasources = conns)
+
+
+## ----m0-sex-------------------------------------------------------------------
+ds.table("M0$sex", datasources = conns)$output.list[["TABLES.COMBINED_all.sources_counts"]]
+
+
+## ----m0-age-------------------------------------------------------------------
+ds.summary("M0$age", datasources = conns)[[1]][["quantiles & mean"]]
 
 
 ## ----recipe-rich--------------------------------------------------------------
@@ -125,16 +135,21 @@ ds.dim("M", datasources = conns)
 
 
 ## ----check-num----------------------------------------------------------------
+ds.summary("M$age",        datasources = conns)[[1]][["quantiles & mean"]]
 ds.summary("M$heart_rate", datasources = conns)[[1]][["quantiles & mean"]]
-ds.summary("M$n_visits",  datasources = conns)[[1]][["quantiles & mean"]]
+ds.summary("M$n_visits",   datasources = conns)[[1]][["quantiles & mean"]]
 
 
 ## ----check-sex----------------------------------------------------------------
-as.data.frame(ds.table("M$sex", datasources = conns)$output.list[["TABLES.COMBINED_all.sources_counts"]])
+ds.table("M$sex",            datasources = conns)$output.list[["TABLES.COMBINED_all.sources_counts"]]
 
 
 ## ----check-htn----------------------------------------------------------------
-as.data.frame(ds.table("M$hypertension", datasources = conns)$output.list[["TABLES.COMBINED_all.sources_counts"]])
+ds.table("M$hypertension",   datasources = conns)$output.list[["TABLES.COMBINED_all.sources_counts"]]
+
+
+## ----check-hyperlip-----------------------------------------------------------
+ds.table("M$hyperlipidemia", datasources = conns)$output.list[["TABLES.COMBINED_all.sources_counts"]]
 
 
 ## ----recipe-multi-------------------------------------------------------------
@@ -152,9 +167,6 @@ rec_multi <- omop_recipe(
 )
 recipe_execute(rec_multi, out = c(demographics = "DEMO", clinical = "CLIN"),
                symbol = "omop", conns = conns)
-
-
-## ----ratify-multi-------------------------------------------------------------
 ds.colnames("DEMO", datasources = conns)
 ds.colnames("CLIN", datasources = conns)
 
@@ -166,9 +178,8 @@ rec_sub <- omop_recipe(
     omop_variable_age(name = "age", year = 2024)
   ),
   filters = list(
-    female        = omop_filter_sex("F"),
-    middle_aged   = omop_filter_age(min = 50, year = 2024),
-    with_hyperlip = omop_filter_has_concept(concept_id = 432867, table = "condition_occurrence")
+    older       = omop_filter_age(min = 50, year = 2024),
+    with_lipids = omop_filter_has_concept(concept_id = 432867, table = "condition_occurrence")
   ),
   output = omop_output(name = "study", type = "wide")
 )
@@ -180,35 +191,16 @@ ds.dim("SUB", datasources = conns)
 ds.summary("SUB$age", datasources = conns)[[1]][["quantiles & mean"]]
 
 
-## ----glm1, results='hide'-----------------------------------------------------
-fit1 <- ds.glm(
-  formula = "M$hyperlipidemia ~ M$age + M$sex",
-  family  = "binomial", datasources = conns)
+## ----glm1---------------------------------------------------------------------
+fit1 <- ds.glm(formula = "M$hyperlipidemia ~ M$age + M$sex",
+               family = "binomial", datasources = conns)
+fit1$coefficients
 
 
-## ----glm1-table---------------------------------------------------------------
-or_table <- function(fit) {
-  co <- fit$coefficients
-  data.frame(
-    term    = rownames(co),
-    OR      = round(co[, "P_OR"], 3),
-    CI_low  = round(co[, "low0.95CI.P_OR"], 3),
-    CI_high = round(co[, "high0.95CI.P_OR"], 3),
-    p_value = signif(co[, "p-value"], 3),
-    row.names = NULL
-  )
-}
-or_table(fit1)
-
-
-## ----glm2, results='hide'-----------------------------------------------------
-fit2 <- ds.glm(
-  formula = "M$hypertension ~ M$age + M$sex + M$hyperlipidemia",
-  family  = "binomial", datasources = conns)
-
-
-## ----glm2-table---------------------------------------------------------------
-or_table(fit2)
+## ----glm2---------------------------------------------------------------------
+fit2 <- ds.glm(formula = "M$hypertension ~ M$age + M$sex + M$hyperlipidemia",
+               family = "binomial", datasources = conns)
+fit2$coefficients
 
 
 ## ----logout-------------------------------------------------------------------

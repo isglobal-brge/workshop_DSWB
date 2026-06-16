@@ -107,35 +107,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
-
-<script type="text/javascript">
-const typesetMath = (el) => {
-  if (window.MathJax) {
-    // MathJax Typeset
-    window.MathJax.typeset([el]);
-  } else if (window.katex) {
-    // KaTeX Render
-    var mathElements = el.getElementsByClassName("math");
-    var macros = [];
-    for (var i = 0; i < mathElements.length; i++) {
-      var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
-        window.katex.render(texText.data, mathElements[i], {
-          displayMode: mathElements[i].classList.contains('display'),
-          throwOnError: false,
-          macros: macros,
-          fleqn: false
-        });
-      }
-    }
-  }
-}
-window.Quarto = {
-  typesetMath
-};
-</script>
 
 <link rel="stylesheet" href="styles.css">
 <link rel="stylesheet" href="navbar-fix.css">
@@ -269,9 +240,9 @@ window.Quarto = {
   <li><a href="#a-categorical-measurement-heart-rhythm" id="toc-a-categorical-measurement-heart-rhythm" class="nav-link" data-scroll-target="#a-categorical-measurement-heart-rhythm">6. A categorical measurement: heart rhythm</a></li>
   <li><a href="#the-recipe-building-analysis-tables" id="toc-the-recipe-building-analysis-tables" class="nav-link" data-scroll-target="#the-recipe-building-analysis-tables">7. The recipe: building analysis tables</a>
   <ul class="collapse">
-  <li><a href="#start-simple" id="toc-start-simple" class="nav-link" data-scroll-target="#start-simple">7.1 Start simple</a></li>
-  <li><a href="#grow-it-numbers-flags-and-counts" id="toc-grow-it-numbers-flags-and-counts" class="nav-link" data-scroll-target="#grow-it-numbers-flags-and-counts">7.2 Grow it: numbers, flags and counts</a></li>
-  <li><a href="#one-recipe-several-tables-multiple-outputs" id="toc-one-recipe-several-tables-multiple-outputs" class="nav-link" data-scroll-target="#one-recipe-several-tables-multiple-outputs">7.3 One recipe, several tables: multiple outputs</a></li>
+  <li><a href="#start-simple-sex-and-age" id="toc-start-simple-sex-and-age" class="nav-link" data-scroll-target="#start-simple-sex-and-age">7.1 Start simple — sex and age</a></li>
+  <li><a href="#grow-it-numbers-flags-and-counts" id="toc-grow-it-numbers-flags-and-counts" class="nav-link" data-scroll-target="#grow-it-numbers-flags-and-counts">7.2 Grow it — numbers, flags and counts</a></li>
+  <li><a href="#one-recipe-several-tables" id="toc-one-recipe-several-tables" class="nav-link" data-scroll-target="#one-recipe-several-tables">7.3 One recipe, several tables</a></li>
   </ul></li>
   <li><a href="#filtering-at-extraction" id="toc-filtering-at-extraction" class="nav-link" data-scroll-target="#filtering-at-extraction">8. Filtering at extraction</a></li>
   <li><a href="#a-real-model-what-predicts-a-diagnosis" id="toc-a-real-model-what-predicts-a-diagnosis" class="nav-link" data-scroll-target="#a-real-model-what-predicts-a-diagnosis">9. A real model: what predicts a diagnosis?</a></li>
@@ -302,14 +273,13 @@ window.Quarto = {
 </header>
 
 
-<p><a href="#" onclick="event.preventDefault(); fetch('https://raw.githubusercontent.com/isglobal-brge/workshop_DSWB/main/dsomop.R').then(response => response.blob()).then(blob => { const url = window.URL.createObjectURL(blob); const a = document.createElement('a'); a.style.display = 'none'; a.href = url; a.download = 'dsomop.R'; document.body.appendChild(a); a.click(); window.URL.revokeObjectURL(url); }); return false;" class="btn btn-primary btn-sm"> <i class="bi bi-download"></i> Download the R script (.R) </a> <a href="#" onclick="event.preventDefault(); fetch('https://raw.githubusercontent.com/isglobal-brge/workshop_DSWB/main/dsomop.Rmd').then(response => response.blob()).then(blob => { const url = window.URL.createObjectURL(blob); const a = document.createElement('a'); a.style.display = 'none'; a.href = url; a.download = 'dsomop.Rmd'; document.body.appendChild(a); a.click(); window.URL.revokeObjectURL(url); }); return false;" class="btn btn-outline-primary btn-sm"> <i class="bi bi-download"></i> Download the source (.Rmd) </a></p>
+<p><a href="#" onclick="event.preventDefault(); fetch('https://raw.githubusercontent.com/isglobal-brge/workshop_DSWB/main/dsomop.R').then(response => response.blob()).then(blob => { const url = window.URL.createObjectURL(blob); const a = document.createElement('a'); a.style.display = 'none'; a.href = url; a.download = 'dsomop.R'; document.body.appendChild(a); a.click(); window.URL.revokeObjectURL(url); }); return false;" class="btn btn-primary btn-sm"> <i class="bi bi-download"></i> Download the R script (.R) </a> <a href="#" onclick="event.preventDefault(); fetch('https://raw.githubusercontent.com/isglobal-brge/workshop_DSWB/main/dsomop.Rmd').then(response => response.blob()).then(blob => { const url = window.URL.createObjectURL(blob); const a = document.createElement('a'); a.style.display = 'none'; a.href = url; a.download = 'dsomop.Rmd'; document.body.appendChild(a); a.click(); window.URL.revokeObjectURL(url); }); return false;" class="btn btn-outline-primary btn-sm"> <i class="bi bi-download"></i> Source (.Rmd) </a></p>
 <section id="welcome" class="level1">
 <h1>Welcome</h1>
 <p>In this tutorial you will analyse <strong>real-world hospital data</strong> that lives in <strong>three different hospitals at once</strong> — and you will do it <strong>without ever seeing or downloading a single patient’s record</strong>.</p>
-<p>The pieces:</p>
 <ul>
-<li><strong>OMOP CDM</strong> is a standard <em>shape</em> for health data. Every hospital stores its patients, diagnoses, drugs and lab results in the same tables (<code>person</code>, <code>condition_occurrence</code>, <code>drug_exposure</code>, <code>measurement</code>, …). Learn it once, use it anywhere.</li>
-<li><strong>DataSHIELD</strong> is the safety layer. You send <em>commands</em> to each hospital; the hospital runs them on its own data and returns <strong>only aggregated, non-disclosive results</strong>. Individual rows never travel.</li>
+<li><strong>OMOP CDM</strong> is a standard <em>shape</em> for health data: every hospital stores patients, diagnoses, drugs and labs in the same tables (<code>person</code>, <code>condition_occurrence</code>, <code>drug_exposure</code>, <code>measurement</code>, …).</li>
+<li><strong>DataSHIELD</strong> is the safety layer: you send <em>commands</em>, each hospital runs them on its own data and returns <strong>only aggregated, non-disclosive results</strong>.</li>
 <li><strong>dsOMOP</strong> is the bridge that lets DataSHIELD speak OMOP.</li>
 </ul>
 <div class="callout callout-style-default callout-important callout-titled">
@@ -322,18 +292,10 @@ window.Quarto = {
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>You never hold patient-level data on your laptop. Every result is checked by a <strong>disclosure filter</strong> on each server before it is returned. If a result would describe too few people, the server hides it. This explains much of what you’ll see.</p>
+<p>You never hold patient-level data on your laptop. Every result is checked by a <strong>disclosure filter</strong> on each server before it is returned. If a result would describe too few people, the server hides it.</p>
 </div>
 </div>
-<p>We work with <strong>MIMIC</strong> (an intensive-care database, ~100 patients here) throughout. The plan, step by step:</p>
-<ol type="1">
-<li><strong>Connect</strong> to the three sites.</li>
-<li><strong>Explore</strong> — what tables, patients, conditions and measurements exist?</li>
-<li>Learn the <strong>recipe</strong> — how to ask the servers to build an analysis table, growing from a one-line recipe to a richer one.</li>
-<li><strong>Filter</strong> at extraction (by condition, sex, age).</li>
-<li>Fit a real <strong>regression model</strong> and read the result.</li>
-</ol>
-<hr>
+<p>We work with <strong>MIMIC</strong> (an intensive-care database, ~100 patients here): connect → explore → learn the <strong>recipe</strong> for building analysis tables → filter → and finish with a real <strong>regression model</strong>.</p>
 </section>
 <section id="connecting-to-the-federation" class="level1">
 <h1>1. Connecting to the federation</h1>
@@ -343,7 +305,6 @@ window.Quarto = {
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dsBaseClient)</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dsOMOPClient)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Describe the three servers and log in (same training login on each, asking for the <strong><code>omop</code></strong> profile), then attach the MIMIC database under the symbol <code>"omop"</code>:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>builder <span class="ot">&lt;-</span> DSI<span class="sc">::</span><span class="fu">newDSLoginBuilder</span>()</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>builder<span class="sc">$</span><span class="fu">append</span>(<span class="at">server =</span> <span class="st">"nairobi"</span>, <span class="at">url =</span> <span class="st">"https://nairobi.datashield.live"</span>,</span>
@@ -366,450 +327,106 @@ Warning
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Forgetting <code>profile = "omop"</code> is the #1 beginner mistake — without it the <code>ds.omop.*</code> functions aren’t available. If that happens, log out and rebuild the login with the profile set.</p>
+<p>Forgetting <code>profile = "omop"</code> is the #1 beginner mistake — without it the <code>ds.omop.*</code> functions aren’t available.</p>
 </div>
 </div>
-<hr>
 </section>
 <section id="reading-the-map-tables-and-columns" class="level1">
 <h1>2. Reading the map: tables and columns</h1>
-<p>dsOMOP reads each site’s schema <strong>separately</strong> — a real federation could have different tables on different sites. Here the three sites are consistent, so one view represents the whole federation. These are the clinical (<code>CDM</code>) tables:</p>
+<p>The clinical (<code>CDM</code>) tables (consistent across the three sites, so one view represents the federation):</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>tabs <span class="ot">&lt;-</span> <span class="fu">ds.omop.tables</span>(<span class="at">symbol =</span> <span class="st">"omop"</span>, <span class="at">conns =</span> conns)[[<span class="dv">1</span>]]</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>tabs[tabs<span class="sc">$</span>schema_category <span class="sc">==</span> <span class="st">"CDM"</span>, <span class="fu">c</span>(<span class="st">"table_name"</span>, <span class="st">"has_person_id"</span>)]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output-display">
-<div class="kable-table">
-<table class="caption-top table table-sm table-striped small">
-<thead>
-<tr class="header">
-<th style="text-align: left;"></th>
-<th style="text-align: left;">table_name</th>
-<th style="text-align: left;">has_person_id</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">1</td>
-<td style="text-align: left;">person</td>
-<td style="text-align: left;">TRUE</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">2</td>
-<td style="text-align: left;">observation_period</td>
-<td style="text-align: left;">TRUE</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">3</td>
-<td style="text-align: left;">visit_occurrence</td>
-<td style="text-align: left;">TRUE</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">4</td>
-<td style="text-align: left;">visit_detail</td>
-<td style="text-align: left;">TRUE</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">5</td>
-<td style="text-align: left;">condition_occurrence</td>
-<td style="text-align: left;">TRUE</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">6</td>
-<td style="text-align: left;">drug_exposure</td>
-<td style="text-align: left;">TRUE</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">7</td>
-<td style="text-align: left;">procedure_occurrence</td>
-<td style="text-align: left;">TRUE</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">8</td>
-<td style="text-align: left;">device_exposure</td>
-<td style="text-align: left;">TRUE</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">9</td>
-<td style="text-align: left;">measurement</td>
-<td style="text-align: left;">TRUE</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">10</td>
-<td style="text-align: left;">observation</td>
-<td style="text-align: left;">TRUE</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">11</td>
-<td style="text-align: left;">death</td>
-<td style="text-align: left;">TRUE</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">12</td>
-<td style="text-align: left;">note</td>
-<td style="text-align: left;">TRUE</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">13</td>
-<td style="text-align: left;">note_nlp</td>
-<td style="text-align: left;">FALSE</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">14</td>
-<td style="text-align: left;">specimen</td>
-<td style="text-align: left;">TRUE</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">15</td>
-<td style="text-align: left;">fact_relationship</td>
-<td style="text-align: left;">FALSE</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">18</td>
-<td style="text-align: left;">location</td>
-<td style="text-align: left;">FALSE</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">19</td>
-<td style="text-align: left;">care_site</td>
-<td style="text-align: left;">FALSE</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">20</td>
-<td style="text-align: left;">provider</td>
-<td style="text-align: left;">FALSE</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">21</td>
-<td style="text-align: left;">payer_plan_period</td>
-<td style="text-align: left;">TRUE</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">22</td>
-<td style="text-align: left;">cost</td>
-<td style="text-align: left;">FALSE</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">23</td>
-<td style="text-align: left;">condition_era</td>
-<td style="text-align: left;">TRUE</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">24</td>
-<td style="text-align: left;">drug_era</td>
-<td style="text-align: left;">TRUE</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">25</td>
-<td style="text-align: left;">dose_era</td>
-<td style="text-align: left;">TRUE</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">26</td>
-<td style="text-align: left;">cdm_source</td>
-<td style="text-align: left;">FALSE</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">27</td>
-<td style="text-align: left;">metadata</td>
-<td style="text-align: left;">FALSE</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">achilles_performance</td>
-<td style="text-align: left;">achilles_performance</td>
-<td style="text-align: left;">FALSE</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">attribute_definition</td>
-<td style="text-align: left;">attribute_definition</td>
-<td style="text-align: left;">FALSE</td>
-</tr>
-</tbody>
-</table>
+<div class="cell-output cell-output-stdout">
+<pre><code>#&gt;                                table_name has_person_id
+#&gt; 1                                  person          TRUE
+#&gt; 2                      observation_period          TRUE
+#&gt; 3                        visit_occurrence          TRUE
+#&gt; 4                            visit_detail          TRUE
+#&gt; 5                    condition_occurrence          TRUE
+#&gt; 6                           drug_exposure          TRUE
+#&gt; 7                    procedure_occurrence          TRUE
+#&gt; 8                         device_exposure          TRUE
+#&gt; 9                             measurement          TRUE
+#&gt; 10                            observation          TRUE
+#&gt; 11                                  death          TRUE
+#&gt; 12                                   note          TRUE
+#&gt; 13                               note_nlp         FALSE
+#&gt; 14                               specimen          TRUE
+#&gt; 15                      fact_relationship         FALSE
+#&gt; 18                               location         FALSE
+#&gt; 19                              care_site         FALSE
+#&gt; 20                               provider         FALSE
+#&gt; 21                      payer_plan_period          TRUE
+#&gt; 22                                   cost         FALSE
+#&gt; 23                          condition_era          TRUE
+#&gt; 24                               drug_era          TRUE
+#&gt; 25                               dose_era          TRUE
+#&gt; 26                             cdm_source         FALSE
+#&gt; 27                               metadata         FALSE
+#&gt; achilles_performance achilles_performance         FALSE
+#&gt; attribute_definition attribute_definition         FALSE</code></pre>
 </div>
 </div>
-</div>
-<p>The columns of a table are the same across the three sites, so one view is enough. The <code>measurement</code> table is where labs and vital signs live:</p>
+<p>The columns of the <code>measurement</code> table (where labs and vital signs live):</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.omop.columns</span>(<span class="st">"measurement"</span>, <span class="at">symbol =</span> <span class="st">"omop"</span>, <span class="at">conns =</span> conns)[[<span class="dv">1</span>]]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output-display">
-<div class="kable-table">
-<table class="caption-top table table-sm table-striped small">
-<colgroup>
-<col style="width: 21%">
-<col style="width: 9%">
-<col style="width: 19%">
-<col style="width: 12%">
-<col style="width: 14%">
-<col style="width: 5%">
-<col style="width: 9%">
-<col style="width: 7%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: left;">column_name</th>
-<th style="text-align: left;">cdm_datatype</th>
-<th style="text-align: left;">db_datatype</th>
-<th style="text-align: left;">concept_role</th>
-<th style="text-align: left;">fk_domain</th>
-<th style="text-align: left;">is_date</th>
-<th style="text-align: left;">is_sensitive</th>
-<th style="text-align: left;">is_blocked</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">measurement_id</td>
-<td style="text-align: left;">integer</td>
-<td style="text-align: left;">bigint</td>
-<td style="text-align: left;">non_concept</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">FALSE</td>
-<td style="text-align: left;">FALSE</td>
-<td style="text-align: left;">FALSE</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">person_id</td>
-<td style="text-align: left;">integer</td>
-<td style="text-align: left;">bigint</td>
-<td style="text-align: left;">non_concept</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">FALSE</td>
-<td style="text-align: left;">FALSE</td>
-<td style="text-align: left;">FALSE</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">measurement_concept_id</td>
-<td style="text-align: left;">integer</td>
-<td style="text-align: left;">bigint</td>
-<td style="text-align: left;">domain_concept</td>
-<td style="text-align: left;">Measurement</td>
-<td style="text-align: left;">FALSE</td>
-<td style="text-align: left;">FALSE</td>
-<td style="text-align: left;">FALSE</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">measurement_date</td>
-<td style="text-align: left;">date</td>
-<td style="text-align: left;">date</td>
-<td style="text-align: left;">non_concept</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">TRUE</td>
-<td style="text-align: left;">FALSE</td>
-<td style="text-align: left;">FALSE</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">measurement_datetime</td>
-<td style="text-align: left;">datetime</td>
-<td style="text-align: left;">timestamp without time zone</td>
-<td style="text-align: left;">non_concept</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">TRUE</td>
-<td style="text-align: left;">FALSE</td>
-<td style="text-align: left;">FALSE</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">measurement_time</td>
-<td style="text-align: left;">varchar(10)</td>
-<td style="text-align: left;">text</td>
-<td style="text-align: left;">non_concept</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">FALSE</td>
-<td style="text-align: left;">FALSE</td>
-<td style="text-align: left;">FALSE</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">measurement_type_concept_id</td>
-<td style="text-align: left;">integer</td>
-<td style="text-align: left;">bigint</td>
-<td style="text-align: left;">type_concept</td>
-<td style="text-align: left;">Type Concept</td>
-<td style="text-align: left;">FALSE</td>
-<td style="text-align: left;">FALSE</td>
-<td style="text-align: left;">FALSE</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">operator_concept_id</td>
-<td style="text-align: left;">integer</td>
-<td style="text-align: left;">bigint</td>
-<td style="text-align: left;">attribute_concept</td>
-<td style="text-align: left;">Meas Value Operator</td>
-<td style="text-align: left;">FALSE</td>
-<td style="text-align: left;">FALSE</td>
-<td style="text-align: left;">FALSE</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">value_as_number</td>
-<td style="text-align: left;">float</td>
-<td style="text-align: left;">numeric</td>
-<td style="text-align: left;">non_concept</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">FALSE</td>
-<td style="text-align: left;">FALSE</td>
-<td style="text-align: left;">FALSE</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">value_as_concept_id</td>
-<td style="text-align: left;">integer</td>
-<td style="text-align: left;">bigint</td>
-<td style="text-align: left;">attribute_concept</td>
-<td style="text-align: left;">Meas Value</td>
-<td style="text-align: left;">FALSE</td>
-<td style="text-align: left;">FALSE</td>
-<td style="text-align: left;">FALSE</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">unit_concept_id</td>
-<td style="text-align: left;">integer</td>
-<td style="text-align: left;">bigint</td>
-<td style="text-align: left;">attribute_concept</td>
-<td style="text-align: left;">Unit</td>
-<td style="text-align: left;">FALSE</td>
-<td style="text-align: left;">FALSE</td>
-<td style="text-align: left;">FALSE</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">range_low</td>
-<td style="text-align: left;">float</td>
-<td style="text-align: left;">numeric</td>
-<td style="text-align: left;">non_concept</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">FALSE</td>
-<td style="text-align: left;">FALSE</td>
-<td style="text-align: left;">FALSE</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">range_high</td>
-<td style="text-align: left;">float</td>
-<td style="text-align: left;">numeric</td>
-<td style="text-align: left;">non_concept</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">FALSE</td>
-<td style="text-align: left;">FALSE</td>
-<td style="text-align: left;">FALSE</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">provider_id</td>
-<td style="text-align: left;">integer</td>
-<td style="text-align: left;">bigint</td>
-<td style="text-align: left;">non_concept</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">FALSE</td>
-<td style="text-align: left;">FALSE</td>
-<td style="text-align: left;">FALSE</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">visit_occurrence_id</td>
-<td style="text-align: left;">integer</td>
-<td style="text-align: left;">bigint</td>
-<td style="text-align: left;">non_concept</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">FALSE</td>
-<td style="text-align: left;">FALSE</td>
-<td style="text-align: left;">FALSE</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">visit_detail_id</td>
-<td style="text-align: left;">integer</td>
-<td style="text-align: left;">bigint</td>
-<td style="text-align: left;">non_concept</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">FALSE</td>
-<td style="text-align: left;">FALSE</td>
-<td style="text-align: left;">FALSE</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">measurement_source_value</td>
-<td style="text-align: left;">varchar(50)</td>
-<td style="text-align: left;">text</td>
-<td style="text-align: left;">non_concept</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">FALSE</td>
-<td style="text-align: left;">TRUE</td>
-<td style="text-align: left;">TRUE</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">measurement_source_concept_id</td>
-<td style="text-align: left;">integer</td>
-<td style="text-align: left;">bigint</td>
-<td style="text-align: left;">source_concept</td>
-<td style="text-align: left;">Measurement</td>
-<td style="text-align: left;">FALSE</td>
-<td style="text-align: left;">TRUE</td>
-<td style="text-align: left;">TRUE</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">unit_source_value</td>
-<td style="text-align: left;">varchar(50)</td>
-<td style="text-align: left;">text</td>
-<td style="text-align: left;">non_concept</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">FALSE</td>
-<td style="text-align: left;">TRUE</td>
-<td style="text-align: left;">TRUE</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">value_source_value</td>
-<td style="text-align: left;">varchar(50)</td>
-<td style="text-align: left;">text</td>
-<td style="text-align: left;">non_concept</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">FALSE</td>
-<td style="text-align: left;">TRUE</td>
-<td style="text-align: left;">TRUE</td>
-</tr>
-</tbody>
-</table>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.omop.columns</span>(<span class="st">"measurement"</span>, <span class="at">symbol =</span> <span class="st">"omop"</span>, <span class="at">conns =</span> conns)[[<span class="dv">1</span>]]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>#&gt;                      column_name cdm_datatype                 db_datatype
+#&gt; 1                 measurement_id      integer                      bigint
+#&gt; 2                      person_id      integer                      bigint
+#&gt; 3         measurement_concept_id      integer                      bigint
+#&gt; 4               measurement_date         date                        date
+#&gt; 5           measurement_datetime     datetime timestamp without time zone
+#&gt; 6               measurement_time  varchar(10)                        text
+#&gt; 7    measurement_type_concept_id      integer                      bigint
+#&gt; 8            operator_concept_id      integer                      bigint
+#&gt; 9                value_as_number        float                     numeric
+#&gt; 10           value_as_concept_id      integer                      bigint
+#&gt; 11               unit_concept_id      integer                      bigint
+#&gt; 12                     range_low        float                     numeric
+#&gt; 13                    range_high        float                     numeric
+#&gt; 14                   provider_id      integer                      bigint
+#&gt; 15           visit_occurrence_id      integer                      bigint
+#&gt; 16               visit_detail_id      integer                      bigint
+#&gt; 17      measurement_source_value  varchar(50)                        text
+#&gt; 18 measurement_source_concept_id      integer                      bigint
+#&gt; 19             unit_source_value  varchar(50)                        text
+#&gt; 20            value_source_value  varchar(50)                        text
+#&gt;         concept_role           fk_domain is_date is_sensitive is_blocked
+#&gt; 1        non_concept                       FALSE        FALSE      FALSE
+#&gt; 2        non_concept                       FALSE        FALSE      FALSE
+#&gt; 3     domain_concept         Measurement   FALSE        FALSE      FALSE
+#&gt; 4        non_concept                        TRUE        FALSE      FALSE
+#&gt; 5        non_concept                        TRUE        FALSE      FALSE
+#&gt; 6        non_concept                       FALSE        FALSE      FALSE
+#&gt; 7       type_concept        Type Concept   FALSE        FALSE      FALSE
+#&gt; 8  attribute_concept Meas Value Operator   FALSE        FALSE      FALSE
+#&gt; 9        non_concept                       FALSE        FALSE      FALSE
+#&gt; 10 attribute_concept          Meas Value   FALSE        FALSE      FALSE
+#&gt; 11 attribute_concept                Unit   FALSE        FALSE      FALSE
+#&gt; 12       non_concept                       FALSE        FALSE      FALSE
+#&gt; 13       non_concept                       FALSE        FALSE      FALSE
+#&gt; 14       non_concept                       FALSE        FALSE      FALSE
+#&gt; 15       non_concept                       FALSE        FALSE      FALSE
+#&gt; 16       non_concept                       FALSE        FALSE      FALSE
+#&gt; 17       non_concept                       FALSE         TRUE       TRUE
+#&gt; 18    source_concept         Measurement   FALSE         TRUE       TRUE
+#&gt; 19       non_concept                       FALSE         TRUE       TRUE
+#&gt; 20       non_concept                       FALSE         TRUE       TRUE</code></pre>
 </div>
 </div>
-</div>
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Tip</span>Where would you look for…?
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-3" class="callout-3-contents callout-collapse collapse">
-<div class="callout-body-container callout-body">
-<p>diagnoses → <code>condition_occurrence</code>; medications → <code>drug_exposure</code>; lab values / vital signs → <code>measurement</code>; social facts → <code>observation</code>; hospital/ICU stays → <code>visit_occurrence</code>. Every one has a <code>person_id</code> linking a patient’s records.</p>
-</div>
-</div>
-</div>
-<hr>
 </section>
 <section id="who-are-these-patients" class="level1">
 <h1>3. Who are these patients?</h1>
-<p>Gender lives in <code>person.gender_concept_id</code>. Rank its values, <strong>pooled</strong> across all three sites:</p>
+<p>Gender, <strong>pooled</strong> across the three sites:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.omop.concept.prevalence</span>(<span class="st">"person"</span>, <span class="at">concept_col =</span> <span class="st">"gender_concept_id"</span>,</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>                           <span class="at">scope =</span> <span class="st">"pooled"</span>, <span class="at">symbol =</span> <span class="st">"omop"</span>, <span class="at">conns =</span> conns)<span class="sc">$</span>pooled</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output-display">
-<div class="kable-table">
-<table class="caption-top table table-sm table-striped small">
-<thead>
-<tr class="header">
-<th style="text-align: right;">concept_id</th>
-<th style="text-align: right;">n_persons</th>
-<th style="text-align: left;">concept_name</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: right;">8507</td>
-<td style="text-align: right;">55</td>
-<td style="text-align: left;">MALE</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">8532</td>
-<td style="text-align: right;">35</td>
-<td style="text-align: left;">FEMALE</td>
-</tr>
-</tbody>
-</table>
-</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.omop.concept.prevalence</span>(<span class="st">"person"</span>, <span class="at">concept_col =</span> <span class="st">"gender_concept_id"</span>,</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>                           <span class="at">scope =</span> <span class="st">"pooled"</span>, <span class="at">symbol =</span> <span class="st">"omop"</span>, <span class="at">conns =</span> conns)<span class="sc">$</span>pooled</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>#&gt;   concept_id n_persons concept_name
+#&gt; 1       8507        55         MALE
+#&gt; 2       8532        35       FEMALE</code></pre>
 </div>
 </div>
 <div class="callout callout-style-default callout-important callout-titled">
@@ -822,7 +439,20 @@ Warning
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>You got <code>MALE</code> / <code>FEMALE</code>, not codes like <code>8507</code> / <code>8532</code>. Any <code>*_concept_id</code> column is automatically translated to readable labels — <strong>concept translation is on by default</strong> everywhere in dsOMOP.</p>
+<p>You got <code>MALE</code> / <code>FEMALE</code>, not codes like <code>8507</code> / <code>8532</code> — any <code>*_concept_id</code> column is automatically translated. <strong>Concept translation is on by default.</strong></p>
+</div>
+</div>
+<p>And their <strong>birth years</strong> — <code>ds.omop.value.histogram()</code> draws a disclosure-safe, federation-wide histogram of any numeric column when you pass <code>plot = TRUE</code>:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.omop.value.histogram</span>(<span class="st">"person"</span>, <span class="at">value_col =</span> <span class="st">"year_of_birth"</span>, <span class="at">nbins =</span> <span class="dv">6</span>, <span class="at">plot =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>                        <span class="at">xlab =</span> <span class="st">"Year of birth"</span>, <span class="at">main =</span> <span class="st">"Patient birth years (pooled)"</span>,</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>                        <span class="at">symbol =</span> <span class="st">"omop"</span>, <span class="at">conns =</span> conns)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="dsomop_files/figure-html/birth-hist-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 </div>
 <div class="callout callout-style-default callout-note callout-titled">
@@ -831,178 +461,57 @@ Warning
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>A real-world aside: de-identification
+Note
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Intensive-care data is de-identified by <strong>shifting dates</strong>. For this teaching dataset the dates were re-anchored so its records run through <strong>2024</strong>, but in real clinical data the calendar is often deliberately distorted while <strong>ages and intervals are preserved</strong>. The lesson: derive age from the data against a known reference year — never assume “this year” means “now”. We do exactly that in Section 7.</p>
+<p>This extract was re-anchored so its records run through <strong>2024</strong>; subtract a birth year from 2024 for an age (earlier birth years = older patients). We’ll get age directly from the recipe in Section 7.</p>
 </div>
 </div>
-<hr>
 </section>
 <section id="discovering-what-was-recorded" class="level1">
 <h1>4. Discovering what was recorded</h1>
 <p>The most common diagnoses, <strong>pooled</strong> and ranked by distinct patients:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.omop.concept.prevalence</span>(<span class="st">"condition_occurrence"</span>, <span class="at">metric =</span> <span class="st">"persons"</span>,</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>                           <span class="at">top_n =</span> <span class="dv">10</span>, <span class="at">scope =</span> <span class="st">"pooled"</span>, <span class="at">symbol =</span> <span class="st">"omop"</span>, <span class="at">conns =</span> conns)<span class="sc">$</span>pooled</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output-display">
-<div class="kable-table">
-<table class="caption-top table table-sm table-striped small">
-<thead>
-<tr class="header">
-<th style="text-align: right;">concept_id</th>
-<th style="text-align: right;">n_persons</th>
-<th style="text-align: left;">concept_name</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: right;">4145513</td>
-<td style="text-align: right;">85</td>
-<td style="text-align: left;">ECG: sinus rhythm</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">4140598</td>
-<td style="text-align: right;">60</td>
-<td style="text-align: left;">ECG: sinus tachycardia</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">433753</td>
-<td style="text-align: right;">55</td>
-<td style="text-align: left;">Alcohol abuse</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">320128</td>
-<td style="text-align: right;">45</td>
-<td style="text-align: left;">Essential hypertension</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">432867</td>
-<td style="text-align: right;">45</td>
-<td style="text-align: left;">Hyperlipidemia</td>
-</tr>
-</tbody>
-</table>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.omop.concept.prevalence</span>(<span class="st">"condition_occurrence"</span>, <span class="at">metric =</span> <span class="st">"persons"</span>,</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>                           <span class="at">top_n =</span> <span class="dv">10</span>, <span class="at">scope =</span> <span class="st">"pooled"</span>, <span class="at">symbol =</span> <span class="st">"omop"</span>, <span class="at">conns =</span> conns)<span class="sc">$</span>pooled</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>#&gt;   concept_id n_persons           concept_name
+#&gt; 1    4145513        85      ECG: sinus rhythm
+#&gt; 2    4140598        60 ECG: sinus tachycardia
+#&gt; 3     433753        55          Alcohol abuse
+#&gt; 4     320128        45 Essential hypertension
+#&gt; 5     432867        45         Hyperlipidemia</code></pre>
 </div>
 </div>
-</div>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>What you are (not) seeing
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Counts are <strong>banded</strong> (rounded) so you never read an exact size, and any condition affecting <strong>too few patients to be safe is simply not listed</strong> — it is dropped on the server, never shown as a flagged or blank row. Absence here means “rare or absent”, and you cannot tell which: that is the disclosure filter protecting individuals.</p>
-</div>
-</div>
-<p>Don’t know a concept’s code? <strong>Search</strong> for it (the result is the same across sites, so we read the pooled view; we keep the most useful columns):</p>
+<p>Don’t know a concept’s code? <strong>Search</strong> for it:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>hits <span class="ot">&lt;-</span> <span class="fu">ds.omop.concept.search</span>(<span class="st">"hyperlipidemia"</span>, <span class="at">domain =</span> <span class="st">"Condition"</span>,</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>                               <span class="at">limit =</span> <span class="dv">5</span>, <span class="at">symbol =</span> <span class="st">"omop"</span>, <span class="at">conns =</span> conns)<span class="sc">$</span>pooled</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>hits[, <span class="fu">c</span>(<span class="st">"concept_id"</span>, <span class="st">"concept_name"</span>, <span class="st">"domain_id"</span>, <span class="st">"vocabulary_id"</span>)]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output-display">
-<div class="kable-table">
-<table class="caption-top table table-sm table-striped small">
-<thead>
-<tr class="header">
-<th style="text-align: right;">concept_id</th>
-<th style="text-align: left;">concept_name</th>
-<th style="text-align: left;">domain_id</th>
-<th style="text-align: left;">vocabulary_id</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: right;">432867</td>
-<td style="text-align: left;">Hyperlipidemia</td>
-<td style="text-align: left;">Condition</td>
-<td style="text-align: left;">SNOMED</td>
-</tr>
-</tbody>
-</table>
-</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.omop.concept.search</span>(<span class="st">"hyperlipidemia"</span>, <span class="at">domain =</span> <span class="st">"Condition"</span>,</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>                       <span class="at">limit =</span> <span class="dv">5</span>, <span class="at">symbol =</span> <span class="st">"omop"</span>, <span class="at">conns =</span> conns)<span class="sc">$</span>pooled</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>#&gt;   concept_id   concept_name domain_id vocabulary_id standard_concept
+#&gt; 1     432867 Hyperlipidemia Condition        SNOMED                S
+#&gt;   concept_class_id concept_code valid_start_date valid_end_date invalid_reason
+#&gt; 1         Disorder     55822004       1970-01-01     2099-12-31           &lt;NA&gt;</code></pre>
 </div>
 </div>
 <p>And <strong>look up</strong> codes you already have:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.omop.concept.lookup</span>(<span class="fu">c</span>(<span class="dv">320128</span>, <span class="dv">432867</span>, <span class="dv">3027018</span>),</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>                       <span class="at">symbol =</span> <span class="st">"omop"</span>, <span class="at">conns =</span> conns)<span class="sc">$</span>pooled</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output-display">
-<div class="kable-table">
-<table class="caption-top table table-sm table-striped small">
-<colgroup>
-<col style="width: 14%">
-<col style="width: 29%">
-<col style="width: 15%">
-<col style="width: 18%">
-<col style="width: 22%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: right;">concept_id</th>
-<th style="text-align: left;">concept_name</th>
-<th style="text-align: left;">domain_id</th>
-<th style="text-align: left;">vocabulary_id</th>
-<th style="text-align: left;">standard_concept</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: right;">320128</td>
-<td style="text-align: left;">Essential hypertension</td>
-<td style="text-align: left;">Condition</td>
-<td style="text-align: left;">SNOMED</td>
-<td style="text-align: left;">S</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">432867</td>
-<td style="text-align: left;">Hyperlipidemia</td>
-<td style="text-align: left;">Condition</td>
-<td style="text-align: left;">SNOMED</td>
-<td style="text-align: left;">S</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">3027018</td>
-<td style="text-align: left;">Heart rate</td>
-<td style="text-align: left;">Measurement</td>
-<td style="text-align: left;">LOINC</td>
-<td style="text-align: left;">S</td>
-</tr>
-</tbody>
-</table>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.omop.concept.lookup</span>(<span class="fu">c</span>(<span class="dv">320128</span>, <span class="dv">432867</span>, <span class="dv">3027018</span>), <span class="at">symbol =</span> <span class="st">"omop"</span>, <span class="at">conns =</span> conns)<span class="sc">$</span>pooled</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>#&gt;   concept_id           concept_name   domain_id vocabulary_id standard_concept
+#&gt; 1     320128 Essential hypertension   Condition        SNOMED                S
+#&gt; 2     432867         Hyperlipidemia   Condition        SNOMED                S
+#&gt; 3    3027018             Heart rate Measurement         LOINC                S</code></pre>
 </div>
 </div>
-</div>
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-7-contents" aria-controls="callout-7" aria-expanded="false" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Tip</span>Your turn
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-7" class="callout-7-contents callout-collapse collapse">
-<div class="callout-body-container callout-body">
-<p>Find the <code>concept_id</code> for a condition that interests you with <code>ds.omop.concept.search(..., domain = "Condition")</code>.</p>
-</div>
-</div>
-</div>
-<hr>
 </section>
 <section id="numeric-measurements-shape-matters" class="level1">
 <h1>5. Numeric measurements: shape matters</h1>
-<p>Measurements store a number in <code>value_as_number</code>. <code>ds.omop.column.stats()</code> returns a <strong>disclosure-safe</strong> summary — counts, mean, sd, and a 5th–95th-percentile band (never the true min/max, which could identify a patient).</p>
-<p>Start with <strong>heart rate</strong> (<code>concept_id = 3027018</code>):</p>
+<p><code>ds.omop.column.stats()</code> returns a disclosure-safe summary (counts, mean, sd, a 5th–95th-percentile band — never the true min/max). Heart rate (<code>3027018</code>):</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.omop.column.stats</span>(<span class="st">"measurement"</span>, <span class="st">"value_as_number"</span>, <span class="at">concept_id =</span> <span class="dv">3027018</span>,</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>                     <span class="at">scope =</span> <span class="st">"pooled"</span>, <span class="at">symbol =</span> <span class="st">"omop"</span>, <span class="at">conns =</span> conns)<span class="sc">$</span>pooled</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.omop.column.stats</span>(<span class="st">"measurement"</span>, <span class="st">"value_as_number"</span>, <span class="at">concept_id =</span> <span class="dv">3027018</span>,</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>                     <span class="at">scope =</span> <span class="st">"pooled"</span>, <span class="at">symbol =</span> <span class="st">"omop"</span>, <span class="at">conns =</span> conns)<span class="sc">$</span>pooled</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>#&gt; $n_total
 #&gt; [1] 19315
@@ -1011,26 +520,15 @@ Warning
 #&gt; [1] 95.73897
 #&gt; 
 #&gt; $sd
-#&gt; [1] 19.25916</code></pre>
+#&gt; [1] 19.25911</code></pre>
 </div>
 </div>
-<p>A picture of the distribution. <code>ds.omop.value.histogram()</code> returns disclosure-safe <strong>bins per site</strong> (clipped to the 5th–95th percentile, with sparse bins dropped); we put them on a common grid and draw the federation-wide shape:</p>
+<p>Its distribution — again with <code>plot = TRUE</code>:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>draw_hist <span class="ot">&lt;-</span> <span class="cf">function</span>(concept_id, nbins, xlab, main, <span class="at">col =</span> <span class="st">"#4C72B0"</span>, <span class="at">digits =</span> <span class="dv">0</span>) {</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  h <span class="ot">&lt;-</span> <span class="fu">ds.omop.value.histogram</span>(<span class="st">"measurement"</span>, <span class="at">value_col =</span> <span class="st">"value_as_number"</span>,</span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>                               <span class="at">concept_id =</span> concept_id, <span class="at">symbol =</span> <span class="st">"omop"</span>, <span class="at">conns =</span> conns)</span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  bins <span class="ot">&lt;-</span> <span class="fu">do.call</span>(rbind, h<span class="sc">$</span>per_site)</span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  bins <span class="ot">&lt;-</span> <span class="fu">subset</span>(bins, <span class="sc">!</span><span class="fu">is.na</span>(count))</span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  mid  <span class="ot">&lt;-</span> (bins<span class="sc">$</span>bin_start <span class="sc">+</span> bins<span class="sc">$</span>bin_end) <span class="sc">/</span> <span class="dv">2</span></span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>  br   <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="fu">min</span>(mid), <span class="fu">max</span>(mid), <span class="at">length.out =</span> nbins <span class="sc">+</span> <span class="dv">1</span>)   <span class="co"># common equal-width bins</span></span>
-<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>  grp  <span class="ot">&lt;-</span> <span class="fu">cut</span>(mid, <span class="at">breaks =</span> br, <span class="at">include.lowest =</span> <span class="cn">TRUE</span>)      <span class="co"># re-bin each site onto them</span></span>
-<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>  agg  <span class="ot">&lt;-</span> <span class="fu">tapply</span>(bins<span class="sc">$</span>count, grp, sum); agg[<span class="fu">is.na</span>(agg)] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>  ctr  <span class="ot">&lt;-</span> <span class="fu">round</span>((<span class="fu">head</span>(br, <span class="sc">-</span><span class="dv">1</span>) <span class="sc">+</span> <span class="fu">tail</span>(br, <span class="sc">-</span><span class="dv">1</span>)) <span class="sc">/</span> <span class="dv">2</span>, digits)</span>
-<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">barplot</span>(<span class="fu">as.numeric</span>(agg), <span class="at">names.arg =</span> ctr, <span class="at">las =</span> <span class="dv">2</span>, <span class="at">col =</span> col, <span class="at">border =</span> <span class="cn">NA</span>,</span>
-<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>          <span class="at">xlab =</span> xlab, <span class="at">ylab =</span> <span class="st">"records"</span>, <span class="at">main =</span> main)</span>
-<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a><span class="fu">draw_hist</span>(<span class="dv">3027018</span>, <span class="at">nbins =</span> <span class="dv">7</span>, <span class="at">xlab =</span> <span class="st">"Heart rate (bpm)"</span>,</span>
-<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>          <span class="at">main =</span> <span class="st">"Heart rate across the federation"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.omop.value.histogram</span>(<span class="st">"measurement"</span>, <span class="at">value_col =</span> <span class="st">"value_as_number"</span>, <span class="at">concept_id =</span> <span class="dv">3027018</span>,</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>                        <span class="at">nbins =</span> <span class="dv">7</span>, <span class="at">plot =</span> <span class="cn">TRUE</span>, <span class="at">xlab =</span> <span class="st">"Heart rate (bpm)"</span>,</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>                        <span class="at">main =</span> <span class="st">"Heart rate (pooled across sites)"</span>,</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>                        <span class="at">symbol =</span> <span class="st">"omop"</span>, <span class="at">conns =</span> conns)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -1039,24 +537,12 @@ Warning
 </div>
 </div>
 </div>
-<p>Heart rate is <strong>roughly symmetric</strong> — a single central peak, mean ≈ median. Now contrast it with a lab that is <strong>not</strong> symmetric, <strong>serum creatinine</strong> (<code>3016723</code>):</p>
+<p>Heart rate is <strong>roughly symmetric</strong>. Contrast it with <strong>serum creatinine</strong> (<code>3016723</code>):</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.omop.column.stats</span>(<span class="st">"measurement"</span>, <span class="st">"value_as_number"</span>, <span class="at">concept_id =</span> <span class="dv">3016723</span>,</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>                     <span class="at">scope =</span> <span class="st">"pooled"</span>, <span class="at">symbol =</span> <span class="st">"omop"</span>, <span class="at">conns =</span> conns)<span class="sc">$</span>pooled</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>#&gt; $n_total
-#&gt; [1] 3880
-#&gt; 
-#&gt; $mean
-#&gt; [1] 1.530898
-#&gt; 
-#&gt; $sd
-#&gt; [1] 1.378811</code></pre>
-</div>
-</div>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">draw_hist</span>(<span class="dv">3016723</span>, <span class="at">nbins =</span> <span class="dv">9</span>, <span class="at">xlab =</span> <span class="st">"Creatinine (mg/dL)"</span>,</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>          <span class="at">main =</span> <span class="st">"Serum creatinine across the federation"</span>, <span class="at">col =</span> <span class="st">"#C44E52"</span>, <span class="at">digits =</span> <span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.omop.value.histogram</span>(<span class="st">"measurement"</span>, <span class="at">value_col =</span> <span class="st">"value_as_number"</span>, <span class="at">concept_id =</span> <span class="dv">3016723</span>,</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>                        <span class="at">nbins =</span> <span class="dv">9</span>, <span class="at">plot =</span> <span class="cn">TRUE</span>, <span class="at">col =</span> <span class="st">"#C44E52"</span>, <span class="at">xlab =</span> <span class="st">"Creatinine (mg/dL)"</span>,</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>                        <span class="at">main =</span> <span class="st">"Serum creatinine (pooled across sites)"</span>,</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>                        <span class="at">symbol =</span> <span class="st">"omop"</span>, <span class="at">conns =</span> conns)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -1071,77 +557,27 @@ Warning
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Important</span>Symmetric vs skewed — why it matters
+<span class="screen-reader-only">Important</span>Symmetric vs skewed
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Heart rate’s mean sits in the middle of the bulk. Creatinine’s distribution has a <strong>long right tail</strong> (a minority of patients with kidney injury), which <strong>pulls the mean above the median</strong> — so for creatinine the mean overstates the “typical” patient. Always look at the shape before trusting a mean; skewed labs are often summarised with the median, or modelled on the log scale.</p>
+<p>Creatinine has a <strong>long right tail</strong> (a minority with kidney injury) that pulls its mean above the median — so the mean overstates the “typical” patient. Always look at the shape before trusting a mean.</p>
 </div>
 </div>
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-9-contents" aria-controls="callout-9" aria-expanded="false" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Tip</span>Always check the units, too
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-9" class="callout-9-contents callout-collapse collapse">
-<div class="callout-body-container callout-body">
-<p>Not every measurement is clean. Body temperature (<code>3020891</code>) in this extract mixes <strong>Celsius and Fahrenheit</strong> records, so its histogram is bimodal and its mean (~88) is meaningless. A real federated project spends much of its time on this kind of <strong>data-quality / unit-harmonisation</strong> check before any analysis.</p>
-</div>
-</div>
-</div>
-<hr>
 </section>
 <section id="a-categorical-measurement-heart-rhythm" class="level1">
 <h1>6. A categorical measurement: heart rhythm</h1>
-<p>Some measurements store a <em>category</em> in <code>value_as_concept_id</code> instead of a number. Heart <strong>rhythm</strong> (<code>3022318</code>) is the classic example. Ask for a <strong>pooled</strong> federation-wide count with <code>scope = "pooled"</code>:</p>
+<p>Some measurements store a <em>category</em> in <code>value_as_concept_id</code> instead of a number. Heart <strong>rhythm</strong> is the measurement concept <code>3022318</code>; its recorded answers live in <code>value_as_concept_id</code>. Count them, pooled:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.omop.value.counts</span>(<span class="st">"measurement"</span>, <span class="st">"value_as_concept_id"</span>,</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>                     <span class="at">concept_id =</span> <span class="dv">3022318</span>, <span class="at">scope =</span> <span class="st">"pooled"</span>,</span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>                     <span class="at">symbol =</span> <span class="st">"omop"</span>, <span class="at">conns =</span> conns)<span class="sc">$</span>pooled</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output-display">
-<div class="kable-table">
-<table class="caption-top table table-sm table-striped small">
-<thead>
-<tr class="header">
-<th style="text-align: right;">n</th>
-<th style="text-align: left;">concept_name</th>
-<th style="text-align: left;">value</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: right;">6530</td>
-<td style="text-align: left;">Sinus rhythm</td>
-<td style="text-align: left;">45877096</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">2400</td>
-<td style="text-align: left;">Atrial fibrillation</td>
-<td style="text-align: left;">45883018</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">2300</td>
-<td style="text-align: left;">Sinus tachycardia</td>
-<td style="text-align: left;">45879290</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">665</td>
-<td style="text-align: left;">concept_0</td>
-<td style="text-align: left;">0</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">385</td>
-<td style="text-align: left;">Sinus bradycardia</td>
-<td style="text-align: left;">21499419</td>
-</tr>
-</tbody>
-</table>
-</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.omop.value.counts</span>(<span class="st">"measurement"</span>, <span class="st">"value_as_concept_id"</span>, <span class="at">concept_id =</span> <span class="dv">3022318</span>,</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>                     <span class="at">scope =</span> <span class="st">"pooled"</span>, <span class="at">symbol =</span> <span class="st">"omop"</span>, <span class="at">conns =</span> conns)<span class="sc">$</span>pooled</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>#&gt;      n        concept_name    value
+#&gt; 1 6530        Sinus rhythm 45877096
+#&gt; 2 2400 Atrial fibrillation 45883018
+#&gt; 3 2300   Sinus tachycardia 45879290
+#&gt; 4  665           concept_0        0
+#&gt; 5  385   Sinus bradycardia 21499419</code></pre>
 </div>
 </div>
 <div class="callout callout-style-default callout-important callout-titled">
@@ -1150,65 +586,48 @@ Warning
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Important</span>Two kinds of measurement
+<span class="screen-reader-only">Important</span>How to read this
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>A <strong>numeric</strong> measurement (heart rate <em>value</em>) → summarise with mean / sd / histogram. A <strong>categorical</strong> one (heart <em>rhythm</em>) → count each level. The coded values came back as readable labels (<code>Sinus rhythm</code>, <code>Atrial fibrillation</code>, …); the <code>concept_0</code> bucket is the <strong>unmapped</strong> records. Any level too rare to clear the privacy threshold is simply <strong>absent</strong> — never a flagged row.</p>
+<ul>
+<li>The first argument (<code>"measurement"</code>) is the <strong>table</strong> we look in; <code>concept_id = 3022318</code> is the measurement; <code>value_as_concept_id</code> is the column we count. (For a social fact you’d look in <code>"observation"</code> instead.)</li>
+<li><strong><code>concept_name</code></strong> is each answer’s translated label; <strong><code>value</code></strong> is its raw concept code (e.g.&nbsp;<code>45877096</code> = “Sinus rhythm”).</li>
+<li><strong><code>concept_0</code></strong> (value <code>0</code>) is OMOP’s <strong>unmapped</strong> bucket — records whose value didn’t map to a standard concept. It is <em>not</em> suppression and not a bug.</li>
+</ul>
 </div>
 </div>
-<hr>
 </section>
 <section id="the-recipe-building-analysis-tables" class="level1">
 <h1>7. The recipe: building analysis tables</h1>
-<p>Single aggregates are great for exploring, but to <strong>model</strong> anything we need a table with <strong>one row per patient</strong> and <strong>one column per variable</strong>. In dsOMOP you describe that table with a <strong>recipe</strong>, and the servers build it for you — still without sending any rows.</p>
-<p>A recipe has four elements:</p>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 50%">
-<col style="width: 50%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Element</th>
-<th>What it is</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><strong>variables</strong></td>
-<td>the columns you want — each an <code>omop_variable(...)</code>: a <code>person</code> column, or something built from a <code>concept_id</code> in an event table</td>
-</tr>
-<tr class="even">
-<td><strong>format</strong></td>
-<td><em>how</em> each variable is summarised per patient: <code>"sex_mf"</code>, <code>"binary"</code> (0/1 presence), <code>"count"</code> (how many records), <code>"mean"</code>, <code>"sd"</code>, … (and <code>omop_variable_age()</code> builds age)</td>
-</tr>
-<tr class="odd">
-<td><strong>filters</strong></td>
-<td>optional restrictions applied <strong>during</strong> extraction (Section 8)</td>
-</tr>
-<tr class="even">
-<td><strong>output</strong></td>
-<td><code>omop_output(name, type = "wide")</code> — <code>"wide"</code> = one row per patient, exactly what a model needs</td>
-</tr>
-</tbody>
-</table>
-<section id="start-simple" class="level2">
-<h2 data-anchor-id="start-simple">7.1 Start simple</h2>
-<p>The smallest useful recipe: just <strong>sex</strong> and <strong>age</strong>. Preview it (a server-side dry run that builds nothing), then execute it into a server-side symbol <code>M0</code>.</p>
+<p>To <strong>model</strong> anything we need one row per patient and one column per variable. You describe that table with a <strong>recipe</strong>; the servers build it for you. Every recipe has the same shape — here is the skeleton (don’t run this; it’s a template):</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>rec0 <span class="ot">&lt;-</span> <span class="fu">omop_recipe</span>(</span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">variables =</span> <span class="fu">list</span>(</span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable</span>(<span class="at">table =</span> <span class="st">"person"</span>, <span class="at">column =</span> <span class="st">"gender_concept_id"</span>, <span class="at">format =</span> <span class="st">"sex_mf"</span>, <span class="at">name =</span> <span class="st">"sex"</span>),</span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable_age</span>(<span class="at">name =</span> <span class="st">"age"</span>, <span class="at">year =</span> <span class="dv">2024</span>)</span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>  ),</span>
-<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">output =</span> <span class="fu">omop_output</span>(<span class="at">name =</span> <span class="st">"study"</span>, <span class="at">type =</span> <span class="st">"wide"</span>)</span>
-<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a><span class="fu">recipe_execute</span>(rec0, <span class="at">out =</span> <span class="fu">c</span>(<span class="at">study =</span> <span class="st">"M0"</span>), <span class="at">symbol =</span> <span class="st">"omop"</span>, <span class="at">conns =</span> conns)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">omop_recipe</span>(</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">variables =</span> <span class="fu">list</span>(    <span class="co"># WHAT columns you want</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable</span>(),       <span class="co"># a person column, or something built from a concept_id</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable_age</span>(),   <span class="co"># the patient's age</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable</span>()        <span class="co"># ...add as many as you need</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">filters =</span> <span class="fu">list</span>(),    <span class="co"># OPTIONAL: restrict the population (Section 8)</span></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">output  =</span> <span class="fu">omop_output</span>()  <span class="co"># the table SHAPE you want (usually wide = one row/patient)</span></span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a><span class="fu">recipe_execute</span>()       <span class="co"># build it on each server into a named symbol</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p><strong>Always inspect what the server built</strong> — confirm the table exists, with the columns and the number of rows you expected:</p>
+<section id="start-simple-sex-and-age" class="level2">
+<h2 data-anchor-id="start-simple-sex-and-age">7.1 Start simple — sex and age</h2>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.colnames</span>(<span class="st">"M0"</span>, <span class="at">datasources =</span> conns)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>rec0 <span class="ot">&lt;-</span> <span class="fu">omop_recipe</span>(</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">variables =</span> <span class="fu">list</span>(</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable</span>(<span class="at">table =</span> <span class="st">"person"</span>, <span class="at">column =</span> <span class="st">"gender_concept_id"</span>, <span class="at">format =</span> <span class="st">"sex_mf"</span>, <span class="at">name =</span> <span class="st">"sex"</span>),</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable_age</span>(<span class="at">name =</span> <span class="st">"age"</span>, <span class="at">year =</span> <span class="dv">2024</span>)</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">output =</span> <span class="fu">omop_output</span>(<span class="at">name =</span> <span class="st">"study"</span>, <span class="at">type =</span> <span class="st">"wide"</span>)</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a><span class="fu">recipe_execute</span>(rec0, <span class="at">out =</span> <span class="fu">c</span>(<span class="at">study =</span> <span class="st">"M0"</span>), <span class="at">symbol =</span> <span class="st">"omop"</span>, <span class="at">conns =</span> conns)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p><strong>Always inspect what the server built</strong>, then look at each variable:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.colnames</span>(<span class="st">"M0"</span>, <span class="at">datasources =</span> conns)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>#&gt; $nairobi
 #&gt; [1] "person_id" "sex"       "age"      
@@ -1219,7 +638,7 @@ Warning
 #&gt; $dakar
 #&gt; [1] "person_id" "sex"       "age"</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.dim</span>(<span class="st">"M0"</span>, <span class="at">datasources =</span> conns)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.dim</span>(<span class="st">"M0"</span>, <span class="at">datasources =</span> conns)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>#&gt; $`dimensions of M0 in nairobi`
 #&gt; [1] 35  3
@@ -1234,6 +653,29 @@ Warning
 #&gt; [1] 100   3</code></pre>
 </div>
 </div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.table</span>(<span class="st">"M0$sex"</span>, <span class="at">datasources =</span> conns)<span class="sc">$</span>output.list[[<span class="st">"TABLES.COMBINED_all.sources_counts"</span>]]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>#&gt; 
+#&gt;  Data in all studies were valid 
+#&gt; 
+#&gt; Study 1 :  No errors reported from this study
+#&gt; Study 2 :  No errors reported from this study
+#&gt; Study 3 :  No errors reported from this study</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>#&gt; M0$sex
+#&gt;  F  M NA 
+#&gt; 43 57  0</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.summary</span>(<span class="st">"M0$age"</span>, <span class="at">datasources =</span> conns)[[<span class="dv">1</span>]][[<span class="st">"quantiles &amp; mean"</span>]]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>#&gt;       5%      10%      25%      50%      75%      90%      95%     Mean 
+#&gt; 38.90000 46.40000 52.00000 63.00000 76.50000 86.00000 88.90000 63.88571</code></pre>
+</div>
+</div>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -1244,27 +686,27 @@ Warning
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Age needs a reference year. This MIMIC extract runs through <strong>2024</strong>, so we anchor age there rather than to <code>today</code> — otherwise every rebuild of this page would silently age the patients. For your own data, set <code>year =</code> to its collection year (or use <code>reference = "index"</code> for age at cohort entry). The age <strong>filter</strong> in Section 8 takes the same <code>year =</code> so the two always agree.</p>
+<p>Age needs a reference year. This extract runs through 2024, so we anchor age there rather than to “today” (which would drift on every rebuild). The age <strong>filter</strong> in Section 8 takes the same <code>year =</code>.</p>
 </div>
 </div>
 </section>
 <section id="grow-it-numbers-flags-and-counts" class="level2">
-<h2 data-anchor-id="grow-it-numbers-flags-and-counts">7.2 Grow it: numbers, flags and counts</h2>
-<p>Now mix the variable <em>types</em> we met while exploring — a categorical (<code>sex</code>), a numeric mean (<code>heart_rate</code>), two <strong>binary</strong> condition flags (<code>hypertension</code> 320128, <code>hyperlipidemia</code> 432867), and a <strong>count</strong> (<code>n_visits</code>, how many hospital visits each patient has):</p>
+<h2 data-anchor-id="grow-it-numbers-flags-and-counts">7.2 Grow it — numbers, flags and counts</h2>
+<p>Mix the variable types we met: a categorical (<code>sex</code>), a numeric mean (<code>heart_rate</code>), two <strong>binary</strong> condition flags, and a <strong>count</strong> (<code>n_visits</code>):</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>rec <span class="ot">&lt;-</span> <span class="fu">omop_recipe</span>(</span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">variables =</span> <span class="fu">list</span>(</span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable</span>(<span class="at">table =</span> <span class="st">"person"</span>, <span class="at">column =</span> <span class="st">"gender_concept_id"</span>, <span class="at">format =</span> <span class="st">"sex_mf"</span>, <span class="at">name =</span> <span class="st">"sex"</span>),</span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable_age</span>(<span class="at">name =</span> <span class="st">"age"</span>, <span class="at">year =</span> <span class="dv">2024</span>),</span>
-<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable</span>(<span class="at">table =</span> <span class="st">"measurement"</span>, <span class="at">concept_id =</span> <span class="dv">3027018</span>, <span class="at">format =</span> <span class="st">"mean"</span>, <span class="at">name =</span> <span class="st">"heart_rate"</span>),</span>
-<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable</span>(<span class="at">table =</span> <span class="st">"condition_occurrence"</span>, <span class="at">concept_id =</span> <span class="dv">320128</span>, <span class="at">format =</span> <span class="st">"binary"</span>, <span class="at">name =</span> <span class="st">"hypertension"</span>),</span>
-<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable</span>(<span class="at">table =</span> <span class="st">"condition_occurrence"</span>, <span class="at">concept_id =</span> <span class="dv">432867</span>, <span class="at">format =</span> <span class="st">"binary"</span>, <span class="at">name =</span> <span class="st">"hyperlipidemia"</span>),</span>
-<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable</span>(<span class="at">table =</span> <span class="st">"visit_occurrence"</span>, <span class="at">format =</span> <span class="st">"count"</span>, <span class="at">name =</span> <span class="st">"n_visits"</span>)</span>
-<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>  ),</span>
-<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">output =</span> <span class="fu">omop_output</span>(<span class="at">name =</span> <span class="st">"study"</span>, <span class="at">type =</span> <span class="st">"wide"</span>)</span>
-<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a><span class="fu">recipe_execute</span>(rec, <span class="at">out =</span> <span class="fu">c</span>(<span class="at">study =</span> <span class="st">"M"</span>), <span class="at">symbol =</span> <span class="st">"omop"</span>, <span class="at">conns =</span> conns)</span>
-<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.colnames</span>(<span class="st">"M"</span>, <span class="at">datasources =</span> conns)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>rec <span class="ot">&lt;-</span> <span class="fu">omop_recipe</span>(</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">variables =</span> <span class="fu">list</span>(</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable</span>(<span class="at">table =</span> <span class="st">"person"</span>, <span class="at">column =</span> <span class="st">"gender_concept_id"</span>, <span class="at">format =</span> <span class="st">"sex_mf"</span>, <span class="at">name =</span> <span class="st">"sex"</span>),</span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable_age</span>(<span class="at">name =</span> <span class="st">"age"</span>, <span class="at">year =</span> <span class="dv">2024</span>),</span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable</span>(<span class="at">table =</span> <span class="st">"measurement"</span>, <span class="at">concept_id =</span> <span class="dv">3027018</span>, <span class="at">format =</span> <span class="st">"mean"</span>, <span class="at">name =</span> <span class="st">"heart_rate"</span>),</span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable</span>(<span class="at">table =</span> <span class="st">"condition_occurrence"</span>, <span class="at">concept_id =</span> <span class="dv">320128</span>, <span class="at">format =</span> <span class="st">"binary"</span>, <span class="at">name =</span> <span class="st">"hypertension"</span>),</span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable</span>(<span class="at">table =</span> <span class="st">"condition_occurrence"</span>, <span class="at">concept_id =</span> <span class="dv">432867</span>, <span class="at">format =</span> <span class="st">"binary"</span>, <span class="at">name =</span> <span class="st">"hyperlipidemia"</span>),</span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable</span>(<span class="at">table =</span> <span class="st">"visit_occurrence"</span>, <span class="at">format =</span> <span class="st">"count"</span>, <span class="at">name =</span> <span class="st">"n_visits"</span>)</span>
+<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb33-10"><a href="#cb33-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">output =</span> <span class="fu">omop_output</span>(<span class="at">name =</span> <span class="st">"study"</span>, <span class="at">type =</span> <span class="st">"wide"</span>)</span>
+<span id="cb33-11"><a href="#cb33-11" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb33-12"><a href="#cb33-12" aria-hidden="true" tabindex="-1"></a><span class="fu">recipe_execute</span>(rec, <span class="at">out =</span> <span class="fu">c</span>(<span class="at">study =</span> <span class="st">"M"</span>), <span class="at">symbol =</span> <span class="st">"omop"</span>, <span class="at">conns =</span> conns)</span>
+<span id="cb33-13"><a href="#cb33-13" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.colnames</span>(<span class="st">"M"</span>, <span class="at">datasources =</span> conns)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>#&gt; $nairobi
 #&gt; [1] "person_id"      "heart_rate"     "hypertension"   "hyperlipidemia"
@@ -1278,7 +720,7 @@ Warning
 #&gt; [1] "person_id"      "heart_rate"     "hypertension"   "hyperlipidemia"
 #&gt; [5] "n_visits"       "sex"            "age"</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.dim</span>(<span class="st">"M"</span>, <span class="at">datasources =</span> conns)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.dim</span>(<span class="st">"M"</span>, <span class="at">datasources =</span> conns)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>#&gt; $`dimensions of M in nairobi`
 #&gt; [1] 35  7
@@ -1293,22 +735,27 @@ Warning
 #&gt; [1] 100   7</code></pre>
 </div>
 </div>
-<p><strong>Inspect every variable in its natural way.</strong> A numeric summary for the continuous columns:</p>
+<p><strong>Look at every variable in its natural way.</strong> Numeric columns → a quantile summary:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.summary</span>(<span class="st">"M$heart_rate"</span>, <span class="at">datasources =</span> conns)[[<span class="dv">1</span>]][[<span class="st">"quantiles &amp; mean"</span>]]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.summary</span>(<span class="st">"M$age"</span>,        <span class="at">datasources =</span> conns)[[<span class="dv">1</span>]][[<span class="st">"quantiles &amp; mean"</span>]]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>#&gt;       5%      10%      25%      50%      75%      90%      95%     Mean 
+#&gt; 38.90000 46.40000 52.00000 63.00000 76.50000 86.00000 88.90000 63.88571</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.summary</span>(<span class="st">"M$heart_rate"</span>, <span class="at">datasources =</span> conns)[[<span class="dv">1</span>]][[<span class="st">"quantiles &amp; mean"</span>]]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>#&gt;        5%       10%       25%       50%       75%       90%       95%      Mean 
 #&gt;  68.85334  70.28388  78.92535  88.44355  98.68583 104.52308 107.79092  88.63992</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.summary</span>(<span class="st">"M$n_visits"</span>,  <span class="at">datasources =</span> conns)[[<span class="dv">1</span>]][[<span class="st">"quantiles &amp; mean"</span>]]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.summary</span>(<span class="st">"M$n_visits"</span>,   <span class="at">datasources =</span> conns)[[<span class="dv">1</span>]][[<span class="st">"quantiles &amp; mean"</span>]]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>#&gt;       5%      10%      25%      50%      75%      90%      95%     Mean 
 #&gt;  1.00000  1.00000  1.50000  3.00000  8.50000 29.80000 39.20000 10.54286</code></pre>
 </div>
 </div>
-<p>A frequency table for the categorical / binary columns:</p>
+<p>Categorical / binary columns → a frequency table:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">as.data.frame</span>(<span class="fu">ds.table</span>(<span class="st">"M$sex"</span>, <span class="at">datasources =</span> conns)<span class="sc">$</span>output.list[[<span class="st">"TABLES.COMBINED_all.sources_counts"</span>]])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.table</span>(<span class="st">"M$sex"</span>,            <span class="at">datasources =</span> conns)<span class="sc">$</span>output.list[[<span class="st">"TABLES.COMBINED_all.sources_counts"</span>]]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>#&gt; 
 #&gt;  Data in all studies were valid 
@@ -1317,39 +764,14 @@ Warning
 #&gt; Study 2 :  No errors reported from this study
 #&gt; Study 3 :  No errors reported from this study</code></pre>
 </div>
-<div class="cell-output-display">
-<div class="kable-table">
-<table class="caption-top table table-sm table-striped small">
-<colgroup>
-<col style="width: 3%">
-<col style="width: 96%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: left;"></th>
-<th style="text-align: right;">ds.table(“M<span class="math inline">\(sex", datasources = conns)\)</span>output.list[[“TABLES.COMBINED_all.sources_counts”]]</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">F</td>
-<td style="text-align: right;">43</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">M</td>
-<td style="text-align: right;">57</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">NA</td>
-<td style="text-align: right;">0</td>
-</tr>
-</tbody>
-</table>
-</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>#&gt; M$sex
+#&gt;  F  M NA 
+#&gt; 43 57  0</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">as.data.frame</span>(<span class="fu">ds.table</span>(<span class="st">"M$hypertension"</span>, <span class="at">datasources =</span> conns)<span class="sc">$</span>output.list[[<span class="st">"TABLES.COMBINED_all.sources_counts"</span>]])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.table</span>(<span class="st">"M$hypertension"</span>,   <span class="at">datasources =</span> conns)<span class="sc">$</span>output.list[[<span class="st">"TABLES.COMBINED_all.sources_counts"</span>]]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>#&gt; 
 #&gt;  Data in all studies were valid 
@@ -1358,35 +780,26 @@ Warning
 #&gt; Study 2 :  No errors reported from this study
 #&gt; Study 3 :  No errors reported from this study</code></pre>
 </div>
-<div class="cell-output-display">
-<div class="kable-table">
-<table class="caption-top table table-sm table-striped small">
-<colgroup>
-<col style="width: 2%">
-<col style="width: 97%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: left;"></th>
-<th style="text-align: right;">ds.table(“M<span class="math inline">\(hypertension", datasources = conns)\)</span>output.list[[“TABLES.COMBINED_all.sources_counts”]]</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">0</td>
-<td style="text-align: right;">47</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">1</td>
-<td style="text-align: right;">53</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">NA</td>
-<td style="text-align: right;">0</td>
-</tr>
-</tbody>
-</table>
+<div class="cell-output cell-output-stdout">
+<pre><code>#&gt; M$hypertension
+#&gt;  0  1 NA 
+#&gt; 47 53  0</code></pre>
 </div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.table</span>(<span class="st">"M$hyperlipidemia"</span>, <span class="at">datasources =</span> conns)<span class="sc">$</span>output.list[[<span class="st">"TABLES.COMBINED_all.sources_counts"</span>]]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>#&gt; 
+#&gt;  Data in all studies were valid 
+#&gt; 
+#&gt; Study 1 :  No errors reported from this study
+#&gt; Study 2 :  No errors reported from this study
+#&gt; Study 3 :  No errors reported from this study</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>#&gt; M$hyperlipidemia
+#&gt;  0  1 NA 
+#&gt; 53 47  0</code></pre>
 </div>
 </div>
 <div class="callout callout-style-default callout-note callout-titled">
@@ -1399,32 +812,29 @@ Warning
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p><code>format = "binary"</code> answers <em>“does this patient have the condition at all?”</em> (0/1) — perfect for a yes/no risk factor. <code>format = "count"</code> answers <em>“how many records?”</em> — here, how many visits. Notice <code>n_visits</code> is <strong>right-skewed</strong>: most patients have a few visits, a handful have many.</p>
+<p><code>format = "binary"</code> is <em>does this patient have it at all?</em> (0/1). <code>format = "count"</code> is <em>how many records?</em> — here <code>n_visits</code> is right-skewed (most patients few visits, a handful many).</p>
 </div>
 </div>
 </section>
-<section id="one-recipe-several-tables-multiple-outputs" class="level2">
-<h2 data-anchor-id="one-recipe-several-tables-multiple-outputs">7.3 One recipe, several tables: multiple outputs</h2>
-<p>A recipe can declare <strong>more than one output</strong>, each selecting a <strong>different subset of the variables</strong> — so a single extraction can produce several purpose-built tables at once (e.g.&nbsp;a demographics table and a clinical table) instead of re-running the extraction. List them with <code>outputs = list(...)</code> and map each name to its own symbol:</p>
+<section id="one-recipe-several-tables" class="level2">
+<h2 data-anchor-id="one-recipe-several-tables">7.3 One recipe, several tables</h2>
+<p>A recipe can declare <strong>several outputs</strong>, each selecting a <strong>different subset of variables</strong>, so one extraction produces several purpose-built tables (e.g.&nbsp;a demographics table and a clinical one) — list them with <code>outputs = list(...)</code>:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>rec_multi <span class="ot">&lt;-</span> <span class="fu">omop_recipe</span>(</span>
-<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">variables =</span> <span class="fu">list</span>(</span>
-<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable</span>(<span class="at">table =</span> <span class="st">"person"</span>, <span class="at">column =</span> <span class="st">"gender_concept_id"</span>, <span class="at">format =</span> <span class="st">"sex_mf"</span>, <span class="at">name =</span> <span class="st">"sex"</span>),</span>
-<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable_age</span>(<span class="at">name =</span> <span class="st">"age"</span>, <span class="at">year =</span> <span class="dv">2024</span>),</span>
-<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable</span>(<span class="at">table =</span> <span class="st">"measurement"</span>, <span class="at">concept_id =</span> <span class="dv">3027018</span>, <span class="at">format =</span> <span class="st">"mean"</span>, <span class="at">name =</span> <span class="st">"heart_rate"</span>),</span>
-<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable</span>(<span class="at">table =</span> <span class="st">"condition_occurrence"</span>, <span class="at">concept_id =</span> <span class="dv">320128</span>, <span class="at">format =</span> <span class="st">"binary"</span>, <span class="at">name =</span> <span class="st">"hypertension"</span>)</span>
-<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a>  ),</span>
-<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">outputs =</span> <span class="fu">list</span>(</span>
-<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_output</span>(<span class="at">name =</span> <span class="st">"demographics"</span>, <span class="at">variables =</span> <span class="fu">c</span>(<span class="st">"sex"</span>, <span class="st">"age"</span>), <span class="at">type =</span> <span class="st">"wide"</span>),</span>
-<span id="cb33-10"><a href="#cb33-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_output</span>(<span class="at">name =</span> <span class="st">"clinical"</span>,     <span class="at">variables =</span> <span class="fu">c</span>(<span class="st">"heart_rate"</span>, <span class="st">"hypertension"</span>), <span class="at">type =</span> <span class="st">"wide"</span>)</span>
-<span id="cb33-11"><a href="#cb33-11" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb33-12"><a href="#cb33-12" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb33-13"><a href="#cb33-13" aria-hidden="true" tabindex="-1"></a><span class="fu">recipe_execute</span>(rec_multi, <span class="at">out =</span> <span class="fu">c</span>(<span class="at">demographics =</span> <span class="st">"DEMO"</span>, <span class="at">clinical =</span> <span class="st">"CLIN"</span>),</span>
-<span id="cb33-14"><a href="#cb33-14" aria-hidden="true" tabindex="-1"></a>               <span class="at">symbol =</span> <span class="st">"omop"</span>, <span class="at">conns =</span> conns)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<p>Ratify that <strong>both</strong> tables were built, each with only its own columns (plus the <code>person_id</code> key that lets you join them later):</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.colnames</span>(<span class="st">"DEMO"</span>, <span class="at">datasources =</span> conns)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>rec_multi <span class="ot">&lt;-</span> <span class="fu">omop_recipe</span>(</span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">variables =</span> <span class="fu">list</span>(</span>
+<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable</span>(<span class="at">table =</span> <span class="st">"person"</span>, <span class="at">column =</span> <span class="st">"gender_concept_id"</span>, <span class="at">format =</span> <span class="st">"sex_mf"</span>, <span class="at">name =</span> <span class="st">"sex"</span>),</span>
+<span id="cb52-4"><a href="#cb52-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable_age</span>(<span class="at">name =</span> <span class="st">"age"</span>, <span class="at">year =</span> <span class="dv">2024</span>),</span>
+<span id="cb52-5"><a href="#cb52-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable</span>(<span class="at">table =</span> <span class="st">"measurement"</span>, <span class="at">concept_id =</span> <span class="dv">3027018</span>, <span class="at">format =</span> <span class="st">"mean"</span>, <span class="at">name =</span> <span class="st">"heart_rate"</span>),</span>
+<span id="cb52-6"><a href="#cb52-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable</span>(<span class="at">table =</span> <span class="st">"condition_occurrence"</span>, <span class="at">concept_id =</span> <span class="dv">320128</span>, <span class="at">format =</span> <span class="st">"binary"</span>, <span class="at">name =</span> <span class="st">"hypertension"</span>)</span>
+<span id="cb52-7"><a href="#cb52-7" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb52-8"><a href="#cb52-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">outputs =</span> <span class="fu">list</span>(</span>
+<span id="cb52-9"><a href="#cb52-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_output</span>(<span class="at">name =</span> <span class="st">"demographics"</span>, <span class="at">variables =</span> <span class="fu">c</span>(<span class="st">"sex"</span>, <span class="st">"age"</span>), <span class="at">type =</span> <span class="st">"wide"</span>),</span>
+<span id="cb52-10"><a href="#cb52-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_output</span>(<span class="at">name =</span> <span class="st">"clinical"</span>,     <span class="at">variables =</span> <span class="fu">c</span>(<span class="st">"heart_rate"</span>, <span class="st">"hypertension"</span>), <span class="at">type =</span> <span class="st">"wide"</span>)</span>
+<span id="cb52-11"><a href="#cb52-11" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb52-12"><a href="#cb52-12" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb52-13"><a href="#cb52-13" aria-hidden="true" tabindex="-1"></a><span class="fu">recipe_execute</span>(rec_multi, <span class="at">out =</span> <span class="fu">c</span>(<span class="at">demographics =</span> <span class="st">"DEMO"</span>, <span class="at">clinical =</span> <span class="st">"CLIN"</span>),</span>
+<span id="cb52-14"><a href="#cb52-14" aria-hidden="true" tabindex="-1"></a>               <span class="at">symbol =</span> <span class="st">"omop"</span>, <span class="at">conns =</span> conns)</span>
+<span id="cb52-15"><a href="#cb52-15" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.colnames</span>(<span class="st">"DEMO"</span>, <span class="at">datasources =</span> conns)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>#&gt; $nairobi
 #&gt; [1] "person_id" "sex"       "age"      
@@ -1435,7 +845,7 @@ Warning
 #&gt; $dakar
 #&gt; [1] "person_id" "sex"       "age"</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.colnames</span>(<span class="st">"CLIN"</span>, <span class="at">datasources =</span> conns)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.colnames</span>(<span class="st">"CLIN"</span>, <span class="at">datasources =</span> conns)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>#&gt; $nairobi
 #&gt; [1] "person_id"    "heart_rate"   "hypertension"
@@ -1447,61 +857,45 @@ Warning
 #&gt; [1] "person_id"    "heart_rate"   "hypertension"</code></pre>
 </div>
 </div>
-<hr>
 </section>
 </section>
 <section id="filtering-at-extraction" class="level1">
 <h1>8. Filtering at extraction</h1>
-<p>Often you only want a <strong>subpopulation</strong>. The cleanest way is to filter <strong>while extracting</strong> — add a <code>filters</code> element so the servers only ever build the rows you asked for. Filters can only ever <strong>shrink</strong> a population (the per-patient disclosure gate still runs on the result), so they are safe.</p>
-<p>Here we combine three filter <em>types</em> — keep only <strong>females</strong>, <strong>aged 50+</strong>, who <strong>have hyperlipidemia</strong> (<code>432867</code>):</p>
+<p>Often you only want a <strong>subpopulation</strong>. Add a <code>filters</code> element so the servers only build the rows you ask for. Filters can only ever <strong>shrink</strong> a population, so they are safe. Here: <strong>patients aged 50+ who have hyperlipidemia</strong>:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>rec_sub <span class="ot">&lt;-</span> <span class="fu">omop_recipe</span>(</span>
-<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">variables =</span> <span class="fu">list</span>(</span>
-<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable</span>(<span class="at">table =</span> <span class="st">"person"</span>, <span class="at">column =</span> <span class="st">"gender_concept_id"</span>, <span class="at">format =</span> <span class="st">"sex_mf"</span>, <span class="at">name =</span> <span class="st">"sex"</span>),</span>
-<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable_age</span>(<span class="at">name =</span> <span class="st">"age"</span>, <span class="at">year =</span> <span class="dv">2024</span>)</span>
-<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a>  ),</span>
-<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">filters =</span> <span class="fu">list</span>(</span>
-<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">female        =</span> <span class="fu">omop_filter_sex</span>(<span class="st">"F"</span>),</span>
-<span id="cb38-8"><a href="#cb38-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">middle_aged   =</span> <span class="fu">omop_filter_age</span>(<span class="at">min =</span> <span class="dv">50</span>, <span class="at">year =</span> <span class="dv">2024</span>),</span>
-<span id="cb38-9"><a href="#cb38-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">with_hyperlip =</span> <span class="fu">omop_filter_has_concept</span>(<span class="at">concept_id =</span> <span class="dv">432867</span>, <span class="at">table =</span> <span class="st">"condition_occurrence"</span>)</span>
-<span id="cb38-10"><a href="#cb38-10" aria-hidden="true" tabindex="-1"></a>  ),</span>
-<span id="cb38-11"><a href="#cb38-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">output =</span> <span class="fu">omop_output</span>(<span class="at">name =</span> <span class="st">"study"</span>, <span class="at">type =</span> <span class="st">"wide"</span>)</span>
-<span id="cb38-12"><a href="#cb38-12" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb38-13"><a href="#cb38-13" aria-hidden="true" tabindex="-1"></a><span class="fu">recipe_execute</span>(rec_sub, <span class="at">out =</span> <span class="fu">c</span>(<span class="at">study =</span> <span class="st">"SUB"</span>), <span class="at">symbol =</span> <span class="st">"omop"</span>, <span class="at">conns =</span> conns)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>rec_sub <span class="ot">&lt;-</span> <span class="fu">omop_recipe</span>(</span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">variables =</span> <span class="fu">list</span>(</span>
+<span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable</span>(<span class="at">table =</span> <span class="st">"person"</span>, <span class="at">column =</span> <span class="st">"gender_concept_id"</span>, <span class="at">format =</span> <span class="st">"sex_mf"</span>, <span class="at">name =</span> <span class="st">"sex"</span>),</span>
+<span id="cb56-4"><a href="#cb56-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable_age</span>(<span class="at">name =</span> <span class="st">"age"</span>, <span class="at">year =</span> <span class="dv">2024</span>)</span>
+<span id="cb56-5"><a href="#cb56-5" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb56-6"><a href="#cb56-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">filters =</span> <span class="fu">list</span>(</span>
+<span id="cb56-7"><a href="#cb56-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">older       =</span> <span class="fu">omop_filter_age</span>(<span class="at">min =</span> <span class="dv">50</span>, <span class="at">year =</span> <span class="dv">2024</span>),</span>
+<span id="cb56-8"><a href="#cb56-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">with_lipids =</span> <span class="fu">omop_filter_has_concept</span>(<span class="at">concept_id =</span> <span class="dv">432867</span>, <span class="at">table =</span> <span class="st">"condition_occurrence"</span>)</span>
+<span id="cb56-9"><a href="#cb56-9" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb56-10"><a href="#cb56-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">output =</span> <span class="fu">omop_output</span>(<span class="at">name =</span> <span class="st">"study"</span>, <span class="at">type =</span> <span class="st">"wide"</span>)</span>
+<span id="cb56-11"><a href="#cb56-11" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb56-12"><a href="#cb56-12" aria-hidden="true" tabindex="-1"></a><span class="fu">recipe_execute</span>(rec_sub, <span class="at">out =</span> <span class="fu">c</span>(<span class="at">study =</span> <span class="st">"SUB"</span>), <span class="at">symbol =</span> <span class="st">"omop"</span>, <span class="at">conns =</span> conns)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p><strong>Check the filters did what you meant</strong> — the cohort is much smaller (every patient is female by construction), and the age summary respects the 50+ floor:</p>
+<p>The cohort is smaller, and the minimum age respects the 50+ floor:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.dim</span>(<span class="st">"SUB"</span>, <span class="at">datasources =</span> conns)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.dim</span>(<span class="st">"SUB"</span>, <span class="at">datasources =</span> conns)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>#&gt; $`dimensions of SUB in nairobi`
-#&gt; [1] 7 3
+#&gt; [1] 14  3
 #&gt; 
 #&gt; $`dimensions of SUB in douala`
-#&gt; [1] 3 3
+#&gt; [1] 11  3
 #&gt; 
 #&gt; $`dimensions of SUB in dakar`
-#&gt; [1] 8 3
+#&gt; [1] 19  3
 #&gt; 
 #&gt; $`dimensions of SUB in combined studies`
-#&gt; [1] 18  3</code></pre>
+#&gt; [1] 44  3</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.summary</span>(<span class="st">"SUB$age"</span>, <span class="at">datasources =</span> conns)[[<span class="dv">1</span>]][[<span class="st">"quantiles &amp; mean"</span>]]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.summary</span>(<span class="st">"SUB$age"</span>, <span class="at">datasources =</span> conns)[[<span class="dv">1</span>]][[<span class="st">"quantiles &amp; mean"</span>]]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>#&gt;   5%  10%  25%  50%  75%  90%  95% Mean 
-#&gt; 53.9 57.8 67.5 80.0 87.0 90.0 91.5 76.0</code></pre>
-</div>
-</div>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Filters compound — fast
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Three filters at once leave only a few dozen patients (and just a handful per site — close to the disclosure floor). That is worth remembering: stack enough filters and a federated cohort can shrink below the threshold and <strong>fail-closed</strong>, returning nothing rather than a disclosive sliver. Filter to the population you need, not narrower.</p>
+<pre><code>#&gt;       5%      10%      25%      50%      75%      90%      95%     Mean 
+#&gt; 54.55000 57.30000 60.75000 75.00000 84.50000 87.40000 89.75000 72.64286</code></pre>
 </div>
 </div>
 <div class="callout callout-style-default callout-note callout-titled">
@@ -1514,70 +908,26 @@ Note
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>These filters are just a demonstration — we built <code>SUB</code> to show how filtering narrows a cohort, but we go back to the full table <code>M</code> for the model below. The safe filter types are the ones that can only shrink a population: <code>omop_filter_sex()</code>, <code>omop_filter_age()</code> / age groups, <code>omop_filter_has_concept()</code>, and ranges; an over-narrow filter (e.g.&nbsp;a single birth year) is rejected so it cannot fingerprint a person.</p>
+<p>The safe filter types all shrink a population: <code>omop_filter_sex()</code>, <code>omop_filter_age()</code> / age groups, <code>omop_filter_has_concept()</code>, and ranges. (You can also restrict by sex with <code>omop_filter_sex("F")</code>.)</p>
 </div>
 </div>
-<hr>
 </section>
 <section id="a-real-model-what-predicts-a-diagnosis" class="level1">
 <h1>9. A real model: what predicts a diagnosis?</h1>
-<p>We have the person-level table <code>M</code>. Let’s start with a clean question: <strong>does hyperlipidemia become more likely with age, and does sex matter?</strong> A logistic regression (<code>family = "binomial"</code>), fitted jointly across the three hospitals:</p>
+<p>A logistic regression of <strong>hyperlipidemia</strong> on age and sex, fitted jointly across the three hospitals. We show the raw <code>ds.glm</code> coefficients (<code>P_OR</code> is the odds ratio, with its 95% CI in the <code>*.P_OR</code> columns):</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>fit1 <span class="ot">&lt;-</span> <span class="fu">ds.glm</span>(</span>
-<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">formula =</span> <span class="st">"M$hyperlipidemia ~ M$age + M$sex"</span>,</span>
-<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">family  =</span> <span class="st">"binomial"</span>, <span class="at">datasources =</span> conns)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>or_table <span class="ot">&lt;-</span> <span class="cf">function</span>(fit) {</span>
-<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>  co <span class="ot">&lt;-</span> fit<span class="sc">$</span>coefficients</span>
-<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data.frame</span>(</span>
-<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">term    =</span> <span class="fu">rownames</span>(co),</span>
-<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">OR      =</span> <span class="fu">round</span>(co[, <span class="st">"P_OR"</span>], <span class="dv">3</span>),</span>
-<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">CI_low  =</span> <span class="fu">round</span>(co[, <span class="st">"low0.95CI.P_OR"</span>], <span class="dv">3</span>),</span>
-<span id="cb44-7"><a href="#cb44-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">CI_high =</span> <span class="fu">round</span>(co[, <span class="st">"high0.95CI.P_OR"</span>], <span class="dv">3</span>),</span>
-<span id="cb44-8"><a href="#cb44-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">p_value =</span> <span class="fu">signif</span>(co[, <span class="st">"p-value"</span>], <span class="dv">3</span>),</span>
-<span id="cb44-9"><a href="#cb44-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">row.names =</span> <span class="cn">NULL</span></span>
-<span id="cb44-10"><a href="#cb44-10" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb44-11"><a href="#cb44-11" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb44-12"><a href="#cb44-12" aria-hidden="true" tabindex="-1"></a><span class="fu">or_table</span>(fit1)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output-display">
-<div class="kable-table">
-<table class="caption-top table table-sm table-striped small">
-<colgroup>
-<col style="width: 28%">
-<col style="width: 14%">
-<col style="width: 16%">
-<col style="width: 19%">
-<col style="width: 21%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: left;">term</th>
-<th style="text-align: right;">OR</th>
-<th style="text-align: right;">CI_low</th>
-<th style="text-align: right;">CI_high</th>
-<th style="text-align: right;">p_value</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">(Intercept)</td>
-<td style="text-align: right;">0.010</td>
-<td style="text-align: right;">0.001</td>
-<td style="text-align: right;">0.089</td>
-<td style="text-align: right;">7.24e-05</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">M<span class="math inline">\(age       | 1.073|  1.037|   1.109| 4.43e-05|
-|M\)</span>sexM</td>
-<td style="text-align: right;">0.986</td>
-<td style="text-align: right;">0.402</td>
-<td style="text-align: right;">2.418</td>
-<td style="text-align: right;">9.75e-01</td>
-</tr>
-</tbody>
-</table>
-</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb61"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a>fit1 <span class="ot">&lt;-</span> <span class="fu">ds.glm</span>(<span class="at">formula =</span> <span class="st">"M$hyperlipidemia ~ M$age + M$sex"</span>,</span>
+<span id="cb61-2"><a href="#cb61-2" aria-hidden="true" tabindex="-1"></a>               <span class="at">family =</span> <span class="st">"binomial"</span>, <span class="at">datasources =</span> conns)</span>
+<span id="cb61-3"><a href="#cb61-3" aria-hidden="true" tabindex="-1"></a>fit1<span class="sc">$</span>coefficients</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>#&gt;                Estimate Std. Error     z-value      p-value low0.95CI.LP
+#&gt; (Intercept) -4.59371247 1.15761941 -3.96824071 7.240518e-05   -6.8626048
+#&gt; M$age        0.07020260 0.01719118  4.08364005 4.433569e-05    0.0365085
+#&gt; M$sexM      -0.01449884 0.45779165 -0.03167126 9.747342e-01   -0.9117540
+#&gt;             high0.95CI.LP       P_OR low0.95CI.P_OR high0.95CI.P_OR
+#&gt; (Intercept)    -2.3248201 0.01001394    0.001045092      0.08908812
+#&gt; M$age           0.1038967 1.07272550    1.037183125      1.10948584
+#&gt; M$sexM          0.8827563 0.98560576    0.401818820      2.41755406</code></pre>
 </div>
 </div>
 <div class="callout callout-style-default callout-important callout-titled">
@@ -1586,106 +936,51 @@ Note
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Important</span>Reading the result (<code>OR</code> = odds ratio)
+<span class="screen-reader-only">Important</span>Reading it
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<ul>
-<li><strong>age</strong> is a clear, <strong>significant</strong> predictor — the odds of hyperlipidemia rise a few percent per year of age (OR &gt; 1, p well below 0.05, confidence interval entirely above 1).</li>
-<li><strong>sex</strong> is <strong>not</strong> significant here (OR ≈ 1, p ≈ 1, CI straddling 1).</li>
-</ul>
-<p>That is exactly how you read a <code>ds.glm</code> table: one clear effect, one null — produced without ever touching a patient record.</p>
+<p><strong>age</strong> is a clear, <strong>significant</strong> predictor (<code>P_OR</code> &gt; 1, tiny <code>p-value</code>); <strong>sex</strong> is not (<code>P_OR</code> ≈ 1). One clear effect, one null — produced without touching a patient record.</p>
 </div>
 </div>
-<p>Now a <strong>multivariable</strong> model: does hypertension depend on age and sex <strong>after adjusting for</strong> hyperlipidemia?</p>
+<p>A <strong>multivariable</strong> model — hypertension on age, sex and hyperlipidemia:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>fit2 <span class="ot">&lt;-</span> <span class="fu">ds.glm</span>(</span>
-<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">formula =</span> <span class="st">"M$hypertension ~ M$age + M$sex + M$hyperlipidemia"</span>,</span>
-<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">family  =</span> <span class="st">"binomial"</span>, <span class="at">datasources =</span> conns)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="fu">or_table</span>(fit2)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output-display">
-<div class="kable-table">
-<table class="caption-top table table-sm table-striped small">
-<colgroup>
-<col style="width: 36%">
-<col style="width: 13%">
-<col style="width: 15%">
-<col style="width: 17%">
-<col style="width: 17%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: left;">term</th>
-<th style="text-align: right;">OR</th>
-<th style="text-align: right;">CI_low</th>
-<th style="text-align: right;">CI_high</th>
-<th style="text-align: right;">p_value</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">(Intercept)</td>
-<td style="text-align: right;">0.084</td>
-<td style="text-align: right;">0.013</td>
-<td style="text-align: right;">0.384</td>
-<td style="text-align: right;">0.01450</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">M<span class="math inline">\(age            | 1.047|  1.014|   1.081| 0.00495|
-|M\)</span>sexM</td>
-<td style="text-align: right;">0.419</td>
-<td style="text-align: right;">0.173</td>
-<td style="text-align: right;">1.014</td>
-<td style="text-align: right;">0.05360</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">M$hyperlipidemia</td>
-<td style="text-align: right;">1.335</td>
-<td style="text-align: right;">0.527</td>
-<td style="text-align: right;">3.382</td>
-<td style="text-align: right;">0.54200</td>
-</tr>
-</tbody>
-</table>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb63"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a>fit2 <span class="ot">&lt;-</span> <span class="fu">ds.glm</span>(<span class="at">formula =</span> <span class="st">"M$hypertension ~ M$age + M$sex + M$hyperlipidemia"</span>,</span>
+<span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a>               <span class="at">family =</span> <span class="st">"binomial"</span>, <span class="at">datasources =</span> conns)</span>
+<span id="cb63-3"><a href="#cb63-3" aria-hidden="true" tabindex="-1"></a>fit2<span class="sc">$</span>coefficients</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>#&gt;                     Estimate Std. Error    z-value     p-value low0.95CI.LP
+#&gt; (Intercept)      -2.38653694 0.97654087 -2.4438680 0.014530743  -4.30052187
+#&gt; M$age             0.04583409 0.01630956  2.8102598 0.004950153   0.01386795
+#&gt; M$sexM           -0.87002367 0.45075104 -1.9301645 0.053586456  -1.75347948
+#&gt; M$hyperlipidemia  0.28922601 0.47408107  0.6100771 0.541810727  -0.63995581
+#&gt;                  high0.95CI.LP      P_OR low0.95CI.P_OR high0.95CI.P_OR
+#&gt; (Intercept)        -0.47255201 0.0842051     0.01338003       0.3840124
+#&gt; M$age               0.07780024 1.0469007     1.01396455       1.0809067
+#&gt; M$sexM              0.01343214 0.4189416     0.17317035       1.0135228
+#&gt; M$hyperlipidemia    1.21840783 1.3353935     0.52731572       3.3817991</code></pre>
 </div>
 </div>
-</div>
-<div class="callout callout-style-default callout-important callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Important</span>Adjustment, and the limits of a small sample
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Age stays a significant predictor of hypertension; sex is <strong>borderline</strong>; and the hyperlipidemia adjustment is not significant. On a <strong>~100-patient</strong> demo, power is limited — “estimable and converged” is the success criterion here, not a definitive clinical claim. The companion GiBleed study (next) has ~2,700 patients and delivers a strongly significant result.</p>
-</div>
-</div>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>DSI<span class="sc">::</span><span class="fu">datashield.logout</span>(conns)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<hr>
-</section>
-<section id="where-to-go-next" class="level1">
-<h1>Where to go next</h1>
-<p>You now have the full toolkit: <strong>connect → explore (conditions, numeric shape, categorical levels) → recipe (variables / format / filters / output, single or multiple) → preview → execute → ratify → summarise → model</strong>, all under a disclosure filter that kept every patient private.</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Coming next
+Note
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>The <strong><a href="omop-exercises.html">exercise sheet</a></strong> lets you practise everything here on new variables and a new model (with hints and a worked solution). Then a second vignette takes these exact tools to the larger <strong>GiBleed</strong> dataset (~2,700 patients) — where, with no numeric values to lean on, everything is treated as <strong>boolean presence</strong> — for a more powerful study.</p>
+<p>Age stays significant; sex is borderline; the comorbidity adjustment is not significant. On ~100 patients power is limited — the larger <strong>GiBleed</strong> study (next) delivers a strongly significant result.</p>
 </div>
 </div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a>DSI<span class="sc">::</span><span class="fu">datashield.logout</span>(conns)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="where-to-go-next" class="level1">
+<h1>Where to go next</h1>
+<p>You have the full toolkit: <strong>connect → explore → recipe (variables / format / filters / output, single or multiple) → execute → ratify → summarise → model</strong>. Next: the <strong><a href="omop-exercises.html">exercise sheet</a></strong>, then the larger <strong><a href="gibleed.html">GiBleed study</a></strong>.</p>
 
 
 </section>
