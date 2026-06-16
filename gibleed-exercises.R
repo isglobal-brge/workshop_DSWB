@@ -16,53 +16,49 @@ conns <- DSI::datashield.login(logins = builder$build())
 ds.omop.connect(resource = "omop_demo.gibleed", symbol = "omop", conns = conns)
 
 
-## ----ge1----------------------------------------------------------------------
-# STEP 1 — pooled prevalence of the top drugs (by distinct patients)
-ds.omop.concept.prevalence("____", metric = "persons", top_n = 12,
-                           scope = "pooled", symbol = "omop", conns = conns)$pooled
+## ----ex1----------------------------------------------------------------------
+# STEP 1 — search the Drug domain for an NSAID (e.g. one whose name you know)
+ds.omop.concept.search()
 
-# STEP 2 — confirm celecoxib's concept_id and how many patients take it
-ds.omop.concept.lookup(1118084, symbol = "omop", conns = conns)$pooled
+# STEP 2 — how many patients are on it?
+ds.omop.concept.prevalence()
 
 
-## ----ge2----------------------------------------------------------------------
-rec <- omop_recipe(
+## ----ex2----------------------------------------------------------------------
+# STEP 1 — find the GI-haemorrhage condition concept_id
+ds.omop.concept.search()
+
+# STEP 2 — wide table of booleans (choose the right formats + the 2019 age anchor)
+omop_recipe(
   variables = list(
-    omop_variable(table = "person", column = "gender_concept_id", format = "sex_mf", name = "sex"),
-    omop_variable_age(name = "age", year = ____),
-    omop_variable(table = "condition_occurrence", concept_id = 192671, format = "____", name = "gi_bleed"),
-    omop_variable(table = "drug_exposure", concept_id = 1118084, format = "____", name = "celecoxib")
+    omop_variable(),
+    omop_variable_age(),
+    omop_variable(),
+    omop_variable()
   ),
-  output = omop_output(name = "study", type = "wide"))
+  output = omop_output()
+)
+recipe_execute()
 
-recipe_execute(rec, out = c(study = "M"), symbol = "omop", conns = conns)
-ds.colnames("M", datasources = conns); ds.dim("M", datasources = conns)
-as.data.frame(ds.table("M$celecoxib", datasources = conns)$output.list[["TABLES.COMBINED_all.sources_counts"]])
-
-
-## ----ge3----------------------------------------------------------------------
-fit <- ds.glm(formula = "M$gi_bleed ~ M$age + M$sex + M$____",
-              family = "binomial", datasources = conns)
-fit$coefficients
+# STEP 3 — logistic regression; is the drug a significant predictor? (P_OR in $coefficients)
+ds.glm()
 
 
-## ----ge4----------------------------------------------------------------------
-rec_fx <- omop_recipe(
+## ----ex3----------------------------------------------------------------------
+# STEP 1 — find the forearm-fracture concept_id
+ds.omop.concept.search()
+
+# STEP 2 — table with sex + age + the fracture flag, then a logistic model on age + sex
+omop_recipe(
   variables = list(
-    omop_variable(table = "person", column = "gender_concept_id", format = "sex_mf", name = "sex"),
-    omop_variable_age(name = "age", year = 2019),
-    omop_variable(table = "condition_occurrence", concept_id = 4278672, format = "binary", name = "fx_forearm")
+    omop_variable(),
+    omop_variable_age(),
+    omop_variable()
   ),
-  output = omop_output(name = "study", type = "wide"))
-recipe_execute(rec_fx, out = c(study = "FX"), symbol = "omop", conns = conns)
-
-fit_fx <- ds.glm(formula = "FX$fx_forearm ~ FX$____ + FX$____",
-                 family = "binomial", datasources = conns)
-fit_fx$coefficients
-
-
-## ----challenge----------------------------------------------------------------
-# YOUR CODE HERE
+  output = omop_output()
+)
+recipe_execute()
+ds.glm()
 
 
 ## ----logout-------------------------------------------------------------------

@@ -1,18 +1,13 @@
 ---
 title: "GiBleed — Exercises"
 subtitle: "Find your own significant association in a larger, boolean-only cohort"
-format:
-  html:
-    df-print: kable
+format: html
 execute:
   eval: false
 ---
 
 <a href="#" onclick="event.preventDefault(); fetch('https://raw.githubusercontent.com/isglobal-brge/workshop_DSWB/main/gibleed-exercises.R').then(response => response.blob()).then(blob => { const url = window.URL.createObjectURL(blob); const a = document.createElement('a'); a.style.display = 'none'; a.href = url; a.download = 'gibleed-exercises.R'; document.body.appendChild(a); a.click(); window.URL.revokeObjectURL(url); }); return false;" class="btn btn-primary btn-sm">
 <i class="bi bi-download"></i> Download the worksheet (.R)
-</a>
-<a href="#" onclick="event.preventDefault(); fetch('https://raw.githubusercontent.com/isglobal-brge/workshop_DSWB/main/gibleed-exercises.Rmd').then(response => response.blob()).then(blob => { const url = window.URL.createObjectURL(blob); const a = document.createElement('a'); a.style.display = 'none'; a.href = url; a.download = 'gibleed-exercises.Rmd'; document.body.appendChild(a); a.click(); window.URL.revokeObjectURL(url); }); return false;" class="btn btn-outline-primary btn-sm">
-<i class="bi bi-download"></i> Source (.Rmd)
 </a>
 <a href="gibleed_solution.html" target="_blank" class="btn btn-success btn-sm">
 <i class="bi bi-check-circle"></i> View solutions
@@ -24,7 +19,7 @@ knitr::opts_chunk$set(comment = "#>", eval = FALSE)
 
 # How to use this sheet
 
-You did the whole workflow in the [GiBleed tutorial](gibleed.html). Now find a **different** association yourself. Fill the `____` blanks, run each chunk, and read the output. Remember: GiBleed has **no numeric values**, so every clinical variable is a **boolean** flag (`format = "binary"`) and age is anchored to **2019**. Worked, executed [solutions](gibleed_solution.html) are one click away.
+You did the workflow in the [GiBleed tutorial](gibleed.html). Now find a **different** association yourself, **looking up the concepts** with `ds.omop.concept.search(...)` (we won't hand you the codes). Each chunk is a bare skeleton plus a `# STEP` comment. Remember: GiBleed has **no numeric values**, so every clinical variable is a **boolean** flag (`format = "binary"`), and age is anchored to **2019**.
 
 ## Setup (run this first)
 
@@ -44,99 +39,61 @@ ds.omop.connect(resource = "omop_demo.gibleed", symbol = "omop", conns = conns)
 
 ---
 
-# Exercise 1 — Explore the medications
+# Exercise 1 — Find a medication
 
-The tutorial looked at *conditions*. Now explore **drugs**: which are most common, and how many patients take **celecoxib** (an anti-inflammatory / NSAID)?
+Find a common **anti-inflammatory (NSAID) painkiller** in this cohort and how many patients take it.
 
-```{r ge1}
-# STEP 1 — pooled prevalence of the top drugs (by distinct patients)
-ds.omop.concept.prevalence("____", metric = "persons", top_n = 12,
-                           scope = "pooled", symbol = "omop", conns = conns)$pooled
+```{r ex1}
+# STEP 1 — search the Drug domain for an NSAID (e.g. one whose name you know)
+ds.omop.concept.search()
 
-# STEP 2 — confirm celecoxib's concept_id and how many patients take it
-ds.omop.concept.lookup(1118084, symbol = "omop", conns = conns)$pooled
+# STEP 2 — how many patients are on it?
+ds.omop.concept.prevalence()
 ```
 
-**Question:** Roughly how many patients are on celecoxib?
+# Exercise 2 — Does that drug relate to GI bleeding?
 
-::: {.callout-tip collapse="true"}
-## Hint
-Drugs live in the **`drug_exposure`** table. Celecoxib is `concept_id = 1118084`.
-:::
+Find the concept for **gastrointestinal haemorrhage**, build a boolean table with sex, age, the GI-bleed flag and the drug flag, then model it.
 
-# Exercise 2 — Build a boolean table
+```{r ex2}
+# STEP 1 — find the GI-haemorrhage condition concept_id
+ds.omop.concept.search()
 
-Build a wide table `M` with **sex**, **age** (anchored to 2019), a boolean **GI-bleed** flag (`192671`) and a boolean **celecoxib** flag (`1118084`). Ratify it, and read each flag's prevalence.
-
-```{r ge2}
-rec <- omop_recipe(
+# STEP 2 — wide table of booleans (choose the right formats + the 2019 age anchor)
+omop_recipe(
   variables = list(
-    omop_variable(table = "person", column = "gender_concept_id", format = "sex_mf", name = "sex"),
-    omop_variable_age(name = "age", year = ____),
-    omop_variable(table = "condition_occurrence", concept_id = 192671, format = "____", name = "gi_bleed"),
-    omop_variable(table = "drug_exposure", concept_id = 1118084, format = "____", name = "celecoxib")
+    omop_variable(),
+    omop_variable_age(),
+    omop_variable(),
+    omop_variable()
   ),
-  output = omop_output(name = "study", type = "wide"))
+  output = omop_output()
+)
+recipe_execute()
 
-recipe_execute(rec, out = c(study = "M"), symbol = "omop", conns = conns)
-ds.colnames("M", datasources = conns); ds.dim("M", datasources = conns)
-as.data.frame(ds.table("M$celecoxib", datasources = conns)$output.list[["TABLES.COMBINED_all.sources_counts"]])
+# STEP 3 — logistic regression; is the drug a significant predictor? (P_OR in $coefficients)
+ds.glm()
 ```
 
-::: {.callout-tip collapse="true"}
-## Hint
-`year = 2019`; both clinical flags are `format = "binary"` (a yes/no presence).
-:::
+# Exercise 3 — A different outcome: does age predict a fracture?
 
-# Exercise 3 — Is celecoxib associated with GI bleeding?
+Unlike GI bleed, some outcomes *do* rise with age. Find a **forearm-fracture** condition and test whether age predicts it.
 
-Fit a logistic regression of GI bleed on age, sex and celecoxib.
+```{r ex3}
+# STEP 1 — find the forearm-fracture concept_id
+ds.omop.concept.search()
 
-```{r ge3}
-fit <- ds.glm(formula = "M$gi_bleed ~ M$age + M$sex + M$____",
-              family = "binomial", datasources = conns)
-fit$coefficients
-```
-
-**Question:** Is celecoxib a significant predictor (p < 0.05)? In which direction (OR above or below 1)?
-
-::: {.callout-tip collapse="true"}
-## Hint
-The third predictor is `M$celecoxib`. Expect a **significant** odds ratio **above 1** (an NSAID raising GI-bleed odds). Age and sex should be non-significant in this older cohort.
-:::
-
-# Exercise 4 — A different outcome: does age predict a fracture?
-
-Unlike GI bleed, some outcomes *do* rise with age. Build a table with sex, age, and a boolean **forearm-fracture** flag (`concept_id = 4278672`), then model it.
-
-```{r ge4}
-rec_fx <- omop_recipe(
+# STEP 2 — table with sex + age + the fracture flag, then a logistic model on age + sex
+omop_recipe(
   variables = list(
-    omop_variable(table = "person", column = "gender_concept_id", format = "sex_mf", name = "sex"),
-    omop_variable_age(name = "age", year = 2019),
-    omop_variable(table = "condition_occurrence", concept_id = 4278672, format = "binary", name = "fx_forearm")
+    omop_variable(),
+    omop_variable_age(),
+    omop_variable()
   ),
-  output = omop_output(name = "study", type = "wide"))
-recipe_execute(rec_fx, out = c(study = "FX"), symbol = "omop", conns = conns)
-
-fit_fx <- ds.glm(formula = "FX$fx_forearm ~ FX$____ + FX$____",
-                 family = "binomial", datasources = conns)
-fit_fx$coefficients
-```
-
-**Question:** Which predictor is significant now? How does that contrast with the GI-bleed model?
-
-::: {.callout-tip collapse="true"}
-## Hint
-Predictors are `FX$age` and `FX$sex`. Here **age** should be significant — older patients fall more — whereas in the GI-bleed model the *comorbidity*, not age, carried the signal.
-:::
-
-# Open challenge
-
-Pick any condition or drug from the tutorial's prevalence chart, add it as a boolean flag, and test whether it predicts GI bleed. **First check its prevalence** (Section 7 of the tutorial showed what happens to a near-100% or near-0% outcome).
-
-```{r challenge}
-# YOUR CODE HERE
+  output = omop_output()
+)
+recipe_execute()
+ds.glm()
 ```
 
 ```{r logout}
@@ -144,5 +101,5 @@ DSI::datashield.logout(conns)
 ```
 
 ::: {.callout-note}
-A larger cohort means more power — but also remember the per-patient disclosure gate still runs on every result, and a degenerate (all-yes / all-no) outcome still can't be modelled.
+Before modelling any outcome, check its prevalence (`ds.omop.concept.prevalence`) — a variable that everyone (or no one) has can't be modelled.
 :::

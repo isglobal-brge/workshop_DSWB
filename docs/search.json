@@ -18,7 +18,7 @@
     "href": "gibleed-exercises.html",
     "title": "GiBleed — Exercises",
     "section": "",
-    "text": "Download the worksheet (.R)    Source (.Rmd)    View solutions"
+    "text": "Download the worksheet (.R)    View solutions"
   },
   {
     "objectID": "gibleed-exercises.html#setup-run-this-first",
@@ -333,7 +333,7 @@
     "href": "omop-exercises.html",
     "title": "dsOMOP — Exercises (MIMIC)",
     "section": "",
-    "text": "Download the worksheet (.R)    Source (.Rmd)    View solutions"
+    "text": "Download the worksheet (.R)    View solutions"
   },
   {
     "objectID": "omop-exercises.html#setup-run-this-first",

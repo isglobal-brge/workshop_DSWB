@@ -235,13 +235,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <ul class="collapse">
   <li><a href="#setup-run-this-first" id="toc-setup-run-this-first" class="nav-link" data-scroll-target="#setup-run-this-first">Setup (run this first)</a></li>
   </ul></li>
-  <li><a href="#exercise-1-find-a-concept-yourself" id="toc-exercise-1-find-a-concept-yourself" class="nav-link" data-scroll-target="#exercise-1-find-a-concept-yourself">Exercise 1 — Find a concept yourself</a></li>
-  <li><a href="#exercise-2-a-new-numeric-variable" id="toc-exercise-2-a-new-numeric-variable" class="nav-link" data-scroll-target="#exercise-2-a-new-numeric-variable">Exercise 2 — A new numeric variable</a></li>
-  <li><a href="#exercise-3-a-new-categorical-variable" id="toc-exercise-3-a-new-categorical-variable" class="nav-link" data-scroll-target="#exercise-3-a-new-categorical-variable">Exercise 3 — A new categorical variable</a></li>
-  <li><a href="#exercise-4-build-your-own-recipe" id="toc-exercise-4-build-your-own-recipe" class="nav-link" data-scroll-target="#exercise-4-build-your-own-recipe">Exercise 4 — Build your own recipe</a></li>
-  <li><a href="#exercise-5-filter-at-extraction" id="toc-exercise-5-filter-at-extraction" class="nav-link" data-scroll-target="#exercise-5-filter-at-extraction">Exercise 5 — Filter at extraction</a></li>
-  <li><a href="#exercise-6-a-model" id="toc-exercise-6-a-model" class="nav-link" data-scroll-target="#exercise-6-a-model">Exercise 6 — A model</a></li>
-  <li><a href="#open-challenge" id="toc-open-challenge" class="nav-link" data-scroll-target="#open-challenge">Open challenge</a></li>
+  <li><a href="#exercise-1-find-a-condition" id="toc-exercise-1-find-a-condition" class="nav-link" data-scroll-target="#exercise-1-find-a-condition">Exercise 1 — Find a condition</a></li>
+  <li><a href="#exercise-2-a-numeric-measurement" id="toc-exercise-2-a-numeric-measurement" class="nav-link" data-scroll-target="#exercise-2-a-numeric-measurement">Exercise 2 — A numeric measurement</a></li>
+  <li><a href="#exercise-3-are-these-patients-married" id="toc-exercise-3-are-these-patients-married" class="nav-link" data-scroll-target="#exercise-3-are-these-patients-married">Exercise 3 — Are these patients married?</a></li>
+  <li><a href="#exercise-4-build-your-own-table" id="toc-exercise-4-build-your-own-table" class="nav-link" data-scroll-target="#exercise-4-build-your-own-table">Exercise 4 — Build your own table</a></li>
+  <li><a href="#exercise-5-filter-then-model" id="toc-exercise-5-filter-then-model" class="nav-link" data-scroll-target="#exercise-5-filter-then-model">Exercise 5 — Filter, then model</a></li>
   </ul>
 </nav>
     </div>
@@ -251,7 +249,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
 <h1 class="title">dsOMOP — Exercises (MIMIC)</h1>
-<p class="subtitle lead">Practise the federated-analysis toolkit on new variables and a new model</p>
+<p class="subtitle lead">Find the concepts yourself and build the analysis</p>
 </div>
 
 
@@ -268,28 +266,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p><a href="#" onclick="event.preventDefault(); fetch('https://raw.githubusercontent.com/isglobal-brge/workshop_DSWB/main/omop-exercises.R').then(response => response.blob()).then(blob => { const url = window.URL.createObjectURL(blob); const a = document.createElement('a'); a.style.display = 'none'; a.href = url; a.download = 'omop-exercises.R'; document.body.appendChild(a); a.click(); window.URL.revokeObjectURL(url); }); return false;" class="btn btn-primary btn-sm"> <i class="bi bi-download"></i> Download the worksheet (.R) </a> <a href="#" onclick="event.preventDefault(); fetch('https://raw.githubusercontent.com/isglobal-brge/workshop_DSWB/main/omop-exercises.Rmd').then(response => response.blob()).then(blob => { const url = window.URL.createObjectURL(blob); const a = document.createElement('a'); a.style.display = 'none'; a.href = url; a.download = 'omop-exercises.Rmd'; document.body.appendChild(a); a.click(); window.URL.revokeObjectURL(url); }); return false;" class="btn btn-outline-primary btn-sm"> <i class="bi bi-download"></i> Source (.Rmd) </a> <a href="omop_exercises_solution.html" target="_blank" class="btn btn-success btn-sm"> <i class="bi bi-check-circle"></i> View solutions </a></p>
+<p><a href="#" onclick="event.preventDefault(); fetch('https://raw.githubusercontent.com/isglobal-brge/workshop_DSWB/main/omop-exercises.R').then(response => response.blob()).then(blob => { const url = window.URL.createObjectURL(blob); const a = document.createElement('a'); a.style.display = 'none'; a.href = url; a.download = 'omop-exercises.R'; document.body.appendChild(a); a.click(); window.URL.revokeObjectURL(url); }); return false;" class="btn btn-primary btn-sm"> <i class="bi bi-download"></i> Download the worksheet (.R) </a> <a href="omop_exercises_solution.html" target="_blank" class="btn btn-success btn-sm"> <i class="bi bi-check-circle"></i> View solutions </a></p>
 <section id="how-to-use-this-sheet" class="level1">
 <h1>How to use this sheet</h1>
-<p>Everything you need you <strong>already did once</strong> in the <a href="dsomop.html">tutorial</a>. Each exercise gives you a <strong>code skeleton</strong> with blanks marked <code>____</code> and a <code># STEP</code> comment telling you what to do — fill in the blanks, run it, and <strong>check the output</strong>. A collapsed <strong>hint</strong> is there if you get stuck. We stay on the <strong>MIMIC</strong> dataset, but use <em>new</em> variables. The <a href="omop_exercises_solution.html">worked solutions</a> (with real output) are one click away.</p>
-<div class="callout callout-style-default callout-important callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Important</span>Reminders
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<ul>
-<li>Connect with <code>profile = "omop"</code>.</li>
-<li>Pooled summaries: pass <code>scope = "pooled"</code> and read the <code>$pooled</code> slot.</li>
-<li>Anchor age with <code>year = 2024</code> (this extract’s collection year).</li>
-<li><strong>Check the output after every step.</strong></li>
-</ul>
-</div>
-</div>
+<p>You did the whole workflow in the <a href="dsomop.html">tutorial</a>. Now do it yourself on <strong>new</strong> variables — and <strong>find the concept codes yourself</strong> with <code>ds.omop.concept.search(...)</code>; we won’t hand them to you. Each chunk is a <strong>bare skeleton</strong> (the functions you’ll need, with empty arguments) plus a <code># STEP</code> comment — fill it in and think about each argument. Worked, executed <a href="omop_exercises_solution.html">solutions</a> are one click away. Anchor age with <code>year = 2024</code>.</p>
 <section id="setup-run-this-first" class="level2">
 <h2 data-anchor-id="setup-run-this-first">Setup (run this first)</h2>
 <div class="cell">
@@ -308,216 +288,80 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <hr>
 </section>
 </section>
-<section id="exercise-1-find-a-concept-yourself" class="level1">
-<h1>Exercise 1 — Find a concept yourself</h1>
-<p>You suspect <strong>alcohol abuse</strong> is recorded. Find its <code>concept_id</code>, then see how many patients have it.</p>
+<section id="exercise-1-find-a-condition" class="level1">
+<h1>Exercise 1 — Find a condition</h1>
+<p>How many patients have a recorded problem with <strong>high blood cholesterol</strong>? Find the concept, then its prevalence.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># STEP 1 — search the Condition domain for "alcohol abuse" to get its concept_id</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.omop.concept.search</span>(<span class="st">"____"</span>, <span class="at">domain =</span> <span class="st">"Condition"</span>, <span class="at">symbol =</span> <span class="st">"omop"</span>, <span class="at">conns =</span> conns)<span class="sc">$</span>pooled</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># STEP 1 — search the Condition domain for the right concept (what term describes high cholesterol?)</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.omop.concept.search</span>()</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># STEP 2 — find it in the pooled condition prevalence (ranked by distinct patients)</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.omop.concept.prevalence</span>(<span class="st">"condition_occurrence"</span>, <span class="at">metric =</span> <span class="st">"persons"</span>,</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>                           <span class="at">top_n =</span> <span class="dv">15</span>, <span class="at">scope =</span> <span class="st">"pooled"</span>, <span class="at">symbol =</span> <span class="st">"omop"</span>, <span class="at">conns =</span> conns)<span class="sc">$</span>pooled</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<p><strong>Question:</strong> What is the <code>concept_id</code>, and roughly how many patients have it?</p>
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Tip</span>Hint
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-2" class="callout-2-contents callout-collapse collapse">
-<div class="callout-body-container callout-body">
-<p>Search the term <code>"alcohol"</code>. You are looking for <em>Alcohol abuse</em> (<code>concept_id = 433753</code>); read its <code>n_persons</code> from the prevalence table.</p>
-</div>
-</div>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># STEP 2 — once you have its concept_id, see how many patients have it</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.omop.concept.prevalence</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
-<section id="exercise-2-a-new-numeric-variable" class="level1">
-<h1>Exercise 2 — A new numeric variable</h1>
-<p>The tutorial summarised heart rate and creatinine. Do the same for <strong>systolic blood pressure</strong> (<code>concept_id = 21492239</code>): get its safe statistics and draw its histogram.</p>
+<section id="exercise-2-a-numeric-measurement" class="level1">
+<h1>Exercise 2 — A numeric measurement</h1>
+<p>Pick a <strong>blood-pressure</strong> measurement, get its disclosure-safe statistics, and plot its distribution. Is it symmetric or skewed?</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># STEP 1 — disclosure-safe summary (pooled): n, mean, sd, p05-p95</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.omop.column.stats</span>(<span class="st">"measurement"</span>, <span class="st">"value_as_number"</span>, <span class="at">concept_id =</span> ____,</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>                     <span class="at">scope =</span> <span class="st">"pooled"</span>, <span class="at">symbol =</span> <span class="st">"omop"</span>, <span class="at">conns =</span> conns)<span class="sc">$</span>pooled</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co"># STEP 2 — its shape: pull the per-site bins, then draw them</span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>h <span class="ot">&lt;-</span> <span class="fu">ds.omop.value.histogram</span>(<span class="st">"measurement"</span>, <span class="at">value_col =</span> <span class="st">"value_as_number"</span>,</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>                             <span class="at">concept_id =</span> ____, <span class="at">symbol =</span> <span class="st">"omop"</span>, <span class="at">conns =</span> conns)</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co"># combine h$per_site (drop NA counts), put midpoints on a common grid, then barplot()</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<p><strong>Question:</strong> Is systolic blood pressure roughly symmetric, or skewed like creatinine?</p>
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Tip</span>Hint
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-3" class="callout-3-contents callout-collapse collapse">
-<div class="callout-body-container callout-body">
-<p>Use <code>concept_id = 21492239</code> in both calls. For the picture, reuse the tutorial’s <code>draw_hist()</code> helper (copy it across), e.g.&nbsp;<code>draw_hist(21492239, nbins = 9, xlab = "Systolic BP (mmHg)", main = "Systolic BP")</code>. Its mean is ~115 mmHg.</p>
-</div>
-</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># STEP 1 — find the concept_id for a systolic blood pressure measurement</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.omop.concept.search</span>()</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co"># STEP 2 — safe summary (mean, sd, p05-p95)</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.omop.column.stats</span>()</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co"># STEP 3 — draw it (remember the histogram can plot itself)</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.omop.value.histogram</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
-<section id="exercise-3-a-new-categorical-variable" class="level1">
-<h1>Exercise 3 — A new categorical variable</h1>
-<p>The tutorial counted heart <strong>rhythm</strong>. Explore <strong>marital status</strong> (<code>concept_id = 40766231</code>, in the <code>observation</code> table): count how often each value occurs.</p>
+<section id="exercise-3-are-these-patients-married" class="level1">
+<h1>Exercise 3 — Are these patients married?</h1>
+<p>Find out the most common <strong>marital situation</strong> of the patients. (It’s recorded in the <code>observation</code> table as a coded value.)</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># STEP — marital status is a CODED value, so it lives in value_as_concept_id. Count it, pooled.</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.omop.value.counts</span>(<span class="st">"observation"</span>, <span class="st">"____"</span>, <span class="at">concept_id =</span> <span class="dv">40766231</span>,</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>                     <span class="at">scope =</span> <span class="st">"pooled"</span>, <span class="at">symbol =</span> <span class="st">"omop"</span>, <span class="at">conns =</span> conns)<span class="sc">$</span>pooled</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<p><strong>Question:</strong> What is the most common marital status?</p>
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Tip</span>Hint
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-4" class="callout-4-contents callout-collapse collapse">
-<div class="callout-body-container callout-body">
-<p>The column is <code>"value_as_concept_id"</code> (categorical measurements/observations store their code there, not in <code>value_as_number</code>).</p>
-</div>
-</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># STEP 1 — find the concept_id that records marital status</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.omop.concept.search</span>()</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co"># STEP 2 — count each recorded value (which column holds a CODED answer?)</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.omop.value.counts</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
-<section id="exercise-4-build-your-own-recipe" class="level1">
-<h1>Exercise 4 — Build your own recipe</h1>
-<p>Build a wide person-level table <code>D</code> with: <strong>sex</strong>, <strong>age</strong> (anchored to 2024), the <strong>mean systolic blood pressure</strong>, a <strong>binary alcohol-abuse flag</strong> (the concept from Exercise 1), and a <strong>count of hospital visits</strong>. Then ratify what the server built and summarise it.</p>
+<section id="exercise-4-build-your-own-table" class="level1">
+<h1>Exercise 4 — Build your own table</h1>
+<p>Build a person-level table with <strong>sex</strong>, <strong>age</strong>, a <strong>numeric</strong> lab/vital of your choice, and a <strong>yes/no flag</strong> for a condition you found above. Then ratify it and summarise each column.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># STEP 1 — write the recipe: fill the format of each variable and the age anchor year</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>rec <span class="ot">&lt;-</span> <span class="fu">omop_recipe</span>(</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># STEP 1 — fill the recipe (choose formats: sex_mf / mean / binary / count ...)</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">omop_recipe</span>(</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">variables =</span> <span class="fu">list</span>(</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable</span>(<span class="at">table =</span> <span class="st">"person"</span>, <span class="at">column =</span> <span class="st">"gender_concept_id"</span>, <span class="at">format =</span> <span class="st">"sex_mf"</span>, <span class="at">name =</span> <span class="st">"sex"</span>),</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable_age</span>(<span class="at">name =</span> <span class="st">"age"</span>, <span class="at">year =</span> ____),</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable</span>(<span class="at">table =</span> <span class="st">"measurement"</span>, <span class="at">concept_id =</span> <span class="dv">21492239</span>, <span class="at">format =</span> <span class="st">"____"</span>, <span class="at">name =</span> <span class="st">"systolic_bp"</span>),</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable</span>(<span class="at">table =</span> <span class="st">"condition_occurrence"</span>, <span class="at">concept_id =</span> <span class="dv">433753</span>, <span class="at">format =</span> <span class="st">"____"</span>, <span class="at">name =</span> <span class="st">"alcohol_abuse"</span>),</span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable</span>(<span class="at">table =</span> <span class="st">"visit_occurrence"</span>, <span class="at">format =</span> <span class="st">"count"</span>, <span class="at">name =</span> <span class="st">"n_visits"</span>)</span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  ),</span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">output =</span> <span class="fu">omop_output</span>(<span class="at">name =</span> <span class="st">"study"</span>, <span class="at">type =</span> <span class="st">"wide"</span>))</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable</span>(),</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable_age</span>(),</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable</span>(),</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable</span>()</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">output =</span> <span class="fu">omop_output</span>()</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="co"># STEP 2 — execute into a server symbol D, then RATIFY it was built as you expected</span></span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="fu">recipe_execute</span>(rec, <span class="at">out =</span> <span class="fu">c</span>(<span class="at">study =</span> <span class="st">"D"</span>), <span class="at">symbol =</span> <span class="st">"omop"</span>, <span class="at">conns =</span> conns)</span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.colnames</span>(<span class="st">"D"</span>, <span class="at">datasources =</span> conns)</span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.dim</span>(<span class="st">"D"</span>, <span class="at">datasources =</span> conns)</span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a><span class="co"># STEP 3 — summarise the systolic_bp column</span></span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.summary</span>(<span class="st">"D$systolic_bp"</span>, <span class="at">datasources =</span> conns)[[<span class="dv">1</span>]][[<span class="st">"quantiles &amp; mean"</span>]]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Tip</span>Hint
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-5" class="callout-5-contents callout-collapse collapse">
-<div class="callout-body-container callout-body">
-<p><code>year = 2024</code>; a <em>mean</em> lab value is <code>format = "mean"</code>; a yes/no condition flag is <code>format = "binary"</code>. <code>D</code> should have one row per patient with <code>person_id, sex, age, systolic_bp, alcohol_abuse, n_visits</code>.</p>
-</div>
-</div>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="co"># STEP 2 — execute into a server symbol, then RATIFY (colnames + dim)</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="fu">recipe_execute</span>()</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="co"># STEP 3 — summarise: ds.summary() for numerics, ds.table() for categories/flags</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
-<section id="exercise-5-filter-at-extraction" class="level1">
-<h1>Exercise 5 — Filter at extraction</h1>
-<p>Re-extract, but keep only <strong>male</strong> patients <strong>aged 60+</strong>, as <code>DSUB</code>. Confirm the cohort shrank and that everyone is male.</p>
+<section id="exercise-5-filter-then-model" class="level1">
+<h1>Exercise 5 — Filter, then model</h1>
+<p>Restrict to a subpopulation (e.g.&nbsp;older patients), then fit a logistic regression for a yes/no outcome of your choice. Read the raw <code>ds.glm</code> coefficients.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># STEP — add a filters = list(...) with a sex filter and an age filter</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>rec_sub <span class="ot">&lt;-</span> <span class="fu">omop_recipe</span>(</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">variables =</span> <span class="fu">list</span>(</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable</span>(<span class="at">table =</span> <span class="st">"person"</span>, <span class="at">column =</span> <span class="st">"gender_concept_id"</span>, <span class="at">format =</span> <span class="st">"sex_mf"</span>, <span class="at">name =</span> <span class="st">"sex"</span>),</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable_age</span>(<span class="at">name =</span> <span class="st">"age"</span>, <span class="at">year =</span> <span class="dv">2024</span>),</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable</span>(<span class="at">table =</span> <span class="st">"condition_occurrence"</span>, <span class="at">concept_id =</span> <span class="dv">433753</span>, <span class="at">format =</span> <span class="st">"binary"</span>, <span class="at">name =</span> <span class="st">"alcohol_abuse"</span>)</span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  ),</span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">filters =</span> <span class="fu">list</span>(</span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">male  =</span> <span class="fu">omop_filter_sex</span>(<span class="st">"____"</span>),</span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">older =</span> <span class="fu">omop_filter_age</span>(<span class="at">min =</span> ____, <span class="at">year =</span> <span class="dv">2024</span>)</span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>  ),</span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">output =</span> <span class="fu">omop_output</span>(<span class="at">name =</span> <span class="st">"study"</span>, <span class="at">type =</span> <span class="st">"wide"</span>))</span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a><span class="fu">recipe_execute</span>(rec_sub, <span class="at">out =</span> <span class="fu">c</span>(<span class="at">study =</span> <span class="st">"DSUB"</span>), <span class="at">symbol =</span> <span class="st">"omop"</span>, <span class="at">conns =</span> conns)</span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.dim</span>(<span class="st">"DSUB"</span>, <span class="at">datasources =</span> conns)</span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a><span class="fu">as.data.frame</span>(<span class="fu">ds.table</span>(<span class="st">"DSUB$sex"</span>, <span class="at">datasources =</span> conns)<span class="sc">$</span>output.list[[<span class="st">"TABLES.COMBINED_all.sources_counts"</span>]])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<p><strong>Question:</strong> How many patients remain, and is every one of them male?</p>
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-6-contents" aria-controls="callout-6" aria-expanded="false" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Tip</span>Hint
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-6" class="callout-6-contents callout-collapse collapse">
-<div class="callout-body-container callout-body">
-<p><code>omop_filter_sex("M")</code> and <code>omop_filter_age(min = 60, year = 2024)</code>. Filters can only shrink a population, so the count drops.</p>
-</div>
-</div>
-</div>
-</section>
-<section id="exercise-6-a-model" class="level1">
-<h1>Exercise 6 — A model</h1>
-<p>Build a table with <strong>sex</strong>, <strong>age</strong> and a <strong>binary hypertension</strong> flag (<code>concept_id = 320128</code>), then fit a logistic regression of hypertension on age and sex.</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># STEP 1 — recipe + execute into H</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>rec_h <span class="ot">&lt;-</span> <span class="fu">omop_recipe</span>(</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">variables =</span> <span class="fu">list</span>(</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable</span>(<span class="at">table =</span> <span class="st">"person"</span>, <span class="at">column =</span> <span class="st">"gender_concept_id"</span>, <span class="at">format =</span> <span class="st">"sex_mf"</span>, <span class="at">name =</span> <span class="st">"sex"</span>),</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable_age</span>(<span class="at">name =</span> <span class="st">"age"</span>, <span class="at">year =</span> <span class="dv">2024</span>),</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable</span>(<span class="at">table =</span> <span class="st">"condition_occurrence"</span>, <span class="at">concept_id =</span> <span class="dv">320128</span>, <span class="at">format =</span> <span class="st">"binary"</span>, <span class="at">name =</span> <span class="st">"hypertension"</span>)</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  ),</span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">output =</span> <span class="fu">omop_output</span>(<span class="at">name =</span> <span class="st">"study"</span>, <span class="at">type =</span> <span class="st">"wide"</span>))</span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="fu">recipe_execute</span>(rec_h, <span class="at">out =</span> <span class="fu">c</span>(<span class="at">study =</span> <span class="st">"H"</span>), <span class="at">symbol =</span> <span class="st">"omop"</span>, <span class="at">conns =</span> conns)</span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="co"># STEP 2 — fit the logistic model: fill in the two predictors</span></span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">ds.glm</span>(<span class="at">formula =</span> <span class="st">"H$hypertension ~ H$____ + H$____"</span>,</span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>              <span class="at">family =</span> <span class="st">"binomial"</span>, <span class="at">datasources =</span> conns)</span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>fit<span class="sc">$</span>coefficients</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<p><strong>Question:</strong> Which predictor is significant (p &lt; 0.05)? Is the direction clinically sensible?</p>
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-7-contents" aria-controls="callout-7" aria-expanded="false" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Tip</span>Hint
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-7" class="callout-7-contents callout-collapse collapse">
-<div class="callout-body-container callout-body">
-<p>The predictors are <code>H$age</code> and <code>H$sex</code>. Read the <code>p-value</code> column; <code>age</code> should be the significant one (odds of hypertension rise with age). On ~100 patients, expect wide confidence intervals.</p>
-</div>
-</div>
-</div>
-</section>
-<section id="open-challenge" class="level1">
-<h1>Open challenge</h1>
-<p>Pick <strong>any</strong> condition that interests you (find it with <code>ds.omop.concept.search</code>), add it to a recipe as a binary flag, and explore whether it is associated with age or sex. There is no single right answer — the skill is running the workflow correctly and reading the result honestly.</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># YOUR CODE HERE</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># STEP 1 — recipe with a filters = list(...) element, then execute</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">omop_recipe</span>(</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">variables =</span> <span class="fu">list</span>(),</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">filters =</span> <span class="fu">list</span>(),</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">output =</span> <span class="fu">omop_output</span>()</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="fu">recipe_execute</span>()</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="co"># STEP 2 — fit the model and inspect $coefficients (P_OR is the odds ratio)</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.glm</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>DSI<span class="sc">::</span><span class="fu">datashield.logout</span>(conns)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>DSI<span class="sc">::</span><span class="fu">datashield.logout</span>(conns)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -529,7 +373,7 @@ Note
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Not every hypothesis pans out — a non-significant result is still a real finding. Doing the analysis correctly matters more than getting stars next to your coefficients.</p>
+<p>Stuck on a concept? <code>ds.omop.concept.search("&lt;term&gt;", domain = "Condition")</code> (or <code>domain = "Measurement"</code>). A non-significant model is still a real result.</p>
 </div>
 </div>
 
