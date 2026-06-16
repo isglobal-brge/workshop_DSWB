@@ -2,12 +2,12 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.7.31">
+<meta name="generator" content="quarto-1.8.27">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>DataSHIELD OMOP Practical Exercises – DataSHIELD APHRC Workshop</title>
+<title>dsOMOP — Exercises (Solutions) – DataSHIELD DSWB Workshop</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -68,13 +68,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="./images/isglobal_logo.jpg" rel="icon" type="image/jpeg">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-b08616ca30bc6986c6ffe4cecfeccd70.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-afdc90b34ebced266e103efb07108d1c.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-d2fec8d93cc0814413f782f2e7a38223.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-ccc22283debd23ef421ac463adf8e61d.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -106,6 +107,35 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <link rel="stylesheet" href="styles.css">
 <link rel="stylesheet" href="navbar-fix.css">
@@ -146,12 +176,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
  <span class="dropdown-text">DataSHIELD Presentation</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./DataSHIELD_workshop_APHRC_tables.html"><i class="bi bi-table" role="img">
+    <a class="dropdown-item" href="./DataSHIELD_workshop_DSWB_tables.html"><i class="bi bi-table" role="img">
 </i> 
  <span class="dropdown-text">DataSHIELD (Tables)</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./DataSHIELD_workshop_APHRC_resources.html"><i class="bi bi-link-45deg" role="img">
+    <a class="dropdown-item" href="./DataSHIELD_workshop_DSWB_resources.html"><i class="bi bi-link-45deg" role="img">
 </i> 
  <span class="dropdown-text">DataSHIELD (Resources)</span></a>
   </li>  
@@ -220,83 +250,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#solution" id="toc-solution" class="nav-link active" data-scroll-target="#solution">Solution</a>
-  <ul class="collapse">
-  <li><a href="#setup" id="toc-setup" class="nav-link" data-scroll-target="#setup">Setup</a></li>
-  </ul></li>
-  <li><a href="#exercise-1-server-connection-and-initial-data-exploration" id="toc-exercise-1-server-connection-and-initial-data-exploration" class="nav-link" data-scroll-target="#exercise-1-server-connection-and-initial-data-exploration">Exercise 1: Server Connection and Initial Data Exploration</a>
-  <ul class="collapse">
-  <li><a href="#exercise-1-connect-to-the-server-and-explore-the-data-structure" id="toc-exercise-1-connect-to-the-server-and-explore-the-data-structure" class="nav-link" data-scroll-target="#exercise-1-connect-to-the-server-and-explore-the-data-structure">Exercise 1: Connect to the server and explore the data structure</a></li>
-  </ul></li>
-  <li><a href="#exercise-2-who-are-we-studying" id="toc-exercise-2-who-are-we-studying" class="nav-link" data-scroll-target="#exercise-2-who-are-we-studying">Exercise 2: Who Are We Studying?</a>
-  <ul class="collapse">
-  <li><a href="#exercise-2-who-are-we-studying-1" id="toc-exercise-2-who-are-we-studying-1" class="nav-link" data-scroll-target="#exercise-2-who-are-we-studying-1">Exercise 2: Who Are We Studying?</a>
-  <ul class="collapse">
-  <li><a href="#task-2.1-gender-distribution" id="toc-task-2.1-gender-distribution" class="nav-link" data-scroll-target="#task-2.1-gender-distribution">Task 2.1: Gender distribution</a></li>
-  <li><a href="#task-2.2-age-distribution" id="toc-task-2.2-age-distribution" class="nav-link" data-scroll-target="#task-2.2-age-distribution">Task 2.2: Age distribution</a></li>
-  <li><a href="#task-2.3-sample-size" id="toc-task-2.3-sample-size" class="nav-link" data-scroll-target="#task-2.3-sample-size">Task 2.3: Sample size</a></li>
-  </ul></li>
-  </ul></li>
-  <li><a href="#exercise-3-what-was-measured" id="toc-exercise-3-what-was-measured" class="nav-link" data-scroll-target="#exercise-3-what-was-measured">Exercise 3: What Was Measured?</a>
-  <ul class="collapse">
-  <li><a href="#exercise-3-what-was-measured-1" id="toc-exercise-3-what-was-measured-1" class="nav-link" data-scroll-target="#exercise-3-what-was-measured-1">Exercise 3: What Was Measured?</a>
-  <ul class="collapse">
-  <li><a href="#task-3.1-available-conditions" id="toc-task-3.1-available-conditions" class="nav-link" data-scroll-target="#task-3.1-available-conditions">Task 3.1: Available conditions</a></li>
-  <li><a href="#task-3.2-clinical-measurements" id="toc-task-3.2-clinical-measurements" class="nav-link" data-scroll-target="#task-3.2-clinical-measurements">Task 3.2: Clinical measurements</a></li>
-  <li><a href="#task-3.3-social-and-demographic-factors" id="toc-task-3.3-social-and-demographic-factors" class="nav-link" data-scroll-target="#task-3.3-social-and-demographic-factors">Task 3.3: Social and demographic factors</a></li>
-  </ul></li>
-  </ul></li>
-  <li><a href="#exercise-4-building-your-analysis-dataset" id="toc-exercise-4-building-your-analysis-dataset" class="nav-link" data-scroll-target="#exercise-4-building-your-analysis-dataset">Exercise 4: Building Your Analysis Dataset</a>
-  <ul class="collapse">
-  <li><a href="#exercise-4-building-your-analysis-dataset-1" id="toc-exercise-4-building-your-analysis-dataset-1" class="nav-link" data-scroll-target="#exercise-4-building-your-analysis-dataset-1">Exercise 4: Building Your Analysis Dataset</a>
-  <ul class="collapse">
-  <li><a href="#task-4.1-retrieving-edinburgh-postnatal-depression-scale" id="toc-task-4.1-retrieving-edinburgh-postnatal-depression-scale" class="nav-link" data-scroll-target="#task-4.1-retrieving-edinburgh-postnatal-depression-scale">Task 4.1: Retrieving Edinburgh Postnatal Depression Scale</a></li>
-  <li><a href="#task-4.2-retrieving-social-determinants" id="toc-task-4.2-retrieving-social-determinants" class="nav-link" data-scroll-target="#task-4.2-retrieving-social-determinants">Task 4.2: Retrieving social determinants</a></li>
-  <li><a href="#task-4.3-retrieving-depression-diagnoses" id="toc-task-4.3-retrieving-depression-diagnoses" class="nav-link" data-scroll-target="#task-4.3-retrieving-depression-diagnoses">Task 4.3: Retrieving depression diagnoses</a></li>
-  <li><a href="#summary-of-retrieved-variables" id="toc-summary-of-retrieved-variables" class="nav-link" data-scroll-target="#summary-of-retrieved-variables">Summary of Retrieved Variables</a></li>
-  </ul></li>
-  </ul></li>
-  <li><a href="#exercise-5-the-data-transformation-challenge" id="toc-exercise-5-the-data-transformation-challenge" class="nav-link" data-scroll-target="#exercise-5-the-data-transformation-challenge">Exercise 5: The Data Transformation Challenge</a>
-  <ul class="collapse">
-  <li><a href="#exercise-5-the-data-transformation-challenge-1" id="toc-exercise-5-the-data-transformation-challenge-1" class="nav-link" data-scroll-target="#exercise-5-the-data-transformation-challenge-1">Exercise 5: The Data Transformation Challenge</a></li>
-  </ul></li>
-  <li><a href="#exercise-6-converting-omop-ids-to-boolean-variables" id="toc-exercise-6-converting-omop-ids-to-boolean-variables" class="nav-link" data-scroll-target="#exercise-6-converting-omop-ids-to-boolean-variables">Exercise 6: Converting OMOP IDs to Boolean Variables</a>
-  <ul class="collapse">
-  <li><a href="#exercise-6-converting-omop-ids-to-boolean-variables-1" id="toc-exercise-6-converting-omop-ids-to-boolean-variables-1" class="nav-link" data-scroll-target="#exercise-6-converting-omop-ids-to-boolean-variables-1">Exercise 6: Converting OMOP IDs to Boolean Variables</a>
-  <ul class="collapse">
-  <li><a href="#convert-depression-variables-to-boolean-format" id="toc-convert-depression-variables-to-boolean-format" class="nav-link" data-scroll-target="#convert-depression-variables-to-boolean-format">Convert depression variables to boolean format</a></li>
-  <li><a href="#check-the-distribution-of-the-new-variables" id="toc-check-the-distribution-of-the-new-variables" class="nav-link" data-scroll-target="#check-the-distribution-of-the-new-variables">Check the distribution of the new variables</a></li>
-  </ul></li>
-  </ul></li>
-  <li><a href="#exercise-7-understanding-depression-patterns" id="toc-exercise-7-understanding-depression-patterns" class="nav-link" data-scroll-target="#exercise-7-understanding-depression-patterns">Exercise 7: Understanding Depression Patterns</a>
-  <ul class="collapse">
-  <li><a href="#exercise-7-understanding-depression-patterns-1" id="toc-exercise-7-understanding-depression-patterns-1" class="nav-link" data-scroll-target="#exercise-7-understanding-depression-patterns-1">Exercise 7: Understanding Depression Patterns</a>
-  <ul class="collapse">
-  <li><a href="#edinburgh-score-distribution" id="toc-edinburgh-score-distribution" class="nav-link" data-scroll-target="#edinburgh-score-distribution">Edinburgh Score Distribution</a></li>
-  <li><a href="#edinburgh-score-statistics" id="toc-edinburgh-score-statistics" class="nav-link" data-scroll-target="#edinburgh-score-statistics">Edinburgh Score Statistics</a></li>
-  <li><a href="#cross-tabulation-of-depression-types" id="toc-cross-tabulation-of-depression-types" class="nav-link" data-scroll-target="#cross-tabulation-of-depression-types">Cross-tabulation of Depression Types</a></li>
-  </ul></li>
-  </ul></li>
-  <li><a href="#exercise-8-correlation-analysis" id="toc-exercise-8-correlation-analysis" class="nav-link" data-scroll-target="#exercise-8-correlation-analysis">Exercise 8: Correlation Analysis</a>
-  <ul class="collapse">
-  <li><a href="#exercise-8-correlation-analysis-1" id="toc-exercise-8-correlation-analysis-1" class="nav-link" data-scroll-target="#exercise-8-correlation-analysis-1">Exercise 8: Correlation Analysis</a>
-  <ul class="collapse">
-  <li><a href="#prepare-variables-for-correlation" id="toc-prepare-variables-for-correlation" class="nav-link" data-scroll-target="#prepare-variables-for-correlation">Prepare Variables for Correlation</a></li>
-  <li><a href="#correlation-matrix" id="toc-correlation-matrix" class="nav-link" data-scroll-target="#correlation-matrix">Correlation Matrix</a></li>
-  </ul></li>
-  </ul></li>
-  <li><a href="#exercise-9-building-statistical-models" id="toc-exercise-9-building-statistical-models" class="nav-link" data-scroll-target="#exercise-9-building-statistical-models">Exercise 9: Building Statistical Models</a>
-  <ul class="collapse">
-  <li><a href="#exercise-9-building-statistical-models-1" id="toc-exercise-9-building-statistical-models-1" class="nav-link" data-scroll-target="#exercise-9-building-statistical-models-1">Exercise 9: Building Statistical Models</a>
-  <ul class="collapse">
-  <li><a href="#prepare-modeling-dataset" id="toc-prepare-modeling-dataset" class="nav-link" data-scroll-target="#prepare-modeling-dataset">Prepare Modeling Dataset</a></li>
-  <li><a href="#model-1-simple-linear-regression" id="toc-model-1-simple-linear-regression" class="nav-link" data-scroll-target="#model-1-simple-linear-regression">Model 1: Simple Linear Regression</a></li>
-  <li><a href="#model-2-logistic-regression" id="toc-model-2-logistic-regression" class="nav-link" data-scroll-target="#model-2-logistic-regression">Model 2: Logistic Regression</a></li>
-  <li><a href="#model-3-comprehensive-model" id="toc-model-3-comprehensive-model" class="nav-link" data-scroll-target="#model-3-comprehensive-model">Model 3: Comprehensive Model</a></li>
-  </ul></li>
-  </ul></li>
-  <li><a href="#challenge-create-your-own-research-question" id="toc-challenge-create-your-own-research-question" class="nav-link" data-scroll-target="#challenge-create-your-own-research-question">Challenge: Create Your Own Research Question</a></li>
-  <li><a href="#clean-up" id="toc-clean-up" class="nav-link" data-scroll-target="#clean-up">Clean Up</a></li>
+  <li><a href="#exercise-1-a-new-numeric-variable" id="toc-exercise-1-a-new-numeric-variable" class="nav-link active" data-scroll-target="#exercise-1-a-new-numeric-variable">Exercise 1 — A new numeric variable</a></li>
+  <li><a href="#exercise-2-a-new-categorical-variable" id="toc-exercise-2-a-new-categorical-variable" class="nav-link" data-scroll-target="#exercise-2-a-new-categorical-variable">Exercise 2 — A new categorical variable</a></li>
+  <li><a href="#exercise-3-find-a-concept-yourself" id="toc-exercise-3-find-a-concept-yourself" class="nav-link" data-scroll-target="#exercise-3-find-a-concept-yourself">Exercise 3 — Find a concept yourself</a></li>
+  <li><a href="#exercise-4-build-your-own-recipe" id="toc-exercise-4-build-your-own-recipe" class="nav-link" data-scroll-target="#exercise-4-build-your-own-recipe">Exercise 4 — Build your own recipe</a></li>
+  <li><a href="#exercise-5-filter-at-extraction" id="toc-exercise-5-filter-at-extraction" class="nav-link" data-scroll-target="#exercise-5-filter-at-extraction">Exercise 5 — Filter at extraction</a></li>
+  <li><a href="#exercise-6-a-model" id="toc-exercise-6-a-model" class="nav-link" data-scroll-target="#exercise-6-a-model">Exercise 6 — A model</a></li>
   </ul>
 </nav>
     </div>
@@ -305,8 +264,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">DataSHIELD OMOP Practical Exercises</h1>
-<p class="subtitle lead">Learning to explore and analyze OMOP data with DataSHIELD</p>
+<h1 class="title">dsOMOP — Exercises (Solutions)</h1>
 </div>
 
 
@@ -323,935 +281,587 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p><a href="#" onclick="event.preventDefault(); fetch('https://raw.githubusercontent.com/isglobal-brge/workshop_DSWB/main/omop_exercises_solution.R').then(response => response.blob()).then(blob => { const url = window.URL.createObjectURL(blob); const a = document.createElement('a'); a.style.display = 'none'; a.href = url; a.download = 'omop_exercises_solution.R'; document.body.appendChild(a); a.click(); window.URL.revokeObjectURL(url); }); return false;" class="btn btn-primary btn-sm"> <i class="bi bi-download"></i> Run the solution yourself! </a></p>
-<section id="solution" class="level1">
-<h1>Solution</h1>
-<section id="setup" class="level2">
-<h2 data-anchor-id="setup">Setup</h2>
-<p>First, let’s load the required libraries and configure SSL settings:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load required libraries</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(DSI)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(DSOpal)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dsBaseClient)</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dsOMOPClient)</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dsOMOPHelper)</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Configure SSL settings (for self-signed certificates)</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(httr)</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>httr<span class="sc">::</span><span class="fu">set_config</span>(httr<span class="sc">::</span><span class="fu">config</span>(<span class="at">ssl_verifypeer =</span> <span class="dv">0</span>L, <span class="at">ssl_verifyhost =</span> <span class="dv">0</span>L))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(DSI); <span class="fu">library</span>(DSOpal); <span class="fu">library</span>(dsBaseClient); <span class="fu">library</span>(dsOMOPClient)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>builder <span class="ot">&lt;-</span> DSI<span class="sc">::</span><span class="fu">newDSLoginBuilder</span>()</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (s <span class="cf">in</span> <span class="fu">c</span>(<span class="st">"nairobi"</span>, <span class="st">"douala"</span>, <span class="st">"dakar"</span>))</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  builder<span class="sc">$</span><span class="fu">append</span>(<span class="at">server =</span> s, <span class="at">url =</span> <span class="fu">paste0</span>(<span class="st">"https://"</span>, s, <span class="st">".datashield.live"</span>),</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>                 <span class="at">user =</span> <span class="st">"ethiopia"</span>, <span class="at">password =</span> <span class="st">"P@ssw0rd"</span>, <span class="at">profile =</span> <span class="st">"omop"</span>)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>conns <span class="ot">&lt;-</span> DSI<span class="sc">::</span><span class="fu">datashield.login</span>(<span class="at">logins =</span> builder<span class="sc">$</span><span class="fu">build</span>())</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.omop.connect</span>(<span class="at">resource =</span> <span class="st">"omop_demo.mimic"</span>, <span class="at">symbol =</span> <span class="st">"omop"</span>, <span class="at">conns =</span> conns)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-</section>
-</section>
-<section id="exercise-1-server-connection-and-initial-data-exploration" class="level1">
-<h1>Exercise 1: Server Connection and Initial Data Exploration</h1>
-<p>Let’s connect to the mystery dataset and see what we can discover!</p>
-<section id="exercise-1-connect-to-the-server-and-explore-the-data-structure" class="level2">
-<h2 data-anchor-id="exercise-1-connect-to-the-server-and-explore-the-data-structure">Exercise 1: Connect to the server and explore the data structure</h2>
+<section id="exercise-1-a-new-numeric-variable" class="level1">
+<h1>Exercise 1 — A new numeric variable</h1>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a connection to the OMOP DataSHIELD server</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>builder <span class="ot">&lt;-</span> <span class="fu">newDSLoginBuilder</span>()</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>builder<span class="sc">$</span><span class="fu">append</span>(<span class="at">server=</span><span class="st">"aphrc"</span>,</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>               <span class="at">url=</span><span class="st">"https://44.201.204.234:9090"</span>,</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>               <span class="at">user=</span><span class="st">"administrator"</span>,</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>               <span class="at">password=</span><span class="st">"password"</span>,</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>               <span class="at">driver =</span> <span class="st">"OpalDriver"</span>,</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>               <span class="at">profile =</span> <span class="st">"omop"</span>)</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>logindata <span class="ot">&lt;-</span> builder<span class="sc">$</span><span class="fu">build</span>()</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>conns <span class="ot">&lt;-</span> <span class="fu">datashield.login</span>(<span class="at">logins=</span>logindata)</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a dsOMOPHelper instance</span></span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>o <span class="ot">&lt;-</span> <span class="fu">ds.omop.helper</span>(</span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">connections =</span> conns,</span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">resource =</span> <span class="st">"omop.study_1"</span>, </span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">symbol =</span> <span class="st">"data"</span></span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Check the initial data summary</span></span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.summary</span>(<span class="st">"data"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>$aphrc
-$aphrc$class
-[1] "data.frame"
-
-$aphrc$`number of rows`
-[1] 188
-
-$aphrc$`number of columns`
-[1] 11
-
-$aphrc$`variables held`
- [1] "person_id"            "gender_concept_id"    "year_of_birth"       
- [4] "month_of_birth"       "day_of_birth"         "birth_datetime"      
- [7] "race_concept_id"      "ethnicity_concept_id" "location_id"         
-[10] "provider_id"          "care_site_id"        </code></pre>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">show_tbl</span>(<span class="fu">ds.omop.column.stats</span>(<span class="st">"measurement"</span>, <span class="st">"value_as_number"</span>, <span class="at">concept_id =</span> <span class="dv">21492239</span>,</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>                              <span class="at">scope =</span> <span class="st">"pooled"</span>, <span class="at">symbol =</span> <span class="st">"omop"</span>, <span class="at">conns =</span> conns)<span class="sc">$</span>pooled)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="kable_wrapper">
+<tbody>
+<tr>
+<td>
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: right;">x</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">8365</td>
+</tr>
+</tbody>
+</table>
+</td>
+<td>
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: right;">x</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">115.1706</td>
+</tr>
+</tbody>
+</table>
+</td>
+<td>
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: right;">x</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">21.79551</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
 </div>
-</div>
-</section>
-</section>
-<section id="exercise-2-who-are-we-studying" class="level1">
-<h1>Exercise 2: Who Are We Studying?</h1>
-<p>Let’s investigate the characteristics of our study population.</p>
-<section id="exercise-2-who-are-we-studying-1" class="level2">
-<h2 data-anchor-id="exercise-2-who-are-we-studying-1">Exercise 2: Who Are We Studying?</h2>
-<section id="task-2.1-gender-distribution" class="level3">
-<h3 data-anchor-id="task-2.1-gender-distribution">Task 2.1: Gender distribution</h3>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># First Clue - Gender Distribution</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.table</span>(<span class="st">"data$gender_concept_id"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>
- Data in all studies were valid 
-
-Study 1 :  No errors reported from this study</code></pre>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>$output.list
-$output.list$TABLE_rvar.by.study_row.props
-                      study
-data$gender_concept_id aphrc
-                female     1
-                NA       NaN
-
-$output.list$TABLE_rvar.by.study_col.props
-                      study
-data$gender_concept_id aphrc
-                female     1
-                NA         0
-
-$output.list$TABLE_rvar.by.study_counts
-                      study
-data$gender_concept_id aphrc
-                female   188
-                NA         0
-
-$output.list$TABLES.COMBINED_all.sources_proportions
-data$gender_concept_id
-female     NA 
-     1      0 
-
-$output.list$TABLES.COMBINED_all.sources_counts
-data$gender_concept_id
-female     NA 
-   188      0 
-
-
-$validity.message
-[1] "Data in all studies were valid"</code></pre>
-</div>
-</div>
-<p><strong>Observation</strong>: All participants are female! This is our first clue.</p>
-</section>
-<section id="task-2.2-age-distribution" class="level3">
-<h3 data-anchor-id="task-2.2-age-distribution">Task 2.2: Age distribution</h3>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Second Clue - Age Distribution</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.assign</span>(</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">toAssign =</span> <span class="st">"2025 - data$year_of_birth"</span>,</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">newobj =</span> <span class="st">"age"</span>,</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">datasources =</span> conns</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Age statistics</span></span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.mean</span>(<span class="st">"age"</span>, <span class="at">datasources =</span> conns)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>$Mean.by.Study
-      EstimatedMean Nmissing Nvalid Ntotal
-aphrc      37.37234        0    188    188
-
-$Nstudies
-[1] 1
-
-$ValidityMessage
-      ValidityMessage 
-aphrc "VALID ANALYSIS"</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.quantileMean</span>(<span class="st">"age"</span>, <span class="at">datasources =</span> conns)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>      5%      10%      25%      50%      75%      90%      95%     Mean 
-30.00000 31.00000 34.00000 37.00000 40.00000 43.30000 46.65000 37.37234 </code></pre>
-</div>
-</div>
-<p><strong>Observation</strong>: Women of reproductive age (roughly 30-45)</p>
-</section>
-<section id="task-2.3-sample-size" class="level3">
-<h3 data-anchor-id="task-2.3-sample-size">Task 2.3: Sample size</h3>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Sample Size</span></span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.dim</span>(<span class="st">"data"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>$`dimensions of data in aphrc`
-[1] 188  11
-
-$`dimensions of data in combined studies`
-[1] 188  11</code></pre>
-</div>
-</div>
-<p>We have 188 female participants of reproductive age. What might they have in common?</p>
-</section>
-</section>
-</section>
-<section id="exercise-3-what-was-measured" class="level1">
-<h1>Exercise 3: What Was Measured?</h1>
-<p>Now let’s explore what types of data were collected.</p>
-<section id="exercise-3-what-was-measured-1" class="level2">
-<h2 data-anchor-id="exercise-3-what-was-measured-1">Exercise 3: What Was Measured?</h2>
-<section id="task-3.1-available-conditions" class="level3">
-<h3 data-anchor-id="task-3.1-available-conditions">Task 3.1: Available conditions</h3>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Explore Conditions (Diagnoses)</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>cond_concepts <span class="ot">&lt;-</span> o<span class="sc">$</span><span class="fu">concepts</span>(<span class="st">"condition_occurrence"</span>)</span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>cond_concepts</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>$aphrc
-  concept_id          concept_name
-1    4239471 Postpartum depression
-2   37312479  Antenatal depression</code></pre>
-</div>
-</div>
-<p><strong>Reveal</strong>: Depression during and after pregnancy! This is a maternal mental health study.</p>
-</section>
-<section id="task-3.2-clinical-measurements" class="level3">
-<h3 data-anchor-id="task-3.2-clinical-measurements">Task 3.2: Clinical measurements</h3>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Explore Measurements</span></span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>meas_concepts <span class="ot">&lt;-</span> o<span class="sc">$</span><span class="fu">concepts</span>(<span class="st">"measurement"</span>)</span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>meas_concepts</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>$aphrc
-  concept_id                         concept_name
-1    4164838 Edinburgh postnatal depression scale</code></pre>
-</div>
-</div>
-<p>The Edinburgh Postnatal Depression Scale - a standard tool for screening maternal depression</p>
-</section>
-<section id="task-3.3-social-and-demographic-factors" class="level3">
-<h3 data-anchor-id="task-3.3-social-and-demographic-factors">Task 3.3: Social and demographic factors</h3>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Explore Observations</span></span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>obs_concepts <span class="ot">&lt;-</span> o<span class="sc">$</span><span class="fu">concepts</span>(<span class="st">"observation"</span>)</span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>obs_concepts</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>$aphrc
-  concept_id                         concept_name
-1          0                  No matching concept
-2    4052017                Religious affiliation
-3    4053609                       Marital status
-4    4075500                  Number in household
-5    4128030                   Delivery procedure
-6    4164838 Edinburgh postnatal depression scale
-7   42528763           Highest level of education
-8   44804285                           Employment</code></pre>
-</div>
-</div>
-<p><strong>Key factors</strong>: Employment, marital status, household size, religion, education<br>
-These social determinants can influence mental health outcomes!</p>
-</section>
-</section>
-</section>
-<section id="exercise-4-building-your-analysis-dataset" class="level1">
-<h1>Exercise 4: Building Your Analysis Dataset</h1>
-<p>Let’s retrieve the variables we need for our analysis.</p>
-<section id="exercise-4-building-your-analysis-dataset-1" class="level2">
-<h2 data-anchor-id="exercise-4-building-your-analysis-dataset-1">Exercise 4: Building Your Analysis Dataset</h2>
-<section id="task-4.1-retrieving-edinburgh-postnatal-depression-scale" class="level3">
-<h3 data-anchor-id="task-4.1-retrieving-edinburgh-postnatal-depression-scale">Task 4.1: Retrieving Edinburgh Postnatal Depression Scale</h3>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>o<span class="sc">$</span><span class="fu">auto</span>(<span class="at">tables=</span><span class="st">"measurement"</span>, </span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>       <span class="at">concepts=</span><span class="dv">4164838</span>,</span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>       <span class="at">columns=</span><span class="st">"value_as_number"</span>)</span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Check data structure after adding Edinburgh scale</span></span>
-<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.summary</span>(<span class="st">"data"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>$aphrc
-$aphrc$class
-[1] "data.frame"
-
-$aphrc$`number of rows`
-[1] 188
-
-$aphrc$`number of columns`
-[1] 12
-
-$aphrc$`variables held`
- [1] "person_id"                                           
- [2] "gender_concept_id"                                   
- [3] "year_of_birth"                                       
- [4] "month_of_birth"                                      
- [5] "day_of_birth"                                        
- [6] "birth_datetime"                                      
- [7] "race_concept_id"                                     
- [8] "ethnicity_concept_id"                                
- [9] "location_id"                                         
-[10] "provider_id"                                         
-[11] "care_site_id"                                        
-[12] "edinburgh_postnatal_depression_scale.value_as_number"</code></pre>
-</div>
-</div>
-<p>✓ <strong>Added</strong>: edinburgh_postnatal_depression_scale.value_as_number</p>
-</section>
-<section id="task-4.2-retrieving-social-determinants" class="level3">
-<h3 data-anchor-id="task-4.2-retrieving-social-determinants">Task 4.2: Retrieving social determinants</h3>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Employment status</span></span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>o<span class="sc">$</span><span class="fu">auto</span>(<span class="at">tables=</span><span class="st">"observation"</span>,</span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>       <span class="at">concepts=</span><span class="dv">44804285</span>,</span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>       <span class="at">columns=</span><span class="st">"value_as_concept_id"</span>)</span>
-<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Other social factors (marital status, household size, religious affiliation)</span></span>
-<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>o<span class="sc">$</span><span class="fu">auto</span>(<span class="at">tables=</span><span class="st">"observation"</span>,</span>
-<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">concepts=</span><span class="fu">c</span>(<span class="dv">4053609</span>, <span class="dv">4075500</span>, <span class="dv">4052017</span>),</span>
-<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>       <span class="at">columns=</span><span class="st">"value_as_concept_id"</span>)</span>
-<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Education level</span></span>
-<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>o<span class="sc">$</span><span class="fu">auto</span>(<span class="at">tables=</span><span class="st">"observation"</span>,</span>
-<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>       <span class="at">concepts=</span><span class="dv">42528763</span>,</span>
-<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>       <span class="at">columns=</span><span class="st">"value_as_concept_id"</span>)</span>
-<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Current variables in our dataset</span></span>
-<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a>current_vars <span class="ot">&lt;-</span> <span class="fu">ds.colnames</span>(<span class="st">"data"</span>)[[<span class="dv">1</span>]]</span>
-<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a>current_vars</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code> [1] "person_id"                                           
- [2] "gender_concept_id"                                   
- [3] "year_of_birth"                                       
- [4] "month_of_birth"                                      
- [5] "day_of_birth"                                        
- [6] "birth_datetime"                                      
- [7] "race_concept_id"                                     
- [8] "ethnicity_concept_id"                                
- [9] "location_id"                                         
-[10] "provider_id"                                         
-[11] "care_site_id"                                        
-[12] "edinburgh_postnatal_depression_scale.value_as_number"
-[13] "employment.value_as_concept_id"                      
-[14] "religious_affiliation.value_as_concept_id"           
-[15] "marital_status.value_as_concept_id"                  
-[16] "number_in_household.value_as_concept_id"             
-[17] "highest_level_of_education.value_as_concept_id"      </code></pre>
-</div>
-</div>
-<p>✓ <strong>Added social factors</strong>: employment, marital_status, number_in_household, religious_affiliation</p>
-</section>
-<section id="task-4.3-retrieving-depression-diagnoses" class="level3">
-<h3 data-anchor-id="task-4.3-retrieving-depression-diagnoses">Task 4.3: Retrieving depression diagnoses</h3>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Retrieve the Diagnoses</span></span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>o<span class="sc">$</span><span class="fu">auto</span>(<span class="at">tables=</span><span class="st">"condition_occurrence"</span>,</span>
-<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>       <span class="at">concepts=</span><span class="fu">c</span>(<span class="dv">4239471</span>, <span class="dv">37312479</span>),</span>
-<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>       <span class="at">columns=</span><span class="st">"condition_occurrence_id"</span>)</span>
-<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Final check</span></span>
-<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.summary</span>(<span class="st">"data"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>$aphrc
-$aphrc$class
-[1] "data.frame"
-
-$aphrc$`number of rows`
-[1] 188
-
-$aphrc$`number of columns`
-[1] 19
-
-$aphrc$`variables held`
- [1] "person_id"                                           
- [2] "gender_concept_id"                                   
- [3] "year_of_birth"                                       
- [4] "month_of_birth"                                      
- [5] "day_of_birth"                                        
- [6] "birth_datetime"                                      
- [7] "race_concept_id"                                     
- [8] "ethnicity_concept_id"                                
- [9] "location_id"                                         
-[10] "provider_id"                                         
-[11] "care_site_id"                                        
-[12] "edinburgh_postnatal_depression_scale.value_as_number"
-[13] "employment.value_as_concept_id"                      
-[14] "religious_affiliation.value_as_concept_id"           
-[15] "marital_status.value_as_concept_id"                  
-[16] "number_in_household.value_as_concept_id"             
-[17] "highest_level_of_education.value_as_concept_id"      
-[18] "antenatal_depression.condition_occurrence_id"        
-[19] "postpartum_depression.condition_occurrence_id"       </code></pre>
-</div>
-</div>
-</section>
-<section id="summary-of-retrieved-variables" class="level3">
-<h3 data-anchor-id="summary-of-retrieved-variables">Summary of Retrieved Variables</h3>
-<p><strong>Clinical Measurement</strong>:</p>
-<ul>
-<li>Edinburgh Postnatal Depression Scale (continuous score)</li>
-</ul>
-<p><strong>Social/Demographic Factors</strong>:</p>
-<ul>
-<li>Employment status</li>
-<li>Marital status</li>
-<li>Number in household</li>
-<li>Religious affiliation</li>
-<li>Education level</li>
-</ul>
-<p><strong>Clinical Diagnoses</strong>:</p>
-<ul>
-<li>Antenatal depression (during pregnancy)</li>
-<li>Postpartum depression (after delivery)</li>
-</ul>
-</section>
-</section>
-</section>
-<section id="exercise-5-the-data-transformation-challenge" class="level1">
-<h1>Exercise 5: The Data Transformation Challenge</h1>
-<p>The depression diagnoses are stored as IDs. Let’s understand why we need to transform them.</p>
-<section id="exercise-5-the-data-transformation-challenge-1" class="level2">
-<h2 data-anchor-id="exercise-5-the-data-transformation-challenge-1">Exercise 5: The Data Transformation Challenge</h2>
-<p>The depression diagnoses are stored as condition_occurrence_id values (long ID numbers). We need to transform these into analyzable boolean (0/1) variables.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Let's see what columns we have now</span></span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>current_cols <span class="ot">&lt;-</span> <span class="fu">ds.colnames</span>(<span class="st">"data"</span>)[[<span class="dv">1</span>]]</span>
-<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>depression_cols <span class="ot">&lt;-</span> <span class="fu">grep</span>(<span class="st">"depression.*condition_occurrence_id"</span>, current_cols, <span class="at">value =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Depression-related columns:</span></span>
-<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>depression_cols</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "antenatal_depression.condition_occurrence_id" 
-[2] "postpartum_depression.condition_occurrence_id"</code></pre>
-</div>
-</div>
-</section>
-</section>
-<section id="exercise-6-converting-omop-ids-to-boolean-variables" class="level1">
-<h1>Exercise 6: Converting OMOP IDs to Boolean Variables</h1>
-<p>Here’s how we transform the condition IDs into analyzable format:</p>
-<section id="exercise-6-converting-omop-ids-to-boolean-variables-1" class="level2">
-<h2 data-anchor-id="exercise-6-converting-omop-ids-to-boolean-variables-1">Exercise 6: Converting OMOP IDs to Boolean Variables</h2>
-<p>Here’s how we transform the condition IDs into analyzable format:</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Function to convert OMOP IDs to boolean variables</span></span>
-<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>convert_to_boolean <span class="ot">&lt;-</span> <span class="cf">function</span>(table, variable_name, id_type, conns) {</span>
-<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Step 1: Construct the full variable name</span></span>
-<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>  full_variable_name <span class="ot">&lt;-</span> <span class="fu">paste0</span>(table, <span class="st">"$"</span>, variable_name, <span class="st">"."</span>, id_type)</span>
-<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Step 2: Convert to numeric (IDs are often stored as strings)</span></span>
-<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>  new_numeric_name <span class="ot">&lt;-</span> <span class="fu">paste0</span>(variable_name, <span class="st">"_numeric"</span>)</span>
-<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ds.asNumeric</span>(</span>
-<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">x.name =</span> full_variable_name, </span>
-<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">newobj =</span> new_numeric_name, </span>
-<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">datasources =</span> conns</span>
-<span id="cb27-13"><a href="#cb27-13" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb27-14"><a href="#cb27-14" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb27-15"><a href="#cb27-15" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Step 3: Convert to boolean (1 if ID exists, 0 if not)</span></span>
-<span id="cb27-16"><a href="#cb27-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ds.Boole</span>(</span>
-<span id="cb27-17"><a href="#cb27-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">V1 =</span> new_numeric_name, </span>
-<span id="cb27-18"><a href="#cb27-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">V2 =</span> <span class="dv">0</span>, </span>
-<span id="cb27-19"><a href="#cb27-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">Boolean.operator =</span> <span class="st">"!="</span>, </span>
-<span id="cb27-20"><a href="#cb27-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">numeric.output =</span> <span class="cn">TRUE</span>, </span>
-<span id="cb27-21"><a href="#cb27-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">na.assign =</span> <span class="dv">0</span>, </span>
-<span id="cb27-22"><a href="#cb27-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">newobj =</span> variable_name,</span>
-<span id="cb27-23"><a href="#cb27-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">datasources =</span> conns</span>
-<span id="cb27-24"><a href="#cb27-24" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb27-25"><a href="#cb27-25" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<section id="convert-depression-variables-to-boolean-format" class="level3">
-<h3 data-anchor-id="convert-depression-variables-to-boolean-format">Convert depression variables to boolean format</h3>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert antenatal depression to boolean</span></span>
-<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="fu">convert_to_boolean</span>(<span class="st">"data"</span>, <span class="st">"antenatal_depression"</span>, <span class="st">"condition_occurrence_id"</span>, conns)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>$is.object.created
-[1] "A data object &lt;antenatal_depression&gt; has been created in all specified data sources"
-
-$validity.check
-[1] "&lt;antenatal_depression&gt; appears valid in all sources"</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert postpartum depression to boolean</span></span>
-<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="fu">convert_to_boolean</span>(<span class="st">"data"</span>, <span class="st">"postpartum_depression"</span>, <span class="st">"condition_occurrence_id"</span>, conns)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>$is.object.created
-[1] "A data object &lt;postpartum_depression&gt; has been created in all specified data sources"
-
-$validity.check
-[1] "&lt;postpartum_depression&gt; appears valid in all sources"</code></pre>
-</div>
-</div>
-</section>
-<section id="check-the-distribution-of-the-new-variables" class="level3">
-<h3 data-anchor-id="check-the-distribution-of-the-new-variables">Check the distribution of the new variables</h3>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Antenatal depression prevalence</span></span>
-<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.table</span>(<span class="st">"antenatal_depression"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>
- Data in all studies were valid 
-
-Study 1 :  No errors reported from this study</code></pre>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>$output.list
-$output.list$TABLE_rvar.by.study_row.props
-                    study
-antenatal_depression aphrc
-                  0      1
-                  1      1
-                  NA   NaN
-
-$output.list$TABLE_rvar.by.study_col.props
-                    study
-antenatal_depression     aphrc
-                  0  0.6223404
-                  1  0.3776596
-                  NA 0.0000000
-
-$output.list$TABLE_rvar.by.study_counts
-                    study
-antenatal_depression aphrc
-                  0    117
-                  1     71
-                  NA     0
-
-$output.list$TABLES.COMBINED_all.sources_proportions
-antenatal_depression
-    0     1    NA 
-0.622 0.378 0.000 
-
-$output.list$TABLES.COMBINED_all.sources_counts
-antenatal_depression
-  0   1  NA 
-117  71   0 
-
-
-$validity.message
-[1] "Data in all studies were valid"</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Postpartum depression prevalence</span></span>
-<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.table</span>(<span class="st">"postpartum_depression"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>
- Data in all studies were valid 
-
-Study 1 :  No errors reported from this study</code></pre>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>$output.list
-$output.list$TABLE_rvar.by.study_row.props
-                     study
-postpartum_depression aphrc
-                   0      1
-                   1      1
-                   NA   NaN
-
-$output.list$TABLE_rvar.by.study_col.props
-                     study
-postpartum_depression     aphrc
-                   0  0.8297872
-                   1  0.1702128
-                   NA 0.0000000
-
-$output.list$TABLE_rvar.by.study_counts
-                     study
-postpartum_depression aphrc
-                   0    156
-                   1     32
-                   NA     0
-
-$output.list$TABLES.COMBINED_all.sources_proportions
-postpartum_depression
-   0    1   NA 
-0.83 0.17 0.00 
-
-$output.list$TABLES.COMBINED_all.sources_counts
-postpartum_depression
-  0   1  NA 
-156  32   0 
-
-
-$validity.message
-[1] "Data in all studies were valid"</code></pre>
-</div>
-</div>
-</section>
-</section>
-</section>
-<section id="exercise-7-understanding-depression-patterns" class="level1">
-<h1>Exercise 7: Understanding Depression Patterns</h1>
-<p>Let’s explore the depression patterns in our data.</p>
-<section id="exercise-7-understanding-depression-patterns-1" class="level2">
-<h2 data-anchor-id="exercise-7-understanding-depression-patterns-1">Exercise 7: Understanding Depression Patterns</h2>
-<section id="edinburgh-score-distribution" class="level3">
-<h3 data-anchor-id="edinburgh-score-distribution">Edinburgh Score Distribution</h3>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a histogram of Edinburgh scores</span></span>
-<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.assign</span>(</span>
-<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">toAssign =</span> <span class="st">"data$edinburgh_postnatal_depression_scale.value_as_number"</span>,</span>
-<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">newobj =</span> <span class="st">"edinburgh_score"</span>,</span>
-<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">datasources =</span> conns</span>
-<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb38-8"><a href="#cb38-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Edinburgh score distribution</span></span>
-<span id="cb38-9"><a href="#cb38-9" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.histogram</span>(<span class="st">"edinburgh_score"</span>, <span class="at">datasources =</span> conns)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>h <span class="ot">&lt;-</span> <span class="fu">ds.omop.value.histogram</span>(<span class="st">"measurement"</span>, <span class="at">value_col =</span> <span class="st">"value_as_number"</span>,</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>                             <span class="at">concept_id =</span> <span class="dv">21492239</span>, <span class="at">symbol =</span> <span class="st">"omop"</span>, <span class="at">conns =</span> conns)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>bins <span class="ot">&lt;-</span> <span class="fu">do.call</span>(rbind, h<span class="sc">$</span>per_site)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>bins <span class="ot">&lt;-</span> <span class="fu">subset</span>(bins, <span class="sc">!</span><span class="fu">is.na</span>(count))</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>bins <span class="ot">&lt;-</span> <span class="fu">aggregate</span>(count <span class="sc">~</span> bin_start, <span class="at">data =</span> bins, <span class="at">FUN =</span> sum)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>bins <span class="ot">&lt;-</span> bins[<span class="fu">order</span>(bins<span class="sc">$</span>bin_start), ]</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="fu">barplot</span>(bins<span class="sc">$</span>count, <span class="at">names.arg =</span> <span class="fu">round</span>(bins<span class="sc">$</span>bin_start), <span class="at">las =</span> <span class="dv">2</span>, <span class="at">col =</span> <span class="st">"#4C72B0"</span>, <span class="at">border =</span> <span class="cn">NA</span>,</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>        <span class="at">xlab =</span> <span class="st">"Systolic BP (mmHg)"</span>, <span class="at">ylab =</span> <span class="st">"records"</span>, <span class="at">main =</span> <span class="st">"Systolic blood pressure"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="omop_exercises_solution_files/figure-html/exercise7-edinburgh-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="omop_exercises_solution_files/figure-html/e1-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
-<div class="cell-output cell-output-stdout">
-<pre><code>$breaks
- [1]  0.000000  2.639393  5.278785  7.918178 10.557570 13.196963 15.836356
- [8] 18.475748 21.115141 23.754533 26.393926
-
-$counts
- [1] 22 42 23 49 23 12  6  8  0  0
-
-$density
- [1] 0.04433644 0.08464230 0.04635173 0.09874935 0.04635173 0.02418351
- [7] 0.01209176 0.01612234 0.00000000 0.00000000
-
-$mids
- [1]  1.319696  3.959089  6.598481  9.237874 11.877267 14.516659 17.156052
- [8] 19.795444 22.434837 25.074230
-
-$xname
-[1] "xvect"
-
-$equidist
-[1] TRUE
-
-attr(,"class")
-[1] "histogram"</code></pre>
 </div>
-</div>
+<blockquote class="blockquote">
+<p><strong>Answer.</strong> Systolic blood pressure is roughly <strong>symmetric</strong> (mean ≈ median, ~115–120 mmHg), with a <strong>wider spread</strong> than heart rate (sd ≈ 22 vs ≈ 19). A broad-but-symmetric distribution is typical of blood pressure.</p>
+</blockquote>
 </section>
-<section id="edinburgh-score-statistics" class="level3">
-<h3 data-anchor-id="edinburgh-score-statistics">Edinburgh Score Statistics</h3>
+<section id="exercise-2-a-new-categorical-variable" class="level1">
+<h1>Exercise 2 — A new categorical variable</h1>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate summary statistics for Edinburgh scores</span></span>
-<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>mean_score <span class="ot">&lt;-</span> <span class="fu">ds.mean</span>(<span class="st">"edinburgh_score"</span>, <span class="at">datasources =</span> conns)</span>
-<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>var_score <span class="ot">&lt;-</span> <span class="fu">ds.var</span>(<span class="st">"edinburgh_score"</span>, <span class="at">datasources =</span> conns)</span>
-<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>quantiles <span class="ot">&lt;-</span> <span class="fu">ds.quantileMean</span>(<span class="st">"edinburgh_score"</span>, <span class="at">datasources =</span> conns)</span>
-<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a><span class="fu">list</span>(</span>
-<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">Mean =</span> mean_score<span class="sc">$</span>Global.Mean[<span class="dv">1</span>],</span>
-<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">Variance =</span> var_score<span class="sc">$</span>Global.Variance[<span class="dv">1</span>],</span>
-<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">Quantiles =</span> quantiles</span>
-<span id="cb40-10"><a href="#cb40-10" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>$Mean
-NULL
-
-$Variance
-NULL
-
-$Quantiles
-       5%       10%       25%       50%       75%       90%       95%      Mean 
- 1.000000  2.000000  4.750000  8.000000 11.000000 15.000000 20.000000  8.382979 </code></pre>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>rh <span class="ot">&lt;-</span> <span class="fu">ds.omop.value.counts</span>(<span class="st">"observation"</span>, <span class="st">"value_as_concept_id"</span>, <span class="at">concept_id =</span> <span class="dv">40766231</span>,</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>                           <span class="at">symbol =</span> <span class="st">"omop"</span>, <span class="at">conns =</span> conns)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">show_tbl</span>(rh<span class="sc">$</span>per_site<span class="sc">$</span>nairobi)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">value</th>
+<th style="text-align: right;">n</th>
+<th style="text-align: right;">n_persons</th>
+<th style="text-align: left;">concept_name</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">45881671</td>
+<td style="text-align: right;">40</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: left;">Never married</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">45883711</td>
+<td style="text-align: right;">25</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: left;">Widowed</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">45876756</td>
+<td style="text-align: right;">25</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: left;">Married</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">45883375</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">Divorced</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
+<blockquote class="blockquote">
+<p><strong>Answer.</strong> The most common status is <strong>Never married</strong>, followed by <strong>Married</strong> and <strong>Widowed</strong>. Some categories are suppressed on this ~100-patient cohort (small-cell control).</p>
+</blockquote>
 </section>
-<section id="cross-tabulation-of-depression-types" class="level3">
-<h3 data-anchor-id="cross-tabulation-of-depression-types">Cross-tabulation of Depression Types</h3>
+<section id="exercise-3-find-a-concept-yourself" class="level1">
+<h1>Exercise 3 — Find a concept yourself</h1>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a cross-tabulation of depression types</span></span>
-<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.table</span>(<span class="at">rvar =</span> <span class="st">"antenatal_depression"</span>, <span class="at">cvar =</span> <span class="st">"postpartum_depression"</span>, <span class="at">datasources =</span> conns)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>
- Data in all studies were valid 
-
-Study 1 :  No errors reported from this study</code></pre>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">show_tbl</span>(<span class="fu">ds.omop.concept.search</span>(<span class="st">"hyperlipidemia"</span>, <span class="at">domain =</span> <span class="st">"Condition"</span>,</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>                                <span class="at">symbol =</span> <span class="st">"omop"</span>, <span class="at">conns =</span> conns))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="kable_wrapper">
+<tbody>
+<tr>
+<td>
+<table class="kable_wrapper">
+<tbody>
+<tr>
+<td>
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 7%">
+<col style="width: 10%">
+<col style="width: 6%">
+<col style="width: 9%">
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 9%">
+<col style="width: 11%">
+<col style="width: 10%">
+<col style="width: 10%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: right;">concept_id</th>
+<th style="text-align: left;">concept_name</th>
+<th style="text-align: left;">domain_id</th>
+<th style="text-align: left;">vocabulary_id</th>
+<th style="text-align: left;">standard_concept</th>
+<th style="text-align: left;">concept_class_id</th>
+<th style="text-align: left;">concept_code</th>
+<th style="text-align: left;">valid_start_date</th>
+<th style="text-align: left;">valid_end_date</th>
+<th style="text-align: left;">invalid_reason</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">432867</td>
+<td style="text-align: left;">Hyperlipidemia</td>
+<td style="text-align: left;">Condition</td>
+<td style="text-align: left;">SNOMED</td>
+<td style="text-align: left;">S</td>
+<td style="text-align: left;">Disorder</td>
+<td style="text-align: left;">55822004</td>
+<td style="text-align: left;">1970-01-01</td>
+<td style="text-align: left;">2099-12-31</td>
+<td style="text-align: left;">NA</td>
+</tr>
+</tbody>
+</table>
+</td>
+<td>
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 7%">
+<col style="width: 10%">
+<col style="width: 6%">
+<col style="width: 9%">
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 9%">
+<col style="width: 11%">
+<col style="width: 10%">
+<col style="width: 10%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: right;">concept_id</th>
+<th style="text-align: left;">concept_name</th>
+<th style="text-align: left;">domain_id</th>
+<th style="text-align: left;">vocabulary_id</th>
+<th style="text-align: left;">standard_concept</th>
+<th style="text-align: left;">concept_class_id</th>
+<th style="text-align: left;">concept_code</th>
+<th style="text-align: left;">valid_start_date</th>
+<th style="text-align: left;">valid_end_date</th>
+<th style="text-align: left;">invalid_reason</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">432867</td>
+<td style="text-align: left;">Hyperlipidemia</td>
+<td style="text-align: left;">Condition</td>
+<td style="text-align: left;">SNOMED</td>
+<td style="text-align: left;">S</td>
+<td style="text-align: left;">Disorder</td>
+<td style="text-align: left;">55822004</td>
+<td style="text-align: left;">1970-01-01</td>
+<td style="text-align: left;">2099-12-31</td>
+<td style="text-align: left;">NA</td>
+</tr>
+</tbody>
+</table>
+</td>
+<td>
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 7%">
+<col style="width: 10%">
+<col style="width: 6%">
+<col style="width: 9%">
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 9%">
+<col style="width: 11%">
+<col style="width: 10%">
+<col style="width: 10%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: right;">concept_id</th>
+<th style="text-align: left;">concept_name</th>
+<th style="text-align: left;">domain_id</th>
+<th style="text-align: left;">vocabulary_id</th>
+<th style="text-align: left;">standard_concept</th>
+<th style="text-align: left;">concept_class_id</th>
+<th style="text-align: left;">concept_code</th>
+<th style="text-align: left;">valid_start_date</th>
+<th style="text-align: left;">valid_end_date</th>
+<th style="text-align: left;">invalid_reason</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">432867</td>
+<td style="text-align: left;">Hyperlipidemia</td>
+<td style="text-align: left;">Condition</td>
+<td style="text-align: left;">SNOMED</td>
+<td style="text-align: left;">S</td>
+<td style="text-align: left;">Disorder</td>
+<td style="text-align: left;">55822004</td>
+<td style="text-align: left;">1970-01-01</td>
+<td style="text-align: left;">2099-12-31</td>
+<td style="text-align: left;">NA</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+<td>
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 7%">
+<col style="width: 10%">
+<col style="width: 6%">
+<col style="width: 9%">
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 9%">
+<col style="width: 11%">
+<col style="width: 10%">
+<col style="width: 10%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: right;">concept_id</th>
+<th style="text-align: left;">concept_name</th>
+<th style="text-align: left;">domain_id</th>
+<th style="text-align: left;">vocabulary_id</th>
+<th style="text-align: left;">standard_concept</th>
+<th style="text-align: left;">concept_class_id</th>
+<th style="text-align: left;">concept_code</th>
+<th style="text-align: left;">valid_start_date</th>
+<th style="text-align: left;">valid_end_date</th>
+<th style="text-align: left;">invalid_reason</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">432867</td>
+<td style="text-align: left;">Hyperlipidemia</td>
+<td style="text-align: left;">Condition</td>
+<td style="text-align: left;">SNOMED</td>
+<td style="text-align: left;">S</td>
+<td style="text-align: left;">Disorder</td>
+<td style="text-align: left;">55822004</td>
+<td style="text-align: left;">1970-01-01</td>
+<td style="text-align: left;">2099-12-31</td>
+<td style="text-align: left;">NA</td>
+</tr>
+</tbody>
+</table>
+</td>
+<td>
+<table class="kable_wrapper">
+<tbody>
+<tr>
+<td>
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 100%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">x</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">ds.omop.concept.search(pattern = “hyperlipidemia”, domain = “Condition”, standard_only = TRUE, limit = 50, symbol = “omop”)</td>
+</tr>
+</tbody>
+</table>
+</td>
+<td>
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">x</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">2026-06-16 07:35:16</td>
+</tr>
+</tbody>
+</table>
+</td>
+<td>
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">x</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">nairobi</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">douala</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">dakar</td>
+</tr>
+</tbody>
+</table>
+</td>
+<td>
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">x</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">pooled</td>
+</tr>
+</tbody>
+</table>
+</td>
+<td>
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">x</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">strict</td>
+</tr>
+</tbody>
+</table>
+</td>
+<td>
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th style="text-align: left;">x</th>
+</tr>
+</thead>
+<tbody>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
 </div>
-<div class="cell-output cell-output-stdout">
-<pre><code>$output.list
-$output.list$TABLE.STUDY.aphrc_row.props
-                    postpartum_depression
-antenatal_depression     0     1  NA
-                  0  0.880 0.120   0
-                  1  0.746 0.254   0
-                  NA   NaN   NaN NaN
-
-$output.list$TABLE.STUDY.aphrc_col.props
-                    postpartum_depression
-antenatal_depression    0     1  NA
-                  0  0.66 0.438 NaN
-                  1  0.34 0.562 NaN
-                  NA 0.00 0.000 NaN
-
-$output.list$TABLES.COMBINED_all.sources_row.props
-                    postpartum_depression
-antenatal_depression     0     1  NA
-                  0  0.880 0.120   0
-                  1  0.746 0.254   0
-                  NA   NaN   NaN NaN
-
-$output.list$TABLES.COMBINED_all.sources_col.props
-                    postpartum_depression
-antenatal_depression    0     1  NA
-                  0  0.66 0.438 NaN
-                  1  0.34 0.562 NaN
-                  NA 0.00 0.000 NaN
-
-$output.list$TABLE_STUDY.aphrc_counts
-                    postpartum_depression
-antenatal_depression   0  1 NA
-                  0  103 14  0
-                  1   53 18  0
-                  NA   0  0  0
-
-$output.list$TABLES.COMBINED_all.sources_counts
-                    postpartum_depression
-antenatal_depression   0  1 NA
-                  0  103 14  0
-                  1   53 18  0
-                  NA   0  0  0
-
-
-$validity.message
-[1] "Data in all studies were valid"</code></pre>
 </div>
-</div>
+<blockquote class="blockquote">
+<p><strong>Answer.</strong> Hyperlipidemia is <strong><code>concept_id = 432867</code></strong>, present in about <strong>45</strong> of the ~100 patients — one of the most common conditions in this ICU cohort.</p>
+</blockquote>
 </section>
-</section>
-</section>
-<section id="exercise-8-correlation-analysis" class="level1">
-<h1>Exercise 8: Correlation Analysis</h1>
-<p>Let’s explore correlations between variables.</p>
-<section id="exercise-8-correlation-analysis-1" class="level2">
-<h2 data-anchor-id="exercise-8-correlation-analysis-1">Exercise 8: Correlation Analysis</h2>
-<section id="prepare-variables-for-correlation" class="level3">
-<h3 data-anchor-id="prepare-variables-for-correlation">Prepare Variables for Correlation</h3>
+<section id="exercise-4-build-your-own-recipe" class="level1">
+<h1>Exercise 4 — Build your own recipe</h1>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create simplified variable names</span></span>
-<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.assign</span>(<span class="st">"data$employment.value_as_concept_id"</span>, <span class="st">"employment"</span>, conns)</span>
-<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.assign</span>(<span class="st">"data$number_in_household.value_as_concept_id"</span>, <span class="st">"household_size"</span>, conns)</span>
-<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a dataset for correlation</span></span>
-<span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a>variable_list <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"edinburgh_score"</span>, <span class="st">"age"</span>, <span class="st">"antenatal_depression"</span>, <span class="st">"postpartum_depression"</span>)</span>
-<span id="cb45-7"><a href="#cb45-7" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.dataFrame</span>(</span>
-<span id="cb45-8"><a href="#cb45-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> variable_list,</span>
-<span id="cb45-9"><a href="#cb45-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">newobj =</span> <span class="st">"cor_data"</span>,</span>
-<span id="cb45-10"><a href="#cb45-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">datasources =</span> conns</span>
-<span id="cb45-11"><a href="#cb45-11" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>rec <span class="ot">&lt;-</span> <span class="fu">omop_recipe</span>(</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">variables =</span> <span class="fu">list</span>(</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable</span>(<span class="at">table =</span> <span class="st">"person"</span>, <span class="at">column =</span> <span class="st">"gender_concept_id"</span>, <span class="at">format =</span> <span class="st">"sex_mf"</span>, <span class="at">name =</span> <span class="st">"sex"</span>),</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable_age</span>(<span class="at">name =</span> <span class="st">"age"</span>),</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable</span>(<span class="at">table =</span> <span class="st">"measurement"</span>, <span class="at">concept_id =</span> <span class="dv">21492239</span>, <span class="at">format =</span> <span class="st">"mean"</span>, <span class="at">name =</span> <span class="st">"systolic_bp"</span>),</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable</span>(<span class="at">table =</span> <span class="st">"condition_occurrence"</span>, <span class="at">concept_id =</span> <span class="dv">432867</span>, <span class="at">format =</span> <span class="st">"binary"</span>, <span class="at">name =</span> <span class="st">"hyperlipidemia"</span>)),</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">outputs =</span> <span class="fu">omop_output</span>(<span class="at">name =</span> <span class="st">"study"</span>, <span class="at">type =</span> <span class="st">"wide"</span>))</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="fu">recipe_execute</span>(rec, <span class="at">out =</span> <span class="fu">c</span>(<span class="at">study =</span> <span class="st">"D"</span>), <span class="at">symbol =</span> <span class="st">"omop"</span>, <span class="at">conns =</span> conns)</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.colnames</span>(<span class="st">"D"</span>, <span class="at">datasources =</span> conns)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>$is.object.created
-[1] "A data object &lt;cor_data&gt; has been created in all specified data sources"
-
-$validity.check
-[1] "&lt;cor_data&gt; appears valid in all sources"</code></pre>
+<pre><code>#&gt; $nairobi
+#&gt; [1] "person_id"      "systolic_bp"    "hyperlipidemia" "sex"           
+#&gt; [5] "age"           
+#&gt; 
+#&gt; $douala
+#&gt; [1] "person_id"      "systolic_bp"    "hyperlipidemia" "sex"           
+#&gt; [5] "age"           
+#&gt; 
+#&gt; $dakar
+#&gt; [1] "person_id"      "systolic_bp"    "hyperlipidemia" "sex"           
+#&gt; [5] "age"</code></pre>
 </div>
-</div>
-</section>
-<section id="correlation-matrix" class="level3">
-<h3 data-anchor-id="correlation-matrix">Correlation Matrix</h3>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate the correlation matrix</span></span>
-<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>cor_matrix <span class="ot">&lt;-</span> <span class="fu">ds.cor</span>(<span class="st">"cor_data"</span>, <span class="at">datasources =</span> conns)</span>
-<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a>cor_matrix</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.dim</span>(<span class="st">"D"</span>, <span class="at">datasources =</span> conns)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>$aphrc
-$aphrc$`Number of missing values in each variable`
-     edinburgh_score age antenatal_depression postpartum_depression
-[1,]               0   0                    0                     0
-
-$aphrc$`Number of missing values casewise`
-                      edinburgh_score age antenatal_depression
-edinburgh_score                     0   0                    0
-age                                 0   0                    0
-antenatal_depression                0   0                    0
-postpartum_depression               0   0                    0
-                      postpartum_depression
-edinburgh_score                           0
-age                                       0
-antenatal_depression                      0
-postpartum_depression                     0
-
-$aphrc$`Correlation Matrix`
-           [,1]       [,2]      [,3]       [,4]
-[1,] 1.00000000 0.06879505 0.7850084 0.27880736
-[2,] 0.06879505 1.00000000 0.1177770 0.05328698
-[3,] 0.78500837 0.11777698 1.0000000 0.17268133
-[4,] 0.27880736 0.05328698 0.1726813 1.00000000
-
-$aphrc$`Number of complete cases used`
-                      edinburgh_score age antenatal_depression
-edinburgh_score                   188 188                  188
-age                               188 188                  188
-antenatal_depression              188 188                  188
-postpartum_depression             188 188                  188
-                      postpartum_depression
-edinburgh_score                         188
-age                                     188
-antenatal_depression                    188
-postpartum_depression                   188</code></pre>
+<pre><code>#&gt; $`dimensions of D in nairobi`
+#&gt; [1] 35  5
+#&gt; 
+#&gt; $`dimensions of D in douala`
+#&gt; [1] 25  5
+#&gt; 
+#&gt; $`dimensions of D in dakar`
+#&gt; [1] 40  5
+#&gt; 
+#&gt; $`dimensions of D in combined studies`
+#&gt; [1] 100   5</code></pre>
 </div>
-</div>
-</section>
-</section>
-</section>
-<section id="exercise-9-building-statistical-models" class="level1">
-<h1>Exercise 9: Building Statistical Models</h1>
-<p>Now let’s test some hypotheses with statistical models.</p>
-<section id="exercise-9-building-statistical-models-1" class="level2">
-<h2 data-anchor-id="exercise-9-building-statistical-models-1">Exercise 9: Building Statistical Models</h2>
-<section id="prepare-modeling-dataset" class="level3">
-<h3 data-anchor-id="prepare-modeling-dataset">Prepare Modeling Dataset</h3>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Prepare all variables</span></span>
-<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.assign</span>(<span class="st">"data$marital_status.value_as_concept_id"</span>, <span class="st">"marital_status"</span>, conns)</span>
-<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.assign</span>(<span class="st">"data$religious_affiliation.value_as_concept_id"</span>, <span class="st">"religion"</span>, conns)</span>
-<span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb49-5"><a href="#cb49-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Create modeling dataset</span></span>
-<span id="cb49-6"><a href="#cb49-6" aria-hidden="true" tabindex="-1"></a>model_vars <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
-<span id="cb49-7"><a href="#cb49-7" aria-hidden="true" tabindex="-1"></a>  <span class="st">"edinburgh_score"</span>,</span>
-<span id="cb49-8"><a href="#cb49-8" aria-hidden="true" tabindex="-1"></a>  <span class="st">"age"</span>,</span>
-<span id="cb49-9"><a href="#cb49-9" aria-hidden="true" tabindex="-1"></a>  <span class="st">"employment"</span>,</span>
-<span id="cb49-10"><a href="#cb49-10" aria-hidden="true" tabindex="-1"></a>  <span class="st">"marital_status"</span>,</span>
-<span id="cb49-11"><a href="#cb49-11" aria-hidden="true" tabindex="-1"></a>  <span class="st">"household_size"</span>,</span>
-<span id="cb49-12"><a href="#cb49-12" aria-hidden="true" tabindex="-1"></a>  <span class="st">"religion"</span>,</span>
-<span id="cb49-13"><a href="#cb49-13" aria-hidden="true" tabindex="-1"></a>  <span class="st">"antenatal_depression"</span>,</span>
-<span id="cb49-14"><a href="#cb49-14" aria-hidden="true" tabindex="-1"></a>  <span class="st">"postpartum_depression"</span></span>
-<span id="cb49-15"><a href="#cb49-15" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb49-16"><a href="#cb49-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb49-17"><a href="#cb49-17" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.cbind</span>(</span>
-<span id="cb49-18"><a href="#cb49-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> model_vars,</span>
-<span id="cb49-19"><a href="#cb49-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">DataSHIELD.checks =</span> <span class="cn">FALSE</span>,</span>
-<span id="cb49-20"><a href="#cb49-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">newobj =</span> <span class="st">"model_data"</span>,</span>
-<span id="cb49-21"><a href="#cb49-21" aria-hidden="true" tabindex="-1"></a>  <span class="at">datasources =</span> conns</span>
-<span id="cb49-22"><a href="#cb49-22" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.summary</span>(<span class="st">"D$systolic_bp"</span>, <span class="at">datasources =</span> conns)[[<span class="dv">1</span>]][[<span class="st">"quantiles &amp; mean"</span>]]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>$is.object.created
-[1] "A data object &lt;model_data&gt; has been created in all specified data sources"
-
-$validity.check
-[1] "&lt;model_data&gt; appears valid in all sources"</code></pre>
+<pre><code>#&gt;        5%       10%       25%       50%       75%       90%       95%      Mean 
+#&gt;  99.72277 104.13354 112.25500 120.19672 128.68355 133.01607 142.95000 120.33293</code></pre>
 </div>
 </div>
+<blockquote class="blockquote">
+<p><strong>Answer.</strong> <code>D</code> has one row per patient with <code>sex</code>, <code>age</code>, <code>systolic_bp</code>, <code>hyperlipidemia</code> (plus <code>person_id</code>); ~100 patients combined, mean systolic BP near 120 mmHg.</p>
+</blockquote>
 </section>
-<section id="model-1-simple-linear-regression" class="level3">
-<h3 data-anchor-id="model-1-simple-linear-regression">Model 1: Simple Linear Regression</h3>
-<p><strong>Research question</strong>: Do age and employment affect depression severity?</p>
+<section id="exercise-5-filter-at-extraction" class="level1">
+<h1>Exercise 5 — Filter at extraction</h1>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>model1 <span class="ot">&lt;-</span> <span class="fu">ds.glm</span>(</span>
-<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">formula =</span> <span class="st">"edinburgh_score ~ age + employment"</span>,</span>
-<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> <span class="st">"model_data"</span>,</span>
-<span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">family =</span> <span class="st">"gaussian"</span>,</span>
-<span id="cb51-5"><a href="#cb51-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">datasources =</span> conns</span>
-<span id="cb51-6"><a href="#cb51-6" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb51-7"><a href="#cb51-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-8"><a href="#cb51-8" aria-hidden="true" tabindex="-1"></a><span class="co"># </span><span class="al">NOTE</span><span class="co">: we use gaussian for the linear regression because edinburgh_score </span></span>
-<span id="cb51-9"><a href="#cb51-9" aria-hidden="true" tabindex="-1"></a><span class="co"># is a continuous variable</span></span>
-<span id="cb51-10"><a href="#cb51-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-11"><a href="#cb51-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Display results</span></span>
-<span id="cb51-12"><a href="#cb51-12" aria-hidden="true" tabindex="-1"></a>model1<span class="sc">$</span>coefficients[, <span class="fu">c</span>(<span class="st">"Estimate"</span>, <span class="st">"Std. Error"</span>, <span class="st">"p-value"</span>)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>rec_old <span class="ot">&lt;-</span> <span class="fu">omop_recipe</span>(</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">variables =</span> <span class="fu">list</span>(</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable</span>(<span class="at">table =</span> <span class="st">"person"</span>, <span class="at">column =</span> <span class="st">"gender_concept_id"</span>, <span class="at">format =</span> <span class="st">"sex_mf"</span>, <span class="at">name =</span> <span class="st">"sex"</span>),</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable_age</span>(<span class="at">name =</span> <span class="st">"age"</span>),</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable</span>(<span class="at">table =</span> <span class="st">"condition_occurrence"</span>, <span class="at">concept_id =</span> <span class="dv">432867</span>, <span class="at">format =</span> <span class="st">"binary"</span>, <span class="at">name =</span> <span class="st">"hyperlipidemia"</span>)),</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">filters  =</span> <span class="fu">list</span>(<span class="at">older =</span> <span class="fu">omop_filter_age</span>(<span class="at">min =</span> <span class="dv">60</span>)),</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">outputs  =</span> <span class="fu">omop_output</span>(<span class="at">name =</span> <span class="st">"study"</span>, <span class="at">type =</span> <span class="st">"wide"</span>))</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a><span class="fu">recipe_execute</span>(rec_old, <span class="at">out =</span> <span class="fu">c</span>(<span class="at">study =</span> <span class="st">"D_old"</span>), <span class="at">symbol =</span> <span class="st">"omop"</span>, <span class="at">conns =</span> conns)</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.dim</span>(<span class="st">"D_old"</span>, <span class="at">datasources =</span> conns)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>                                   Estimate Std. Error    p-value
-(Intercept)                      6.55113468 3.18129582 0.03946875
-age                              0.05435431 0.08149318 0.50478498
-employmentconcept_id_3000000190 -1.50846406 0.91748499 0.10014947
-employmentemployed               0.88276561 1.06596101 0.40759087
-employmentunemployed             1.48222758 1.67422086 0.37598201</code></pre>
+<pre><code>#&gt; $`dimensions of D_old in nairobi`
+#&gt; [1] 23  4
+#&gt; 
+#&gt; $`dimensions of D_old in douala`
+#&gt; [1] 13  4
+#&gt; 
+#&gt; $`dimensions of D_old in dakar`
+#&gt; [1] 31  4
+#&gt; 
+#&gt; $`dimensions of D_old in combined studies`
+#&gt; [1] 67  4</code></pre>
 </div>
-</div>
-</section>
-<section id="model-2-logistic-regression" class="level3">
-<h3 data-anchor-id="model-2-logistic-regression">Model 2: Logistic Regression</h3>
-<p><strong>Research question</strong>: What predicts postpartum depression?</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>model2 <span class="ot">&lt;-</span> <span class="fu">ds.glm</span>(</span>
-<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">formula =</span> <span class="st">"postpartum_depression ~ antenatal_depression + edinburgh_score + age"</span>,</span>
-<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> <span class="st">"model_data"</span>,</span>
-<span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">family =</span> <span class="st">"binomial"</span>,</span>
-<span id="cb53-5"><a href="#cb53-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">datasources =</span> conns</span>
-<span id="cb53-6"><a href="#cb53-6" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb53-7"><a href="#cb53-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb53-8"><a href="#cb53-8" aria-hidden="true" tabindex="-1"></a><span class="co"># </span><span class="al">NOTE</span><span class="co">: we use binomial for the logistic regression because postpartum_depression </span></span>
-<span id="cb53-9"><a href="#cb53-9" aria-hidden="true" tabindex="-1"></a><span class="co"># is a binary variable</span></span>
-<span id="cb53-10"><a href="#cb53-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb53-11"><a href="#cb53-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Display results with odds ratios</span></span>
-<span id="cb53-12"><a href="#cb53-12" aria-hidden="true" tabindex="-1"></a>coef2 <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(model2<span class="sc">$</span>coefficients)</span>
-<span id="cb53-13"><a href="#cb53-13" aria-hidden="true" tabindex="-1"></a>coef2[, <span class="fu">c</span>(<span class="st">"Estimate"</span>, <span class="st">"P_OR"</span>, <span class="st">"low0.95CI.P_OR"</span>, <span class="st">"high0.95CI.P_OR"</span>, <span class="st">"p-value"</span>)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.summary</span>(<span class="st">"D_old$age"</span>, <span class="at">datasources =</span> conns)[[<span class="dv">1</span>]][[<span class="st">"quantiles &amp; mean"</span>]]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>                        Estimate       P_OR low0.95CI.P_OR high0.95CI.P_OR
-(Intercept)          -3.54563182 0.02804138    0.001179574       0.4134207
-antenatal_depression -0.54101858 0.58215498    0.163605492       2.0714734
-edinburgh_score       0.16500606 1.17940027    1.053754267       1.3200279
-age                   0.01706014 1.01720649    0.935642275       1.1058810
-                         p-value
-(Intercept)          0.029666046
-antenatal_depression 0.403482994
-edinburgh_score      0.004092097
-age                  0.689117964</code></pre>
+<pre><code>#&gt;       5%      10%      25%      50%      75%      90%      95%     Mean 
+#&gt; 60.00000 60.20000 65.00000 74.00000 81.50000 89.60000 92.70000 74.56522</code></pre>
 </div>
 </div>
+<blockquote class="blockquote">
+<p><strong>Answer.</strong> The filter is applied <strong>during</strong> extraction, so the servers only build patients aged 60+. The cohort shrinks and the minimum age is now 60.</p>
+</blockquote>
 </section>
-<section id="model-3-comprehensive-model" class="level3">
-<h3 data-anchor-id="model-3-comprehensive-model">Model 3: Comprehensive Model</h3>
-<p><strong>Research question</strong>: How do social factors influence depression severity?</p>
+<section id="exercise-6-a-model" class="level1">
+<h1>Exercise 6 — A model</h1>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>model3 <span class="ot">&lt;-</span> <span class="fu">ds.glm</span>(</span>
-<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">formula =</span> <span class="st">"edinburgh_score ~ age + employment + marital_status + household_size + antenatal_depression + postpartum_depression"</span>,</span>
-<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> <span class="st">"model_data"</span>,</span>
-<span id="cb55-4"><a href="#cb55-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">family =</span> <span class="st">"gaussian"</span>,</span>
-<span id="cb55-5"><a href="#cb55-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">datasources =</span> conns</span>
-<span id="cb55-6"><a href="#cb55-6" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb55-7"><a href="#cb55-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb55-8"><a href="#cb55-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Display results</span></span>
-<span id="cb55-9"><a href="#cb55-9" aria-hidden="true" tabindex="-1"></a>coef3 <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(model3<span class="sc">$</span>coefficients)</span>
-<span id="cb55-10"><a href="#cb55-10" aria-hidden="true" tabindex="-1"></a>coef3[, <span class="fu">c</span>(<span class="st">"Estimate"</span>, <span class="st">"Std. Error"</span>, <span class="st">"p-value"</span>)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>                                        Estimate Std. Error      p-value
-(Intercept)                          6.092664004 2.48950930 1.439169e-02
-age                                 -0.031171097 0.05047231 5.368469e-01
-employmentconcept_id_3000000190     -0.726001118 0.56434730 1.982882e-01
-employmentemployed                   0.260437725 0.65568752 6.912215e-01
-employmentunemployed                -0.090871853 1.03895956 9.303025e-01
-marital_statusnever_married          0.468057728 1.01966972 6.462135e-01
-marital_statusseparated              0.154215495 1.49000551 9.175662e-01
-household_sizeconcept_id_3000000213 -0.003011284 1.73959746 9.986188e-01
-household_sizeconcept_id_3000000214  0.933970491 1.79391906 6.026236e-01
-antenatal_depression                 8.128952822 0.50187602 5.283310e-59
-postpartum_depression                1.947858945 0.63937261 2.315101e-03</code></pre>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>rec_h <span class="ot">&lt;-</span> <span class="fu">omop_recipe</span>(</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">variables =</span> <span class="fu">list</span>(</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable</span>(<span class="at">table =</span> <span class="st">"person"</span>, <span class="at">column =</span> <span class="st">"gender_concept_id"</span>, <span class="at">format =</span> <span class="st">"sex_mf"</span>, <span class="at">name =</span> <span class="st">"sex"</span>),</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable_age</span>(<span class="at">name =</span> <span class="st">"age"</span>),</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable</span>(<span class="at">table =</span> <span class="st">"condition_occurrence"</span>, <span class="at">concept_id =</span> <span class="dv">432867</span>, <span class="at">format =</span> <span class="st">"binary"</span>, <span class="at">name =</span> <span class="st">"hyperlipidemia"</span>)),</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">outputs =</span> <span class="fu">omop_output</span>(<span class="at">name =</span> <span class="st">"study"</span>, <span class="at">type =</span> <span class="st">"wide"</span>))</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a><span class="fu">recipe_execute</span>(rec_h, <span class="at">out =</span> <span class="fu">c</span>(<span class="at">study =</span> <span class="st">"H"</span>), <span class="at">symbol =</span> <span class="st">"omop"</span>, <span class="at">conns =</span> conns)</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">ds.glm</span>(<span class="st">"H$hyperlipidemia ~ H$age + H$sex"</span>, <span class="at">family =</span> <span class="st">"binomial"</span>, <span class="at">datasources =</span> conns)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-</div>
-</section>
-</section>
-</section>
-<section id="challenge-create-your-own-research-question" class="level1">
-<h1>Challenge: Create Your Own Research Question</h1>
-<p>This is just an example of how you can create your own research question:</p>
-<p><strong>Research question</strong>: Does employment modify the effect of antenatal depression?</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>model4 <span class="ot">&lt;-</span> <span class="fu">ds.glm</span>(</span>
-<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">formula =</span> <span class="st">"edinburgh_score ~ antenatal_depression * employment + age"</span>,</span>
-<span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> <span class="st">"model_data"</span>,</span>
-<span id="cb57-4"><a href="#cb57-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">family =</span> <span class="st">"gaussian"</span>,</span>
-<span id="cb57-5"><a href="#cb57-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">datasources =</span> conns</span>
-<span id="cb57-6"><a href="#cb57-6" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb57-7"><a href="#cb57-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb57-8"><a href="#cb57-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Look for interaction terms</span></span>
-<span id="cb57-9"><a href="#cb57-9" aria-hidden="true" tabindex="-1"></a>coef4 <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(model4<span class="sc">$</span>coefficients)</span>
-<span id="cb57-10"><a href="#cb57-10" aria-hidden="true" tabindex="-1"></a>interaction_terms <span class="ot">&lt;-</span> <span class="fu">grep</span>(<span class="st">":"</span>, <span class="fu">rownames</span>(coef4), <span class="at">value =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb57-11"><a href="#cb57-11" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(<span class="fu">length</span>(interaction_terms) <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
-<span id="cb57-12"><a href="#cb57-12" aria-hidden="true" tabindex="-1"></a>  coef4[interaction_terms, <span class="fu">c</span>(<span class="st">"Estimate"</span>, <span class="st">"Std. Error"</span>, <span class="st">"p-value"</span>)]</span>
-<span id="cb57-13"><a href="#cb57-13" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>                                                       Estimate Std. Error
-antenatal_depression:employmentconcept_id_3000000190 -0.5747745   1.210526
-antenatal_depression:employmentemployed              -0.4960371   1.337733
-antenatal_depression:employmentunemployed            -1.3958084   2.091940
-                                                       p-value
-antenatal_depression:employmentconcept_id_3000000190 0.6349197
-antenatal_depression:employmentemployed              0.7107832
-antenatal_depression:employmentunemployed            0.5046242</code></pre>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>co <span class="ot">&lt;-</span> fit<span class="sc">$</span>coefficients</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="fu">show_tbl</span>(<span class="fu">data.frame</span>(</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">term =</span> <span class="fu">rownames</span>(co), <span class="at">OR =</span> <span class="fu">round</span>(co[, <span class="st">"P_OR"</span>], <span class="dv">2</span>),</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">CI_low =</span> <span class="fu">round</span>(co[, <span class="st">"low0.95CI.P_OR"</span>], <span class="dv">2</span>), <span class="at">CI_high =</span> <span class="fu">round</span>(co[, <span class="st">"high0.95CI.P_OR"</span>], <span class="dv">2</span>),</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">p_value =</span> <span class="fu">signif</span>(co[, <span class="st">"p-value"</span>], <span class="dv">3</span>), <span class="at">row.names =</span> <span class="cn">NULL</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 29%">
+<col style="width: 12%">
+<col style="width: 17%">
+<col style="width: 19%">
+<col style="width: 21%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">term</th>
+<th style="text-align: right;">OR</th>
+<th style="text-align: right;">CI_low</th>
+<th style="text-align: right;">CI_high</th>
+<th style="text-align: right;">p_value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">(Intercept)</td>
+<td style="text-align: right;">0.01</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">0.08</td>
+<td style="text-align: right;">6.98e-05</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">H<span class="math inline">\(age       | 1.07|   1.04|    1.11| 4.43e-05|
+|H\)</span>sexM</td>
+<td style="text-align: right;">0.99</td>
+<td style="text-align: right;">0.40</td>
+<td style="text-align: right;">2.42</td>
+<td style="text-align: right;">9.75e-01</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
-</section>
-<section id="clean-up" class="level1">
-<h1>Clean Up</h1>
-<p>Always remember to log out from the servers!</p>
+<blockquote class="blockquote">
+<p><strong>Answer.</strong> <strong>age</strong> is a strong, significant predictor of hyperlipidemia (odds rise with age, p &lt; 0.001) — clinically sensible, since cholesterol problems accumulate over a lifetime. <strong>sex</strong> is not significant. A clean, honest single-predictor result.</p>
+</blockquote>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Very important!!!</span></span>
-<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a><span class="fu">datashield.logout</span>(conns)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>DSI<span class="sc">::</span><span class="fu">datashield.logout</span>(conns)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 
 
@@ -1302,13 +912,14 @@ antenatal_depression:employmentunemployed            0.5046242</code></pre>
       e.clearSelection();
     }
     const getTextToCopy = function(trigger) {
-        const codeEl = trigger.previousElementSibling.cloneNode(true);
-        for (const childEl of codeEl.children) {
-          if (isCodeAnnotation(childEl)) {
-            childEl.remove();
-          }
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
         }
-        return codeEl.innerText;
+      }
+      return codeEl.innerText;
     }
     const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
       text: getTextToCopy
@@ -1323,7 +934,7 @@ antenatal_depression:employmentunemployed            0.5046242</code></pre>
     }
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);
-        var filterRegex = new RegExp("https:\/\/isglobal-brge\.github\.io\/workshop_APHRC");
+        var filterRegex = new RegExp("https:\/\/isglobal-brge\.github\.io\/workshop_DSWB");
       var isInternal = (href) => {
           return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
       }

@@ -2,12 +2,12 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.7.31">
+<meta name="generator" content="quarto-1.8.27">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>DataSHIELD OMOP Practical Exercises – DataSHIELD APHRC Workshop</title>
+<title>dsOMOP — Exercises – DataSHIELD DSWB Workshop</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -68,13 +68,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="./images/isglobal_logo.jpg" rel="icon" type="image/jpeg">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-b08616ca30bc6986c6ffe4cecfeccd70.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-afdc90b34ebced266e103efb07108d1c.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-d2fec8d93cc0814413f782f2e7a38223.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-ccc22283debd23ef421ac463adf8e61d.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -146,12 +147,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
  <span class="dropdown-text">DataSHIELD Presentation</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./DataSHIELD_workshop_APHRC_tables.html"><i class="bi bi-table" role="img">
+    <a class="dropdown-item" href="./DataSHIELD_workshop_DSWB_tables.html"><i class="bi bi-table" role="img">
 </i> 
  <span class="dropdown-text">DataSHIELD (Tables)</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./DataSHIELD_workshop_APHRC_resources.html"><i class="bi bi-link-45deg" role="img">
+    <a class="dropdown-item" href="./DataSHIELD_workshop_DSWB_resources.html"><i class="bi bi-link-45deg" role="img">
 </i> 
  <span class="dropdown-text">DataSHIELD (Resources)</span></a>
   </li>  
@@ -220,64 +221,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#download-the-worksheet" id="toc-download-the-worksheet" class="nav-link active" data-scroll-target="#download-the-worksheet">Download the Worksheet</a></li>
-  <li><a href="#introduction" id="toc-introduction" class="nav-link" data-scroll-target="#introduction">Introduction</a>
+  <li><a href="#how-to-use-this-sheet" id="toc-how-to-use-this-sheet" class="nav-link active" data-scroll-target="#how-to-use-this-sheet">How to use this sheet</a>
   <ul class="collapse">
-  <li><a href="#learning-objectives" id="toc-learning-objectives" class="nav-link" data-scroll-target="#learning-objectives">Learning Objectives</a></li>
-  <li><a href="#prerequisites" id="toc-prerequisites" class="nav-link" data-scroll-target="#prerequisites">Prerequisites</a></li>
-  <li><a href="#server-connection-details" id="toc-server-connection-details" class="nav-link" data-scroll-target="#server-connection-details">Server Connection Details</a></li>
+  <li><a href="#setup-run-this-first" id="toc-setup-run-this-first" class="nav-link" data-scroll-target="#setup-run-this-first">Setup (run this first)</a></li>
   </ul></li>
-  <li><a href="#need-help" id="toc-need-help" class="nav-link" data-scroll-target="#need-help">Need Help?</a></li>
-  <li><a href="#exercise-1-server-connection-and-mystery-dataset" id="toc-exercise-1-server-connection-and-mystery-dataset" class="nav-link" data-scroll-target="#exercise-1-server-connection-and-mystery-dataset">Exercise 1: Server Connection and Mystery Dataset</a>
-  <ul class="collapse">
-  <li><a href="#task-1.1-create-a-server-connection" id="toc-task-1.1-create-a-server-connection" class="nav-link" data-scroll-target="#task-1.1-create-a-server-connection">Task 1.1: Create a Server Connection</a></li>
-  <li><a href="#task-1.2-create-dsomophelper-instance" id="toc-task-1.2-create-dsomophelper-instance" class="nav-link" data-scroll-target="#task-1.2-create-dsomophelper-instance">Task 1.2: Create dsOMOPHelper Instance</a></li>
-  <li><a href="#task-1.3-explore-initial-data" id="toc-task-1.3-explore-initial-data" class="nav-link" data-scroll-target="#task-1.3-explore-initial-data">Task 1.3: Explore Initial Data</a></li>
-  </ul></li>
-  <li><a href="#exercise-2-who-are-we-studying" id="toc-exercise-2-who-are-we-studying" class="nav-link" data-scroll-target="#exercise-2-who-are-we-studying">Exercise 2: Who Are We Studying?</a>
-  <ul class="collapse">
-  <li><a href="#task-2.1-first-clue---gender-distribution" id="toc-task-2.1-first-clue---gender-distribution" class="nav-link" data-scroll-target="#task-2.1-first-clue---gender-distribution">Task 2.1: First Clue - Gender Distribution</a></li>
-  <li><a href="#task-2.2-second-clue---age-distribution" id="toc-task-2.2-second-clue---age-distribution" class="nav-link" data-scroll-target="#task-2.2-second-clue---age-distribution">Task 2.2: Second Clue - Age Distribution</a></li>
-  <li><a href="#task-2.3-sample-size" id="toc-task-2.3-sample-size" class="nav-link" data-scroll-target="#task-2.3-sample-size">Task 2.3: Sample Size</a></li>
-  </ul></li>
-  <li><a href="#exercise-3-what-was-measured" id="toc-exercise-3-what-was-measured" class="nav-link" data-scroll-target="#exercise-3-what-was-measured">Exercise 3: What Was Measured?</a>
-  <ul class="collapse">
-  <li><a href="#task-3.1-explore-conditions-diagnoses" id="toc-task-3.1-explore-conditions-diagnoses" class="nav-link" data-scroll-target="#task-3.1-explore-conditions-diagnoses">Task 3.1: Explore Conditions (Diagnoses)</a></li>
-  <li><a href="#task-3.2-explore-measurements" id="toc-task-3.2-explore-measurements" class="nav-link" data-scroll-target="#task-3.2-explore-measurements">Task 3.2: Explore Measurements</a></li>
-  <li><a href="#task-3.3-explore-observations" id="toc-task-3.3-explore-observations" class="nav-link" data-scroll-target="#task-3.3-explore-observations">Task 3.3: Explore Observations</a></li>
-  </ul></li>
-  <li><a href="#exercise-4-building-your-analysis-dataset" id="toc-exercise-4-building-your-analysis-dataset" class="nav-link" data-scroll-target="#exercise-4-building-your-analysis-dataset">Exercise 4: Building Your Analysis Dataset</a>
-  <ul class="collapse">
-  <li><a href="#task-4.1-start-with-the-clinical-outcome" id="toc-task-4.1-start-with-the-clinical-outcome" class="nav-link" data-scroll-target="#task-4.1-start-with-the-clinical-outcome">Task 4.1: Start with the Clinical Outcome</a></li>
-  <li><a href="#task-4.2-add-social-determinants" id="toc-task-4.2-add-social-determinants" class="nav-link" data-scroll-target="#task-4.2-add-social-determinants">Task 4.2: Add Social Determinants</a></li>
-  <li><a href="#task-4.3-retrieve-the-diagnoses" id="toc-task-4.3-retrieve-the-diagnoses" class="nav-link" data-scroll-target="#task-4.3-retrieve-the-diagnoses">Task 4.3: Retrieve the Diagnoses</a></li>
-  </ul></li>
-  <li><a href="#exercise-5-the-data-transformation-challenge" id="toc-exercise-5-the-data-transformation-challenge" class="nav-link" data-scroll-target="#exercise-5-the-data-transformation-challenge">Exercise 5: The Data Transformation Challenge</a></li>
-  <li><a href="#exercise-6-creating-analyzable-variables" id="toc-exercise-6-creating-analyzable-variables" class="nav-link" data-scroll-target="#exercise-6-creating-analyzable-variables">Exercise 6: Creating Analyzable Variables</a>
-  <ul class="collapse">
-  <li><a href="#understanding-the-challenge" id="toc-understanding-the-challenge" class="nav-link" data-scroll-target="#understanding-the-challenge">Understanding the Challenge</a></li>
-  <li><a href="#task-6.1-transform-your-diagnosis-variables" id="toc-task-6.1-transform-your-diagnosis-variables" class="nav-link" data-scroll-target="#task-6.1-transform-your-diagnosis-variables">Task 6.1: Transform Your Diagnosis Variables</a></li>
-  <li><a href="#task-6.2-explore-prevalence" id="toc-task-6.2-explore-prevalence" class="nav-link" data-scroll-target="#task-6.2-explore-prevalence">Task 6.2: Explore Prevalence</a></li>
-  </ul></li>
-  <li><a href="#exercise-7-understanding-depression-patterns" id="toc-exercise-7-understanding-depression-patterns" class="nav-link" data-scroll-target="#exercise-7-understanding-depression-patterns">Exercise 7: Understanding Depression Patterns</a>
-  <ul class="collapse">
-  <li><a href="#task-7.1-depression-severity-distribution" id="toc-task-7.1-depression-severity-distribution" class="nav-link" data-scroll-target="#task-7.1-depression-severity-distribution">Task 7.1: Depression Severity Distribution</a></li>
-  <li><a href="#task-7.2-the-timeline-question" id="toc-task-7.2-the-timeline-question" class="nav-link" data-scroll-target="#task-7.2-the-timeline-question">Task 7.2: The Timeline Question</a></li>
-  </ul></li>
-  <li><a href="#exercise-8-finding-risk-factors" id="toc-exercise-8-finding-risk-factors" class="nav-link" data-scroll-target="#exercise-8-finding-risk-factors">Exercise 8: Finding Risk Factors</a>
-  <ul class="collapse">
-  <li><a href="#task-8.1-prepare-your-analysis-variables" id="toc-task-8.1-prepare-your-analysis-variables" class="nav-link" data-scroll-target="#task-8.1-prepare-your-analysis-variables">Task 8.1: Prepare Your Analysis Variables</a></li>
-  <li><a href="#task-8.2-explore-correlations" id="toc-task-8.2-explore-correlations" class="nav-link" data-scroll-target="#task-8.2-explore-correlations">Task 8.2: Explore Correlations</a></li>
-  </ul></li>
-  <li><a href="#exercise-9-testing-hypotheses-with-statistical-models" id="toc-exercise-9-testing-hypotheses-with-statistical-models" class="nav-link" data-scroll-target="#exercise-9-testing-hypotheses-with-statistical-models">Exercise 9: Testing Hypotheses with Statistical Models</a>
-  <ul class="collapse">
-  <li><a href="#prepare-the-modeling-dataset" id="toc-prepare-the-modeling-dataset" class="nav-link" data-scroll-target="#prepare-the-modeling-dataset">Prepare the Modeling Dataset</a></li>
-  <li><a href="#task-9.1-hypothesis-1---age-and-employment" id="toc-task-9.1-hypothesis-1---age-and-employment" class="nav-link" data-scroll-target="#task-9.1-hypothesis-1---age-and-employment">Task 9.1: Hypothesis 1 - Age and Employment</a></li>
-  <li><a href="#task-9.2-hypothesis-2---postpartum-depression-prediction" id="toc-task-9.2-hypothesis-2---postpartum-depression-prediction" class="nav-link" data-scroll-target="#task-9.2-hypothesis-2---postpartum-depression-prediction">Task 9.2: Hypothesis 2 - Postpartum Depression Prediction</a></li>
-  <li><a href="#task-9.3-hypothesis-3---impact-of-social-factors" id="toc-task-9.3-hypothesis-3---impact-of-social-factors" class="nav-link" data-scroll-target="#task-9.3-hypothesis-3---impact-of-social-factors">Task 9.3: Hypothesis 3 - Impact of Social Factors</a></li>
-  </ul></li>
-  <li><a href="#challenge-create-your-own-research-question" id="toc-challenge-create-your-own-research-question" class="nav-link" data-scroll-target="#challenge-create-your-own-research-question">Challenge: Create Your Own Research Question</a></li>
-
+  <li><a href="#exercise-1-a-new-numeric-variable" id="toc-exercise-1-a-new-numeric-variable" class="nav-link" data-scroll-target="#exercise-1-a-new-numeric-variable">Exercise 1 — A new numeric variable</a></li>
+  <li><a href="#exercise-2-a-new-categorical-variable" id="toc-exercise-2-a-new-categorical-variable" class="nav-link" data-scroll-target="#exercise-2-a-new-categorical-variable">Exercise 2 — A new categorical variable</a></li>
+  <li><a href="#exercise-3-find-a-concept-yourself" id="toc-exercise-3-find-a-concept-yourself" class="nav-link" data-scroll-target="#exercise-3-find-a-concept-yourself">Exercise 3 — Find a concept yourself</a></li>
+  <li><a href="#exercise-4-build-your-own-recipe" id="toc-exercise-4-build-your-own-recipe" class="nav-link" data-scroll-target="#exercise-4-build-your-own-recipe">Exercise 4 — Build your own recipe</a></li>
+  <li><a href="#exercise-5-filter-at-extraction" id="toc-exercise-5-filter-at-extraction" class="nav-link" data-scroll-target="#exercise-5-filter-at-extraction">Exercise 5 — Filter at extraction</a></li>
+  <li><a href="#exercise-6-a-model" id="toc-exercise-6-a-model" class="nav-link" data-scroll-target="#exercise-6-a-model">Exercise 6 — A model</a></li>
+  <li><a href="#open-challenge" id="toc-open-challenge" class="nav-link" data-scroll-target="#open-challenge">Open challenge</a></li>
   </ul>
 </nav>
     </div>
@@ -286,7 +240,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">DataSHIELD OMOP Practical Exercises</h1>
+<h1 class="title">dsOMOP — Exercises</h1>
+<p class="subtitle lead">Practise the federated-analysis toolkit on new MIMIC variables and a new model</p>
 </div>
 
 
@@ -303,716 +258,202 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<section id="download-the-worksheet" class="level2">
-<h2 data-anchor-id="download-the-worksheet">Download the Worksheet</h2>
-<p><a href="#" onclick="event.preventDefault(); fetch('https://raw.githubusercontent.com/isglobal-brge/workshop_APHRC/main/omop_exercises_worksheet.Rmd').then(response => response.blob()).then(blob => { const url = window.URL.createObjectURL(blob); const a = document.createElement('a'); a.style.display = 'none'; a.href = url; a.download = 'omop_exercises_worksheet.Rmd'; document.body.appendChild(a); a.click(); window.URL.revokeObjectURL(url); }); return false;" class="btn btn-primary btn-sm"> <i class="bi bi-download"></i> Download exercise worksheet </a></p>
-<p>Download the R Markdown worksheet to complete the exercises in your own RStudio environment. The worksheet contains all the exercise tasks with space for your code.</p>
-</section>
-<section id="introduction" class="level2">
-<h2 data-anchor-id="introduction">Introduction</h2>
-<p>In this practical exercise, you will learn how to work with OMOP CDM (Observational Medical Outcomes Partnership Common Data Model) data using DataSHIELD.</p>
-<p>You’ll be working with a real dataset from the African Population and Health Research Center (APHRC), but we won’t tell you what it’s about - that’s for you to discover! Through systematic exploration, you’ll uncover what type of study this was, who the participants were, and what was measured!</p>
-<section id="learning-objectives" class="level3">
-<h3 data-anchor-id="learning-objectives">Learning Objectives</h3>
-<p>By the end of this exercise, you will be able to:</p>
-<ol type="1">
-<li>Connect to an OMOP database through DataSHIELD</li>
-<li>Explore OMOP concepts and data structure</li>
-<li>Retrieve specific clinical and demographic data</li>
-<li>Transform OMOP data into analyzable format</li>
-<li>Perform exploratory data analysis</li>
-<li>Build statistical models with OMOP data</li>
-</ol>
-</section>
-<section id="prerequisites" class="level3">
-<h3 data-anchor-id="prerequisites">Prerequisites</h3>
-<p>Before starting, ensure you have installed:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Required packages</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="fu">c</span>(<span class="st">"DSI"</span>, <span class="st">"DSOpal"</span>)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>devtools<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">"isglobal-brge/dsOMOPClient"</span>)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>devtools<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">"isglobal-brge/dsOMOPHelper"</span>)</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>devtools<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">"datashield/dsBaseClient"</span>)</span></code></pre></div>
-</section>
-<section id="server-connection-details" class="level3">
-<h3 data-anchor-id="server-connection-details">Server Connection Details</h3>
-<p>For this tutorial, you’ll connect to:</p>
-<ul>
-<li><strong>Server name:</strong> APHRC</li>
-<li><strong>Server URL</strong>: https://44.201.204.234:9090</li>
-<li><strong>Username</strong>: administrator</li>
-<li><strong>Password</strong>: password</li>
-<li><strong>Project</strong>: omop</li>
-<li><strong>Resource</strong>: omop.study_1</li>
-</ul>
-<div class="callout callout-style-default callout-warning callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Warning
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>This server uses a self-signed certificate. You’ll need to configure your R session to accept it.</p>
-</div>
-</div>
-<hr>
-</section>
-</section>
-<section id="need-help" class="level2">
-<h2 data-anchor-id="need-help">Need Help?</h2>
-<p><a href="omop_exercises_solution.html" target="_blank" class="btn btn-success btn-lg"> <i class="bi bi-lightbulb"></i> View Complete Solution! </a></p>
-<p>The solution file contains all the code with detailed explanations and outputs to help you understand each step of the analysis.</p>
-<hr>
-</section>
-<section id="exercise-1-server-connection-and-mystery-dataset" class="level2">
-<h2 data-anchor-id="exercise-1-server-connection-and-mystery-dataset">Exercise 1: Server Connection and Mystery Dataset</h2>
-<p>Let’s start by connecting to the OMOP DataSHIELD server. You’re about to explore a mystery dataset - pay attention to clues about what kind of study this might be!</p>
-<section id="task-1.1-create-a-server-connection" class="level3">
-<h3 data-anchor-id="task-1.1-create-a-server-connection">Task 1.1: Create a Server Connection</h3>
-<p>Set up the connection to the APHRC DataSHIELD node:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load required libraries</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(DSI)</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(DSOpal)</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dsBaseClient)</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dsOMOPClient)</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dsOMOPHelper)</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Configure SSL for self-signed certificates</span></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(httr)</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>httr<span class="sc">::</span><span class="fu">set_config</span>(httr<span class="sc">::</span><span class="fu">config</span>(<span class="at">ssl_verifypeer =</span> <span class="dv">0</span>L, <span class="at">ssl_verifyhost =</span> <span class="dv">0</span>L))</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Create connection</span></span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="co"># YOUR CODE HERE:</span></span></code></pre></div>
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Need a hint?
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-2" class="callout-2-contents callout-collapse collapse">
-<div class="callout-body-container callout-body">
-<p>You need to:</p>
-<ol type="1">
-<li>Create a builder with <code>newDSLoginBuilder()</code></li>
-<li>Add server details with <code>builder$append()</code></li>
-<li>Build the login data</li>
-<li>Connect with <code>datashield.login()</code></li>
-</ol>
-</div>
-</div>
-</div>
-</section>
-<section id="task-1.2-create-dsomophelper-instance" class="level3">
-<h3 data-anchor-id="task-1.2-create-dsomophelper-instance">Task 1.2: Create dsOMOPHelper Instance</h3>
-<p>Create a helper object to interact with the OMOP data:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># YOUR CODE HERE:</span></span></code></pre></div>
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Need a hint?
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-3" class="callout-3-contents callout-collapse collapse">
-<div class="callout-body-container callout-body">
-<p>Use <code>ds.omop.helper()</code> with the resource “omop.study_1”</p>
-</div>
-</div>
-</div>
-</section>
-<section id="task-1.3-explore-initial-data" class="level3">
-<h3 data-anchor-id="task-1.3-explore-initial-data">Task 1.3: Explore Initial Data</h3>
-<p>Check what data is available:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># YOUR CODE HERE:</span></span></code></pre></div>
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Need a hint?
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-4" class="callout-4-contents callout-collapse collapse">
-<div class="callout-body-container callout-body">
-<p>Use <code>ds.summary()</code> on your data symbol</p>
-</div>
-</div>
-</div>
-<hr>
-</section>
-</section>
-<section id="exercise-2-who-are-we-studying" class="level2">
-<h2 data-anchor-id="exercise-2-who-are-we-studying">Exercise 2: Who Are We Studying?</h2>
-<p>The OMOP Person table contains demographic information. Let’s discover who the participants in this study are.</p>
-<section id="task-2.1-first-clue---gender-distribution" class="level3">
-<h3 data-anchor-id="task-2.1-first-clue---gender-distribution">Task 2.1: First Clue - Gender Distribution</h3>
-<p>Check the gender distribution:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># YOUR CODE HERE:</span></span></code></pre></div>
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Need a hint?
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-5" class="callout-5-contents callout-collapse collapse">
-<div class="callout-body-container callout-body">
-<p>Use <code>ds.table()</code> on the gender_concept_id column</p>
-</div>
-</div>
-</div>
-<p><strong>Question</strong>: What do you notice about the gender distribution? What might this tell you about the study?</p>
-</section>
-<section id="task-2.2-second-clue---age-distribution" class="level3">
-<h3 data-anchor-id="task-2.2-second-clue---age-distribution">Task 2.2: Second Clue - Age Distribution</h3>
-<p>Calculate the participants’ ages and examine the distribution:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># YOUR CODE HERE:</span></span></code></pre></div>
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-6-contents" aria-controls="callout-6" aria-expanded="false" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Need a hint?
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-6" class="callout-6-contents callout-collapse collapse">
-<div class="callout-body-container callout-body">
-<ol type="1">
-<li>Create age = 2025 - year_of_birth</li>
-<li>Then get mean and quantiles</li>
-</ol>
-</div>
-</div>
-</div>
-<p><strong>Question</strong>: What is the age range? Combined with the gender information, what type of study might this be?</p>
-</section>
-<section id="task-2.3-sample-size" class="level3">
-<h3 data-anchor-id="task-2.3-sample-size">Task 2.3: Sample Size</h3>
-<p>Check how many participants we have:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># YOUR CODE HERE:</span></span></code></pre></div>
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-7-contents" aria-controls="callout-7" aria-expanded="false" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Need a hint?
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-7" class="callout-7-contents callout-collapse collapse">
-<div class="callout-body-container callout-body">
-<p>Use <code>ds.dim()</code></p>
-</div>
-</div>
-</div>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Note
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p><strong>Detective Work</strong>: Based on what you’ve discovered so far:</p>
-<ul>
-<li>All participants share a specific characteristic</li>
-<li>They’re in a particular age range</li>
-<li>What life event might they be experiencing?</li>
-</ul>
-</div>
-</div>
-<hr>
-</section>
-</section>
-<section id="exercise-3-what-was-measured" class="level2">
-<h2 data-anchor-id="exercise-3-what-was-measured">Exercise 3: What Was Measured?</h2>
-<p>Now let’s discover what data was collected in this study. OMOP organizes data into different domains.</p>
-<section id="task-3.1-explore-conditions-diagnoses" class="level3">
-<h3 data-anchor-id="task-3.1-explore-conditions-diagnoses">Task 3.1: Explore Conditions (Diagnoses)</h3>
-<p>Start with medical conditions:</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># YOUR CODE HERE:</span></span></code></pre></div>
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-9-contents" aria-controls="callout-9" aria-expanded="false" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Need a hint?
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-9" class="callout-9-contents callout-collapse collapse">
-<div class="callout-body-container callout-body">
-<p>Use <code>o$concepts("condition_occurrence")</code></p>
-</div>
-</div>
-</div>
-<p><strong>Question</strong>: What conditions are tracked? What does this reveal about the study focus?</p>
-</section>
-<section id="task-3.2-explore-measurements" class="level3">
-<h3 data-anchor-id="task-3.2-explore-measurements">Task 3.2: Explore Measurements</h3>
-<p>Check what clinical measurements were taken:</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># YOUR CODE HERE:</span></span></code></pre></div>
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-10-contents" aria-controls="callout-10" aria-expanded="false" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Need a hint?
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-10" class="callout-10-contents callout-collapse collapse">
-<div class="callout-body-container callout-body">
-<p>Use <code>o$concepts("measurement")</code></p>
-</div>
-</div>
-</div>
-<p><strong>Question</strong>: What scale is being used? What is it designed to measure?</p>
-</section>
-<section id="task-3.3-explore-observations" class="level3">
-<h3 data-anchor-id="task-3.3-explore-observations">Task 3.3: Explore Observations</h3>
-<p>Finally, look at other observations (social/demographic factors):</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># YOUR CODE HERE:</span></span></code></pre></div>
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-11-contents" aria-controls="callout-11" aria-expanded="false" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Need a hint?
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-11" class="callout-11-contents callout-collapse collapse">
-<div class="callout-body-container callout-body">
-<p>Use <code>o$concepts("observation")</code></p>
-</div>
-</div>
-</div>
-<p><strong>Question</strong>: What social and demographic factors were collected? Why might these be relevant?</p>
+<p><a href="#" onclick="event.preventDefault(); fetch('https://raw.githubusercontent.com/isglobal-brge/workshop_DSWB/main/omop-exercises.Rmd').then(response => response.blob()).then(blob => { const url = window.URL.createObjectURL(blob); const a = document.createElement('a'); a.style.display = 'none'; a.href = url; a.download = 'omop-exercises.Rmd'; document.body.appendChild(a); a.click(); window.URL.revokeObjectURL(url); }); return false;" class="btn btn-primary btn-sm"> <i class="bi bi-download"></i> Download this worksheet (.Rmd) </a> <a href="omop_exercises_solution.html" target="_blank" class="btn btn-success btn-sm"> <i class="bi bi-check-circle"></i> View solutions </a></p>
+<section id="how-to-use-this-sheet" class="level1">
+<h1>How to use this sheet</h1>
+<p>Everything you need you <strong>already did once</strong> in the tutorial. Each exercise has a blank code block (<code># YOUR CODE HERE</code>) and a <strong>collapsed hint</strong> — try it yourself first. Write your answers to the questions in plain words. We stay on the <strong>MIMIC</strong> dataset throughout.</p>
 <div class="callout callout-style-default callout-important callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-Important
+<span class="screen-reader-only">Important</span>Reminders
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p><strong>The Big Reveal</strong>: By now you should have figured out:</p>
 <ul>
-<li>This is a study of women</li>
-<li>In reproductive age</li>
-<li>Looking at specific mental health conditions</li>
-<li>During a particular life period</li>
-</ul>
-<p>Can you name the specific focus of this study?</p>
-</div>
-</div>
-<hr>
-</section>
-</section>
-<section id="exercise-4-building-your-analysis-dataset" class="level2">
-<h2 data-anchor-id="exercise-4-building-your-analysis-dataset">Exercise 4: Building Your Analysis Dataset</h2>
-<p>Now that you understand the study, let’s retrieve the relevant data for analysis.</p>
-<section id="task-4.1-start-with-the-clinical-outcome" class="level3">
-<h3 data-anchor-id="task-4.1-start-with-the-clinical-outcome">Task 4.1: Start with the Clinical Outcome</h3>
-<p>Retrieve the main clinical measurement:</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># YOUR CODE HERE:</span></span></code></pre></div>
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-13-contents" aria-controls="callout-13" aria-expanded="false" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Need a hint?
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-13" class="callout-13-contents callout-collapse collapse">
-<div class="callout-body-container callout-body">
-<ul>
-<li>Use <code>o$auto()</code> with concept 4164838</li>
-<li>Get the <code>value_as_number</code> column</li>
+<li>Connect with <code>profile = "omop"</code>.</li>
+<li>Pooled summaries: pass <code>scope = "pooled"</code> and read the <code>$pooled</code> slot.</li>
+<li><strong>Check the output after every step.</strong></li>
 </ul>
 </div>
 </div>
-</div>
-<p>After retrieval, check the data structure with <code>ds.summary()</code>.</p>
-</section>
-<section id="task-4.2-add-social-determinants" class="level3">
-<h3 data-anchor-id="task-4.2-add-social-determinants">Task 4.2: Add Social Determinants</h3>
-<p>Mental health is influenced by social factors. Retrieve all relevant social variables:</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># YOUR CODE HERE:</span></span></code></pre></div>
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-14-contents" aria-controls="callout-14" aria-expanded="false" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Need a hint?
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-14" class="callout-14-contents callout-collapse collapse">
-<div class="callout-body-container callout-body">
-<p>Retrieve these concepts from observation table: - Employment status (44804285) - Marital status (4053609) - Number in household (4075500) - Religious affiliation (4052017) - Education level (42528763)</p>
-</div>
-</div>
-</div>
-<p><strong>Question</strong>: Why might these social factors be important for mental health research?</p>
-</section>
-<section id="task-4.3-retrieve-the-diagnoses" class="level3">
-<h3 data-anchor-id="task-4.3-retrieve-the-diagnoses">Task 4.3: Retrieve the Diagnoses</h3>
-<p>Get the depression diagnoses:</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># YOUR CODE HERE:</span></span></code></pre></div>
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-15-contents" aria-controls="callout-15" aria-expanded="false" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Need a hint?
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-15" class="callout-15-contents callout-collapse collapse">
-<div class="callout-body-container callout-body">
-<ul>
-<li>Get both conditions you discovered earlier</li>
-<li>Remember: you need the <code>condition_occurrence_id</code> column</li>
-</ul>
-</div>
-</div>
-</div>
-<p>Check your final data structure. How many variables do you have now?</p>
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Tip
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p><strong>Expected Variables</strong>: By the end of Exercise 4, you should have:</p>
-<ul>
-<li>Original person table columns (11)</li>
-<li>Edinburgh scale (1)</li>
-<li>Social factors (5)</li>
-<li>Depression diagnoses (2)</li>
-<li>Total: 19 variables</li>
-</ul>
-</div>
+<section id="setup-run-this-first" class="level2">
+<h2 data-anchor-id="setup-run-this-first">Setup (run this first)</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(DSI); <span class="fu">library</span>(DSOpal); <span class="fu">library</span>(dsBaseClient); <span class="fu">library</span>(dsOMOPClient)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>builder <span class="ot">&lt;-</span> DSI<span class="sc">::</span><span class="fu">newDSLoginBuilder</span>()</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (s <span class="cf">in</span> <span class="fu">c</span>(<span class="st">"nairobi"</span>, <span class="st">"douala"</span>, <span class="st">"dakar"</span>))</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  builder<span class="sc">$</span><span class="fu">append</span>(<span class="at">server =</span> s, <span class="at">url =</span> <span class="fu">paste0</span>(<span class="st">"https://"</span>, s, <span class="st">".datashield.live"</span>),</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>                 <span class="at">user =</span> <span class="st">"ethiopia"</span>, <span class="at">password =</span> <span class="st">"P@ssw0rd"</span>, <span class="at">profile =</span> <span class="st">"omop"</span>)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>conns <span class="ot">&lt;-</span> DSI<span class="sc">::</span><span class="fu">datashield.login</span>(<span class="at">logins =</span> builder<span class="sc">$</span><span class="fu">build</span>())</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.omop.connect</span>(<span class="at">resource =</span> <span class="st">"omop_demo.mimic"</span>, <span class="at">symbol =</span> <span class="st">"omop"</span>, <span class="at">conns =</span> conns)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <hr>
 </section>
 </section>
-<section id="exercise-5-the-data-transformation-challenge" class="level2">
-<h2 data-anchor-id="exercise-5-the-data-transformation-challenge">Exercise 5: The Data Transformation Challenge</h2>
-<p>You’ve retrieved the data, but there’s a problem: condition occurrences are stored as IDs, not as analyzable variables. Let’s solve this!</p>
-<hr>
-</section>
-<section id="exercise-6-creating-analyzable-variables" class="level2">
-<h2 data-anchor-id="exercise-6-creating-analyzable-variables">Exercise 6: Creating Analyzable Variables</h2>
-<section id="understanding-the-challenge" class="level3">
-<h3 data-anchor-id="understanding-the-challenge">Understanding the Challenge</h3>
-<p>When you look at your data, you’ll notice the depression diagnoses are stored as long ID numbers. We need to transform these into simple yes/no (1/0) variables for analysis.</p>
-<p>Here’s a function that does this transformation:</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>convert_to_boolean <span class="ot">&lt;-</span> <span class="cf">function</span>(table, variable_name, id_type, conns) {</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"Converting %s to boolean...</span><span class="sc">\n</span><span class="st">"</span>, variable_name))</span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Step 1: Construct the full variable name</span></span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>  full_variable_name <span class="ot">&lt;-</span> <span class="fu">paste0</span>(table, <span class="st">"$"</span>, variable_name, <span class="st">"."</span>, id_type)</span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Step 2: Convert to numeric (IDs are often strings)</span></span>
-<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>  new_numeric_name <span class="ot">&lt;-</span> <span class="fu">paste0</span>(variable_name, <span class="st">"_numeric"</span>)</span>
-<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ds.asNumeric</span>(</span>
-<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">x.name =</span> full_variable_name, </span>
-<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">newobj =</span> new_numeric_name, </span>
-<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">datasources =</span> conns</span>
-<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Step 3: Convert to boolean (1 if ID exists, 0 if not)</span></span>
-<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ds.Boole</span>(</span>
-<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">V1 =</span> new_numeric_name, </span>
-<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">V2 =</span> <span class="dv">0</span>, </span>
-<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">Boolean.operator =</span> <span class="st">"!="</span>, </span>
-<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">numeric.output =</span> <span class="cn">TRUE</span>, </span>
-<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">na.assign =</span> <span class="dv">0</span>, </span>
-<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">newobj =</span> variable_name,</span>
-<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">datasources =</span> conns</span>
-<span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb14-25"><a href="#cb14-25" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
-</section>
-<section id="task-6.1-transform-your-diagnosis-variables" class="level3">
-<h3 data-anchor-id="task-6.1-transform-your-diagnosis-variables">Task 6.1: Transform Your Diagnosis Variables</h3>
-<p>Convert both depression conditions to boolean:</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># YOUR CODE HERE:</span></span></code></pre></div>
+<section id="exercise-1-a-new-numeric-variable" class="level1">
+<h1>Exercise 1 — A new numeric variable</h1>
+<p>In the tutorial we summarised <strong>heart rate</strong>. Do the same for <strong>systolic blood pressure</strong> (<code>concept_id = 21492239</code>): get its safe statistics, then draw its histogram.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># YOUR CODE HERE</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p><strong>Question:</strong> Is systolic blood pressure roughly symmetric, or skewed? How does its spread compare to heart rate’s?</p>
 <div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-17-contents" aria-controls="callout-17" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-Need a hint?
+<span class="screen-reader-only">Tip</span>Hint
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-17" class="callout-17-contents callout-collapse collapse">
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
-<p>Convert both <code>antenatal_depression</code> and <code>postpartum_depression</code> using the provided function</p>
+<p><code>ds.omop.column.stats("measurement", "value_as_number", concept_id = 21492239, scope = "pooled", symbol = "omop", conns = conns)$pooled</code> for the numbers. For the picture, reuse the tutorial’s recipe: get the per-site bins with <code>ds.omop.value.histogram("measurement", value_col = "value_as_number", concept_id = 21492239, symbol = "omop", conns = conns)</code>, then aggregate <code>count</code> over <code>bin_start</code> and <code>barplot()</code>.</p>
 </div>
 </div>
 </div>
 </section>
-<section id="task-6.2-explore-prevalence" class="level3">
-<h3 data-anchor-id="task-6.2-explore-prevalence">Task 6.2: Explore Prevalence</h3>
-<p>Now check the prevalence of each condition:</p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># YOUR CODE HERE:</span></span></code></pre></div>
+<section id="exercise-2-a-new-categorical-variable" class="level1">
+<h1>Exercise 2 — A new categorical variable</h1>
+<p>The tutorial used <strong>heart rhythm</strong>. Explore <strong>marital status</strong> (<code>concept_id = 40766231</code>, in the <code>observation</code> table): count how often each value occurs.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># YOUR CODE HERE</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p><strong>Question:</strong> What is the most common marital status?</p>
 <div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-18-contents" aria-controls="callout-18" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-Need a hint?
+<span class="screen-reader-only">Tip</span>Hint
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-18" class="callout-18-contents callout-collapse collapse">
+<div id="callout-3" class="callout-3-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
-<p>Use <code>ds.table()</code> on each boolean variable</p>
+<p>Marital status is a coded value, so it lives in <code>value_as_concept_id</code>: <code>ds.omop.value.counts("observation", "value_as_concept_id", concept_id = 40766231, symbol = "omop", conns = conns)</code></p>
 </div>
 </div>
 </div>
-<p><strong>Question</strong>: What percentage of women experienced each type of depression? Is there an overlap?</p>
-<hr>
 </section>
-</section>
-<section id="exercise-7-understanding-depression-patterns" class="level2">
-<h2 data-anchor-id="exercise-7-understanding-depression-patterns">Exercise 7: Understanding Depression Patterns</h2>
-<p>Now let’s explore the patterns in the data to understand maternal mental health better.</p>
-<section id="task-7.1-depression-severity-distribution" class="level3">
-<h3 data-anchor-id="task-7.1-depression-severity-distribution">Task 7.1: Depression Severity Distribution</h3>
-<p>First, examine the Edinburgh Scale scores:</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># YOUR CODE HERE:</span></span></code></pre></div>
+<section id="exercise-3-find-a-concept-yourself" class="level1">
+<h1>Exercise 3 — Find a concept yourself</h1>
+<p>You suspect <strong>hyperlipidemia</strong> is common. Find its <code>concept_id</code> by searching, then check how prevalent it is.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># YOUR CODE HERE</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p><strong>Question:</strong> What is the concept_id, and how many patients have it?</p>
 <div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-19-contents" aria-controls="callout-19" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-Need a hint?
+<span class="screen-reader-only">Tip</span>Hint
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-19" class="callout-19-contents callout-collapse collapse">
+<div id="callout-4" class="callout-4-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
-<ol type="1">
-<li>Create a simpler variable name for Edinburgh scores</li>
-<li>Create a histogram</li>
-<li>Get summary statistics</li>
-</ol>
+<p><code>ds.omop.concept.search("hyperlipidemia", domain = "Condition", symbol = "omop", conns = conns)</code> to get the id, then look for it in <code>ds.omop.concept.prevalence("condition_occurrence", metric = "persons", top_n = 15, scope = "pooled", symbol = "omop", conns = conns)$pooled</code>.</p>
 </div>
 </div>
 </div>
-<p><strong>Question</strong>: What’s the typical score? Note that scores ≥10 often indicate possible depression.</p>
 </section>
-<section id="task-7.2-the-timeline-question" class="level3">
-<h3 data-anchor-id="task-7.2-the-timeline-question">Task 7.2: The Timeline Question</h3>
-<p>Create a cross-tabulation to understand the relationship between antenatal and postpartum depression:</p>
-<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># YOUR CODE HERE:</span></span></code></pre></div>
+<section id="exercise-4-build-your-own-recipe" class="level1">
+<h1>Exercise 4 — Build your own recipe</h1>
+<p>Build a person-level table <code>D</code> with four columns: <strong>sex</strong>, <strong>age</strong>, the <strong>mean systolic blood pressure</strong>, and a <strong>binary flag for hyperlipidemia</strong> (the concept from Exercise 3). Preview it, execute it, then check the columns, dimensions and a summary.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># YOUR CODE HERE</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
 <div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-20-contents" aria-controls="callout-20" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-Need a hint?
+<span class="screen-reader-only">Tip</span>Hint
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-20" class="callout-20-contents callout-collapse collapse">
+<div id="callout-5" class="callout-5-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
-<p>Use <code>ds.table()</code> with <code>rvar="antenatal_depression"</code> and <code>cvar="postpartum_depression"</code></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>rec <span class="ot">&lt;-</span> <span class="fu">omop_recipe</span>(</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">variables =</span> <span class="fu">list</span>(</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable</span>(<span class="at">table =</span> <span class="st">"person"</span>, <span class="at">column =</span> <span class="st">"gender_concept_id"</span>, <span class="at">format =</span> <span class="st">"sex_mf"</span>, <span class="at">name =</span> <span class="st">"sex"</span>),</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable_age</span>(<span class="at">name =</span> <span class="st">"age"</span>),</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable</span>(<span class="at">table =</span> <span class="st">"measurement"</span>, <span class="at">concept_id =</span> <span class="dv">21492239</span>, <span class="at">format =</span> <span class="st">"mean"</span>, <span class="at">name =</span> <span class="st">"systolic_bp"</span>),</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">omop_variable</span>(<span class="at">table =</span> <span class="st">"condition_occurrence"</span>, <span class="at">concept_id =</span> <span class="dv">432867</span>, <span class="at">format =</span> <span class="st">"binary"</span>, <span class="at">name =</span> <span class="st">"hyperlipidemia"</span>)),</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">outputs =</span> <span class="fu">omop_output</span>(<span class="at">name =</span> <span class="st">"study"</span>, <span class="at">type =</span> <span class="st">"wide"</span>))</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="fu">recipe_preview</span>(rec, <span class="at">symbol =</span> <span class="st">"omop"</span>, <span class="at">conns =</span> conns)</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="fu">recipe_execute</span>(rec, <span class="at">out =</span> <span class="fu">c</span>(<span class="at">study =</span> <span class="st">"D"</span>), <span class="at">symbol =</span> <span class="st">"omop"</span>, <span class="at">conns =</span> conns)</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.colnames</span>(<span class="st">"D"</span>, <span class="at">datasources =</span> conns); <span class="fu">ds.dim</span>(<span class="st">"D"</span>, <span class="at">datasources =</span> conns)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </div>
 </div>
-<p><strong>Key Questions</strong>:</p>
-<ol type="1">
-<li>How many women had depression during pregnancy only?</li>
-<li>How many developed it only after delivery?</li>
-<li>How many had depression at both time points?</li>
-<li>What does this tell us about the progression of maternal depression?</li>
-</ol>
-<hr>
 </section>
-</section>
-<section id="exercise-8-finding-risk-factors" class="level2">
-<h2 data-anchor-id="exercise-8-finding-risk-factors">Exercise 8: Finding Risk Factors</h2>
-<p>Let’s investigate what factors might be associated with maternal depression.</p>
-<section id="task-8.1-prepare-your-analysis-variables" class="level3">
-<h3 data-anchor-id="task-8.1-prepare-your-analysis-variables">Task 8.1: Prepare Your Analysis Variables</h3>
-<p>Create a dataset for correlation analysis:</p>
-<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># YOUR CODE HERE:</span></span></code></pre></div>
+<section id="exercise-5-filter-at-extraction" class="level1">
+<h1>Exercise 5 — Filter at extraction</h1>
+<p>Re-extract, but this time keep only the <strong>older patients (age ≥ 60)</strong> as <code>D_old</code>, by adding a <strong>filter</strong> to the recipe. Then check the age range to confirm the filter worked.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># YOUR CODE HERE</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p><strong>Question:</strong> How many patients remain, and what is the new minimum age?</p>
 <div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-21-contents" aria-controls="callout-21" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-6-contents" aria-controls="callout-6" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-Need a hint?
+<span class="screen-reader-only">Tip</span>Hint
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-21" class="callout-21-contents callout-collapse collapse">
+<div id="callout-6" class="callout-6-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
-<ul>
-<li>Include: edinburgh_score, age, antenatal_depression, postpartum_depression</li>
-<li>Create a data frame with these variables</li>
-</ul>
+<p>Add <code>filters = list(older = omop_filter_age(min = 60))</code> to your <code>omop_recipe(...)</code> and execute into <code>D_old</code>, then <code>ds.dim("D_old", ...)</code> and <code>ds.summary("D_old$age", ...)[[1]]</code>. Filtering during extraction means the servers only ever build the rows you asked for.</p>
 </div>
 </div>
 </div>
 </section>
-<section id="task-8.2-explore-correlations" class="level3">
-<h3 data-anchor-id="task-8.2-explore-correlations">Task 8.2: Explore Correlations</h3>
-<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># YOUR CODE HERE:</span></span></code></pre></div>
+<section id="exercise-6-a-model" class="level1">
+<h1>Exercise 6 — A model</h1>
+<p>Using a person-level table with <code>sex</code>, <code>age</code> and <code>hyperlipidemia</code>, fit a logistic regression: <strong>does the chance of hyperlipidemia change with age or differ by sex?</strong></p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># YOUR CODE HERE</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p><strong>Question:</strong> Which predictors are significant (p &lt; 0.05)? Is the result clinically sensible?</p>
 <div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-22-contents" aria-controls="callout-22" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-7-contents" aria-controls="callout-7" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-Need a hint?
+<span class="screen-reader-only">Tip</span>Hint
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-22" class="callout-22-contents callout-collapse collapse">
+<div id="callout-7" class="callout-7-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
-<p>Calculate correlation matrix using <code>ds.cor()</code></p>
-</div>
-</div>
-</div>
-<p><strong>Research Questions</strong>:</p>
-<ol type="1">
-<li>Is younger age associated with higher depression scores?</li>
-<li>How strong is the link between antenatal and postpartum depression?</li>
-<li>Does the Edinburgh score correlate with clinical diagnoses?</li>
-</ol>
-<hr>
-</section>
-</section>
-<section id="exercise-9-testing-hypotheses-with-statistical-models" class="level2">
-<h2 data-anchor-id="exercise-9-testing-hypotheses-with-statistical-models">Exercise 9: Testing Hypotheses with Statistical Models</h2>
-<p>Now let’s test specific hypotheses about maternal depression using statistical models.</p>
-<section id="prepare-the-modeling-dataset" class="level3">
-<h3 data-anchor-id="prepare-the-modeling-dataset">Prepare the Modeling Dataset</h3>
-<p>First, organize your variables for modeling:</p>
-<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Simplify variable names</span></span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.assign</span>(<span class="st">"data$employment.value_as_concept_id"</span>, <span class="st">"employment"</span>, conns)</span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.assign</span>(<span class="st">"data$marital_status.value_as_concept_id"</span>, <span class="st">"marital_status"</span>, conns)</span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.assign</span>(<span class="st">"data$number_in_household.value_as_concept_id"</span>, <span class="st">"household_size"</span>, conns)</span>
-<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.assign</span>(<span class="st">"data$religious_affiliation.value_as_concept_id"</span>, <span class="st">"religion"</span>, conns)</span>
-<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Create modeling dataset</span></span>
-<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>model_vars <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
-<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>  <span class="st">"edinburgh_score"</span>, <span class="st">"age"</span>, <span class="st">"employment"</span>, <span class="st">"marital_status"</span>,</span>
-<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>  <span class="st">"household_size"</span>, <span class="st">"religion"</span>, <span class="st">"antenatal_depression"</span>, <span class="st">"postpartum_depression"</span></span>
-<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a><span class="fu">ds.cbind</span>(</span>
-<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> model_vars,</span>
-<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">DataSHIELD.checks =</span> <span class="cn">FALSE</span>,</span>
-<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">newobj =</span> <span class="st">"model_data"</span>,</span>
-<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">datasources =</span> conns</span>
-<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
-</section>
-<section id="task-9.1-hypothesis-1---age-and-employment" class="level3">
-<h3 data-anchor-id="task-9.1-hypothesis-1---age-and-employment">Task 9.1: Hypothesis 1 - Age and Employment</h3>
-<p><strong>Research question</strong>: Do age and employment affect depression severity?</p>
-<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># YOUR CODE HERE:</span></span></code></pre></div>
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-23-contents" aria-controls="callout-23" aria-expanded="false" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Need a hint?
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-23" class="callout-23-contents callout-collapse collapse">
-<div class="callout-body-container callout-body">
-<p>Build a linear model: <code>edinburgh_score ~ age + employment</code>.</p>
+<p>Build a recipe with <code>sex</code>, <code>omop_variable_age()</code> and a binary <code>hyperlipidemia</code> (432867), execute into <code>H</code>, then <code>ds.glm("H$hyperlipidemia ~ H$age + H$sex", family = "binomial", datasources = conns)$coefficients</code>.</p>
 </div>
 </div>
 </div>
 </section>
-<section id="task-9.2-hypothesis-2---postpartum-depression-prediction" class="level3">
-<h3 data-anchor-id="task-9.2-hypothesis-2---postpartum-depression-prediction">Task 9.2: Hypothesis 2 - Postpartum Depression Prediction</h3>
-<p><strong>Research question</strong>: What predicts postpartum depression?</p>
-<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># YOUR CODE HERE:</span></span></code></pre></div>
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-24-contents" aria-controls="callout-24" aria-expanded="false" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
+<section id="open-challenge" class="level1">
+<h1>Open challenge</h1>
+<p>Pick <strong>any</strong> condition that interests you (use <code>ds.omop.concept.search</code>), add it to a recipe, and explore whether it is associated with age or sex. There is no single right answer — the skill is running the workflow correctly and reading the result honestly.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># YOUR CODE HERE</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div class="callout-title-container flex-fill">
-Need a hint?
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-24" class="callout-24-contents callout-collapse collapse">
-<div class="callout-body-container callout-body">
-<p>Build a logistic model with <code>postpartum_depression</code> as the outcome and relevant predictors (age, employment, marital status, household size, religion, antenatal depression).</p>
-</div>
-</div>
-</div>
-</section>
-<section id="task-9.3-hypothesis-3---impact-of-social-factors" class="level3">
-<h3 data-anchor-id="task-9.3-hypothesis-3---impact-of-social-factors">Task 9.3: Hypothesis 3 - Impact of Social Factors</h3>
-<p><strong>Research question</strong>: How do social factors influence depression severity?</p>
-<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># YOUR CODE HERE:</span></span></code></pre></div>
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-25-contents" aria-controls="callout-25" aria-expanded="false" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Need a hint?
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-25" class="callout-25-contents callout-collapse collapse">
-<div class="callout-body-container callout-body">
-<p>Build a linear model with <code>edinburgh_score</code> as the outcome and social factors (employment, marital status, household size, religion) as predictors.</p>
-</div>
-</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>DSI<span class="sc">::</span><span class="fu">datashield.logout</span>(conns)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -1024,16 +465,9 @@ Note
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p><strong>Reality Check</strong>: In this dataset, we may not find statistically significant results for all hypotheses. This is normal in real research! The important thing is understanding the methodology.</p>
+<p>Not every hypothesis pans out — a non-significant result is still a real finding. Doing the analysis correctly matters more than getting stars next to your coefficients.</p>
 </div>
 </div>
-<hr>
-</section>
-</section>
-<section id="challenge-create-your-own-research-question" class="level2">
-<h2 data-anchor-id="challenge-create-your-own-research-question">Challenge: Create Your Own Research Question</h2>
-<p>Based on what you’ve observed about the data, formulate and test your own hypothesis:</p>
-<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># YOUR CODE HERE:</span></span></code></pre></div>
 
 
 </section>
@@ -1041,9 +475,71 @@ Note
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);
-        var filterRegex = new RegExp("https:\/\/isglobal-brge\.github\.io\/workshop_APHRC");
+        var filterRegex = new RegExp("https:\/\/isglobal-brge\.github\.io\/workshop_DSWB");
       var isInternal = (href) => {
           return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
       }

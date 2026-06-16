@@ -1,580 +1,344 @@
 ---
-title: "dsOMOP Workshop"
-format: 
+title: "Federated OMOP analysis with dsOMOP"
+subtitle: "A hands-on tutorial — exploring real hospital data across three sites, without the data ever leaving them"
+format:
   html:
-    code-copy: false
+    code-copy: true
 execute:
   warning: false
+  message: false
+  error: true
 ---
 
-<a href="#" onclick="event.preventDefault(); fetch('https://raw.githubusercontent.com/isglobal-brge/workshop_DSWB/main/dsomop.Rmd').then(response => response.blob()).then(blob => { const url = window.URL.createObjectURL(blob); const a = document.createElement('a'); a.style.display = 'none'; a.href = url; a.download = 'dsomop.Rmd'; document.body.appendChild(a); a.click(); window.URL.revokeObjectURL(url); }); return false;" class="btn btn-primary btn-sm">
-<i class="bi bi-download"></i> Download this R Markdown file
+<a href="#" onclick="event.preventDefault(); fetch('https://raw.githubusercontent.com/isglobal-brge/workshop_DSWB/main/dsomop.R').then(response => response.blob()).then(blob => { const url = window.URL.createObjectURL(blob); const a = document.createElement('a'); a.style.display = 'none'; a.href = url; a.download = 'dsomop.R'; document.body.appendChild(a); a.click(); window.URL.revokeObjectURL(url); }); return false;" class="btn btn-primary btn-sm">
+<i class="bi bi-download"></i> Download the R script (.R)
+</a>
+<a href="#" onclick="event.preventDefault(); fetch('https://raw.githubusercontent.com/isglobal-brge/workshop_DSWB/main/dsomop.Rmd').then(response => response.blob()).then(blob => { const url = window.URL.createObjectURL(blob); const a = document.createElement('a'); a.style.display = 'none'; a.href = url; a.download = 'dsomop.Rmd'; document.body.appendChild(a); a.click(); window.URL.revokeObjectURL(url); }); return false;" class="btn btn-outline-primary btn-sm">
+<i class="bi bi-download"></i> Download the source (.Rmd)
 </a>
 
-In this lesson, we will learn how to:
+```{r setup, include=FALSE}
+library(knitr)
+knitr::opts_chunk$set(comment = "#>", collapse = FALSE)
+# small helper: render a data.frame as a clean table
+show_tbl <- function(x, ...) knitr::kable(x, ...)
+```
 
-- Set up the required dependencies and connect to a DataSHIELD server
-- Create an interface object to interact with an OMOP database
-- Explore the available data and identify the concepts of interest
-- Retrieve data from the OMOP database using the interface object
-- Explore the retrieved data and manipulate it using DataSHIELD functions
-- Create cohort definitions using DataSHIELD functions to filter the data
-- Perform a practical example of an analysis integrating the retrieved data into the DataSHIELD workflow
+# Welcome
 
-# Recommended background knowledge
+In this tutorial you will analyse **real-world hospital data** that lives in **three different hospitals at once** — and you will do it **without ever seeing or downloading a single patient's record**.
 
-Before using `dsOMOP`, it is recommended to have a basic understanding of:
+The pieces:
 
-- The OMOP CDM structure and its standardized clinical data format. You can learn more about OMOP CDM in the [OHDSI Book chapter 'The Common Data Model'](https://ohdsi.github.io/TheBookOfOhdsi/CommonDataModel.html).
+- **OMOP CDM** is a standard *shape* for health data. Every hospital stores its patients, diagnoses, drugs and lab results in the same tables (`person`, `condition_occurrence`, `drug_exposure`, `measurement`, ...). Learn it once, use it anywhere.
+- **DataSHIELD** is the safety layer. You send *commands* to each hospital; the hospital runs them on its own data and returns **only aggregated, non-disclosive results**. Individual rows never travel.
+- **dsOMOP** is the bridge that lets DataSHIELD speak OMOP.
 
-- OMOP Vocabularies and how they standardize medical concepts (like diagnoses, medications, procedures) across different coding systems (ICD-9, ICD-10, SNOMED CT, etc.) into a common representation. The [OHDSI Book chapter 'Standardized Vocabularies'](https://ohdsi.github.io/TheBookOfOhdsi/StandardizedVocabularies.html) provides a comprehensive overview of this standardization process.
+::: {.callout-important}
+## The golden rule
+You never hold patient-level data on your laptop. Every result is checked by a **disclosure filter** on each server before it is returned. If a result would describe too few people, the server hides it. This explains much of what you'll see.
+:::
 
-- Basic DataSHIELD concepts and workflow. The [DataSHIELD Beginner's Tutorial](https://data2knowledge.atlassian.net/wiki/spaces/DSDEV/pages/931069953/Beginners+Tutorial+DataSHIELD+v6.1) is a good starting point.
+We work with **MIMIC** (an intensive-care database) throughout this tutorial. You will: connect → explore → learn the **recipe** for extracting analysis tables → filter at extraction → and finish with a real **regression model** — all federated across three sites.
 
-- For more information about the `dsOMOP` framework, you can visit the [dsOMOP website](https://isglobal-brge.github.io/dsOMOP/).
+---
 
-This knowledge will help you better understand how to effectively query and work with OMOP CDM data through the DataSHIELD infrastructure.
+# 1. Connecting to the federation
 
-# Initial setup
-
-For this exercise, we will use the following libraries:
-
-```{r libraries, message=FALSE}
+```{r libs}
 library(DSI)
 library(DSOpal)
 library(dsBaseClient)
 library(dsOMOPClient)
-library(dsOMOPHelper)
-library(dsTidyverseClient)
 ```
 
-We will establish a connection to the demo Opal server. In order to use the OMOP packages and have access to the OMOP database resources, we need to specify the `profile = "omop"` parameter in the login builder:
+Describe the three servers and log in (same training login on each, asking for the **`omop`** profile), then attach the MIMIC database under the symbol `"omop"`:
 
-```{r connection}
-builder <- newDSLoginBuilder()
-builder$append(server="opal-demo",
-              url="https://opal-demo.obiba.org/",
-              user="dsuser",
-              password="P@ssw0rd",
-              driver = "OpalDriver",
-              profile = "omop")
+```{r login}
+builder <- DSI::newDSLoginBuilder()
+for (s in c("nairobi", "douala", "dakar"))
+  builder$append(server = s, url = paste0("https://", s, ".datashield.live"),
+                 user = "ethiopia", password = "P@ssw0rd", profile = "omop")
+conns <- DSI::datashield.login(logins = builder$build())
 
-logindata <- builder$build()
-conns <- datashield.login(logins=logindata)
+ds.omop.connect(resource = "omop_demo.mimic", symbol = "omop", conns = conns)
 ```
 
-# Creating an OMOP database interface object
-
-We will create an OMOP database interface object using the `ds.omop.helper` function. This interface object provides a set of methods for easily interacting with an OMOP database. 
-
-In our case, we will use the `mimiciv` resource inside the `omop_demo` project, which points to a small sample database formatted in OMOP CDM:
-
-```{r setup}
-helper <- ds.omop.helper(
-    connections = conns,
-    resource = "omop_demo.mimiciv", 
-    symbol = "mimiciv"
-)
-```
-
-This will create both the object `helper` which will assist us in the creation of our desired dataset, and parallely a table in the server side called `mimiciv` (since this is the name we specified in the `symbol` parameter) which will contain the data that we import from the OMOP database.
-
-We can check the list of objects available in the server side using the `ds.ls` function:
-
-```{r ls}
-ds.ls()
-```
-
-As we can observe, `mimiciv` has been successfully created in the server side. We can check the current state of the `mimiciv` table in the server side at any time using the `ds.summary` function:
-
-```{r summary}
-ds.summary("mimiciv")
-```
-
-The `mimiciv` table initially contains only the `person` table, as that is the nexus table in the OMOP CDM. This allows us to append data from other tables since all pieces of information are linked to the `person` table, since it is the table that contains the patient identifiers.
-
-Now it is time to retrieve more data and add it to the `mimiciv` object using the `helper` interface object! But first, we need to explore our database to plan the data retrieval.
-
-# Data exploration
-
-The first step is to identify the data that is available in the OMOP database. We can check the available tables using the `tables` method. The table structure should usually one that matches one version of the OMOP CDM (in our case, the `mimiciv` database is formatted in the [OMOP CDM 5.4](https://ohdsi.github.io/CommonDataModel/cdm54.html). This commonly provides a good starting point to understand the structure of our data:
-
-```{r tables}
-helper$tables()
-```
-
-As expected, the `mimiciv` database presents the structure of the OMOP CDM 5.4:
-
-![OMOP CDM v5.4 schema](fig/cdm54.png)
-
-We can also check the columns available in each table using the `columns` method. These should match the columns available in the OMOP CDM documentation for the specific version of the CDM that the database is formatted in. This information is also available in the [OMOP CDM documentation](https://ohdsi.github.io/CommonDataModel/cdm54.html), but is a good reminder of the structure of the data. 
-
-Let's check the columns available in the `condition_occurrence`, `measurement` and `observation` tables:
-
-```{r columns_condition_occurrence}
-helper$columns("condition_occurrence")
-```
-
-```{r columns_measurement}
-helper$columns("measurement")
-```
-
-```{r columns_observation}
-helper$columns("observation")
-```
-
-Now that we have a good understanding of the structure of the data we are working with, we should identify the concepts that we are interested in. Bear in mind that the OMOP CDM is designed to be used in a wide range of contexts, and therefore the concepts that are present in a database will be specific to the context of the database. 
-
-Concepts are the building blocks of the OMOP CDM. They are used to represent the entities that are present in the database, and are based on clinical vocabularies. For the sake of standardization, concepts are represented by numerical IDs matched to terms in clinical vocabularies. For example, the concept "Chronic obstructive lung disease" is stored as concept ID 255573 in the OMOP CDM, and it is represented by this identifier across the whole database.
-
-We can explore the concepts available in the OMOP CDM through [Athena](https://athena.ohdsi.org/), the central repository of standardized clinical vocabularies used in the OMOP CDM. Athena provides a web interface to search and browse concepts across different vocabularies and domains.
-
-However, we can also use the `concepts` method to retrieve the concepts available in the database. This method will return a list of concept IDs present in a table, linked to the official concept name designed to it. 
-
-Let's check the concepts available in the `condition_occurrence`, `measurement` and `observation` tables:
-
-```{r concepts_condition_occurrence}
-condition_list <- helper$concepts("condition_occurrence")
-condition_list
-```
-
-```{r concepts_measurement}
-measurement_list <- helper$concepts("measurement")
-measurement_list
-```
-
-```{r concepts_observation}
-observation_list <- helper$concepts("observation")
-observation_list
-```
-
-These serve as concept catalogs for each table. We can explore them to identify the concepts that are present in the database.
-
-For example, as an exercise, let's find the concept IDs for: 
-
-- Systolic blood pressure
-- Marital status
-
-**Note:** For convenience, we can save these concept catalogs as files for easy reference, sharing with collaborators, and future consultation. For example, we can save them as CSV files:
-
-```{r save_concepts, eval=FALSE}
-# Create a data directory if it doesn't exist
-dir.create("data", showWarnings = FALSE)
-
-# Save the concept catalogs as CSV files
-write.csv(condition_list, file = "data/condition_list.csv")
-write.csv(measurement_list, file = "data/measurement_list.csv")
-write.csv(observation_list, file = "data/observation_list.csv")
-```
-
-**Did you find the concepts that we are looking for?**
-
-::: {.callout-tip collapse="true"}
-## Click to see the solution
-
-Let's search for these concepts in our catalogs:
-
-1. **Systolic blood pressure**: 3004249
-   - Found in Measurement
-   - Concept name: Systolic blood pressure
-
-2. **Marital status**: 40766231
-   - Found in Observation
-   - Concept name: Marital status [NHANES]
+::: {.callout-warning}
+Forgetting `profile = "omop"` is the #1 beginner mistake — without it the `ds.omop.*` functions aren't available. If that happens, log out and rebuild the login with the profile set.
 :::
-
-# Data retrieval
-
-We have identified the concepts that we are interested in. Now it is time to retrieve data from the OMOP database.
-
-Bear in mind that we do not usually want to retrieve all the columns related to a concept. You should check the columns of the `condition_occurrence`, `measurement` and `observation` tables to identify the columns that are relevant to our analysis.
-
-For example, let's say that we want to obtain the numerical value of the systolic blood pressure. We can check again the columns available in the `measurement` table:
-
-```{r columns_measurement_2}
-helper$columns("measurement")
-```
-
-We can see that the `measurement` table contains the `value_as_number` column, which contains the numerical value of the measurement.
-
-This means that we want to:
-
-- From the `measurement` table,
-- get the systolic blood pressure (whose concept ID is `3004249`),
-- taking only the `value_as_number` column
-
-We can retrieve this data using the `auto` method of the `helper` interface object. This method automates the process of retrieving the data from the database and storing it in the `mimiciv` table:
-
-```{r auto}
-helper$auto(
-    table = "measurement",
-    concepts = 3004249,
-    columns = "value_as_number"
-)
-```
-
-The data should have been stored in the `mimiciv` table. `dsOMOP` automatically translantes the concept IDs to their designated textual names for readability. This means that the column name will be the concept name, followed by the column name of the table (`systolic_blood_pressure.value_as_number`). We can check the current state of the `mimiciv` table in the server side at any time using the `ds.summary` function:
-
-```{r summary_2}
-ds.summary("mimiciv")
-```
-
-As we can see, the `mimiciv` table now contains the `systolic_blood_pressure.value_as_number` column, which contains the numerical value of the systolic blood pressure. Let's check a summary of this data:
-
-```{r data}
-ds.summary("mimiciv$systolic_blood_pressure.value_as_number")
-```
-
-Let's now use `ds.rename` from the `dsTidyverse` package, which we have seen before, to rename the variable to `sbp` for convenience:
-
-```{r rename_sbp, warning=FALSE}
-ds.rename(
-  df.name = "mimiciv",
-  tidy_expr = list(sbp = systolic_blood_pressure.value_as_number),
-  newobj = "mimiciv")
-```
-
-Let's check whether the changes have been applied by listing the columns of the `mimiciv` table:
-
-```{r colnames}
-ds.colnames("mimiciv")
-```
-
-From this point, the data we have incorporated into the `mimiciv` table is ready to be used in our analysis as any other dataframe in DataSHIELD. To illustrate this, let's perform a `ds.histogram` to visualize the distribution of the systolic blood pressure:
-
-```{r histogram_sbp}
-ds.histogram("mimiciv$sbp")
-```
-
-Let's now retrieve the data for the concept `Marital status [NHANES]`. Let's start by checking the columns available in the `observation` table:
-
-```{r columns_observation_2}
-helper$columns("observation")
-```
-
-In this case, the `observation` table contains the `value_as_concept_id` column, which contains the concept ID of the observation value (which will be translated to the textual concept name by `dsOMOP`).
-
-Let's use the `auto` method to retrieve it:
-
-- From the `observation` table,
-- get the marital status (whose concept ID is `40766231`),
-- taking only the `value_as_concept_id` column
-
-```{r auto_marital_status}
-helper$auto(
-    table = "observation",
-    concepts = 40766231,
-    columns = "value_as_concept_id"
-)
-```
-
-We should now have the `marital_status_nhanes.value_as_concept_id` column in the `mimiciv` table. Let's check the current state of the `mimiciv` table in the server side at any time using the `ds.summary` function:
-
-```{r summary_3}
-ds.summary("mimiciv")
-```
-
-The `mimiciv` table now contains the `marital_status_nhanes.value_as_concept_id` column. Let's see a summary of this data:
-
-```{r summary_marital_status}
-ds.summary("mimiciv$marital_status_nhanes.value_as_concept_id")
-```
-
-As we can observe, the `marital_status_nhanes.value_as_concept_id` column contains the following categories: 
-
-- `divorced`
-- `married`
-- `never married`
-- `widowed`
-
-Those were originally numerical concept IDs in the database, but `dsOMOP` automatically translated them to their textual names.
-
-# Subsetting data
-
-Another fundamental operation in the dataset construction process that may be required for specific research contexts is subsetting. It is used to filter tables based on specific criteria, such as gender, age, conditions, measurements, observations or other characteristics. This operation can be used to determine a specific cohort of individuals, since all the data that is going to be retrieved from the database from that point will be related to the remaining individuals in the `person` table.
-
-Let’s see with a simple example how we can filter, using the subset operation, a dataset to only include women patients. But first, **where do we find the gender data?**
-
-::: {.callout-tip collapse="true"}
-## Click to see the solution
-
-The gender data is part of the `person` table under the `gender_concept_id` column, which was automatically retrieved when we created the `helper` interface object. This means that it is already available in the `mimiciv` table under `mimiciv$gender_concept_id`.
-
-:::
-
-Let's first check that this variable is indeed available in the `mimiciv` table:
-
-```{r colnames_3}
-ds.colnames("mimiciv")
-```
-
-Let's also check a summary of this variable:
-
-```{r summary_gender}
-ds.summary("mimiciv$gender_concept_id")
-```
-
-As we can observe, the `gender_concept_id` column contains the following categories: 
-
-- `female`
-- `male`
-
-Those were also numerical concept IDs in the database that were matched to their corresponding concept names by `dsOMOP`.
-
-Let's start by renaming the `gender_concept_id` column to `gender` for convenience:
-
-```{r rename_gender, warning=FALSE}
-ds.rename(
-  df.name = "mimiciv",
-  tidy_expr = list(gender = gender_concept_id),
-  newobj = "mimiciv")
-```
-
-From this point on, all the data is already in the DataSHIELD environment, so we will use DataSHIELD's standard methods to perform the filtering. 
-
-In DataSHIELD, we first need to create a filter object in the server side that contains the value we want to filter by. Let's create a `gender_filter` object that contains the value `"female"`:
-
-```{r filter_gender}
-ds.make(newobj = "gender_filter", toAssign = "c('female')")
-```
-
-Now we can use the `ds.dataFrameSubset` function to filter the `mimiciv` table to only include female patients by passing the `gender_filter` object as a parameter with the `Boolean.operator` parameter set to `"=="`:
-
-```{r subset_gender}
-ds.dataFrameSubset(
-  df.name = "mimiciv",
-  V1.name = "mimiciv$gender",
-  V2.name = "gender_filter",
-  Boolean.operator = "==",
-  newobj = "mimiciv",
-  datasources = conns,
-  notify.of.progress = FALSE
-)
-```
-
-This will override the `mimiciv` table in the server side, which will now be the same table but only containing the female patients. Let's check if this is the case: 
-
-```{r summary_female}
-ds.summary("mimiciv$gender")
-```
-
-As we can see, the `mimiciv` table contains only female patients now. If we were to retrieve any other data from the database with the `auto` method, it would only be related to the female patients from this point on.
-
-# More advanced operations
-
-Let's now perform a more advanced operation. We want to study the relationship between **chronic obstructive pulmonary disease (COPD)** and two key biomarkers: **tobacco use** and **asthma**, so we will perform a **generalized linear model (GLM)** to estimate the odds ratio (OR) of COPD for each biomarker. 
-
-We start by creating a new `helper` interface object where we will retrieve the specified data. Since we are not going to use the `helper` object and the `mimiciv` table from the previous section anymore, we will create new objects with the same name:
-
-```{r helper_2}
-helper <- ds.omop.helper(
-    connections = conns,
-    resource = "omop_demo.mimiciv", 
-    symbol = "mimiciv"
-)
-```
-
-As we can see, the `mimiciv` table now only contains the initial `person` table again:
-
-```{r summary_4}
-ds.summary("mimiciv")
-```
-
-And we have restored all the patients that were in the `mimiciv` table from the previous section, not just the female patients:
-
-```{r summary_female_2}
-ds.summary("mimiciv$gender_concept_id")
-```
-
-We can now use the concept catalogs that we retrieved earlier to identify the concept IDs for COPD, tobacco use and asthma:
-
-```{r concepts_condition_occurrence_2}
-condition_list
-```
-
-```{r concepts_observation_2}
-observation_list
-```
-
-```{r concepts_measurement_2}
-measurement_list
-```
-
-**Can you identify the concept IDs for COPD, tobacco use and asthma?**
-
-::: {.callout-tip collapse="true"}
-## Click to see the solution
-
-1. **Chronic obstructive pulmonary disease**: 255573
-   - Found in Condition occurrence
-   - Concept name: Chronic obstructive lung disease
-
-2. **Tobacco use**: 4005823
-   - Found in Observation
-   - Concept name: Tobacco user
-
-3. **Asthma**: 317009
-   - Found in Condition occurrence
-   - Concept name: Asthma
-:::
-
-Let's now retrieve these variables from the database. In this case, our strategy will be to retrieve any form of data related to the variables we are studying. OMOP CDM tables are designed to only register the presence of a concept in a patient, so we will have to retrieve those and create auxiliar boolean variables that indicate the presence of the concept in the patient. This means that we can just retrieve the basic identifiers for each concept:
-
-- From the `condition_occurrence` table,
-- get COPD (whose concept ID is `255573`) and asthma (whose concept ID is `317009`),
-- taking only the `condition_occurrence_id` column
-
-```{r auto_copd}
-helper$auto(
-    table = "condition_occurrence",
-    concepts = c(255573, 317009),
-    columns = "condition_occurrence_id"
-)
-```
-
-- From the `observation` table,
-- get tobacco use (whose concept ID is `4005823`),
-- taking only the `observation_id` column
-
-```{r auto_tobacco}
-helper$auto(
-    table = "observation",
-    concepts = 4005823,
-    columns = "observation_id"
-)
-```
-
-We can now check the current state of the `mimiciv` table:
-
-```{r summary_5}
-ds.summary("mimiciv")
-```
-
-As we can see, the `mimiciv` table now contains: 
-
-- `chronic_obstructive_lung_disease.condition_occurrence_id`
-- `tobacco_user.observation_id`
-- `asthma.condition_occurrence_id`
-
-We can now create boolean variables that indicate the presence of each concept in the patient. DataSHIELD will not transform an ID to a boolean if it is in a string format, so this process involves two steps:
-
-1. Transforming the ID to numeric
-2. Transforming the numeric ID to boolean
-
-Let's start by transforming the COPD variable: 
-
-```{r transform_copd}
-# Convert COPD ID to numeric
-ds.asNumeric(
-    x.name = "mimiciv$chronic_obstructive_lung_disease.condition_occurrence_id",
-    newobj = "copd_numeric",
-    datasources = conns
-)
-
-# Convert numeric COPD to boolean
-ds.Boole(
-    V1 = "copd_numeric",
-    V2 = 0,
-    Boolean.operator = "!=",
-    numeric.output = TRUE,
-    na.assign = 0,
-    newobj = "copd",
-    datasources = conns
-)
-```
-
-This has created a `copd` object in the server that contains the boolean variables indicating the presence of COPD in the patient.
-
-```{r table_copd_boolean}
-ds.table("copd")
-```
-
-Let's now repeat the same process for the tobacco use variable:
-
-```{r transform_tobacco}
-# Convert tobacco ID to numeric
-ds.asNumeric(
-    x.name = "mimiciv$tobacco_user.observation_id",
-    newobj = "tobacco_numeric",
-    datasources = conns
-)
-
-# Convert numeric tobacco to boolean 
-ds.Boole(
-    V1 = "tobacco_numeric",
-    V2 = 0,
-    Boolean.operator = "!=",
-    numeric.output = TRUE,
-    na.assign = 0,
-    newobj = "tobacco",
-    datasources = conns
-)
-```
-
-and for the asthma variable:
-
-```{r transform_asthma}
-# Convert asthma ID to numeric 
-ds.asNumeric(
-    x.name = "mimiciv$asthma.condition_occurrence_id",
-    newobj = "asthma_numeric", 
-    datasources = conns
-)
-
-# Convert numeric asthma to boolean
-ds.Boole(
-    V1 = "asthma_numeric",
-    V2 = 0,
-    Boolean.operator = "!=", 
-    numeric.output = TRUE,
-    na.assign = 0,
-    newobj = "asthma",
-    datasources = conns
-)
-```
-
-We can now check the presence of the `tobacco` and `asthma` objects in the server side:
-
-```{r table_tobacco_boolean}
-ds.table("tobacco")
-```
-
-```{r table_asthma_boolean}
-ds.table("asthma")
-```
-
-We can now perform the GLM analysis using the `ds.glm` function from DataSHIELD:
-
-```{r glm_copd_tobacco}
-ds.glm(
-    formula = "copd ~ tobacco + asthma",
-    family = "binomial",
-    datasources = conns
-)
-```
-
-**Note:** Our dataset is very small, so the GLM analysis is not very reliable. This is just an example of how to perform a GLM analysis in DataSHIELD with data imported from an OMOP database.
-
-# Logout
-
-Do not forget to logout from the DataSHIELD server after finishing the exercise:
-
-```{r logout}
-datashield.logout(conns)
-```
-
-# Real-world example
-
-In this article, we present a real-world example demonstrating how dsOMOP can be applied to analyze clinical data and validate known clinical associations by exploring the relationship between chronic obstructive pulmonary disease (COPD) and several key predictors using a large-scale synthetic dataset:
-
-<a href="https://isglobal-brge.github.io/dsOMOPHelper/articles/copd.html" class="btn btn-info btn-lg" target="_blank">
-<i class="bi bi-arrow-right-circle"></i> COPD analysis with dsOMOP
-</a>
 
 ---
 
-Now that you are familiar with DataSHIELD, the OMOP CDM and dsOMOP, are you ready to practice with real data? Try our comprehensive OMOP exercises using data from the African Population and Health Research Center (APHRC)!
+# 2. Reading the map: tables and columns
 
-<a href="omop-exercises.qmd" class="btn btn-primary btn-lg">
-<i class="bi bi-pencil-square"></i> Go to the exercises!
-</a>
+Ask what tables exist (the result has one entry per server; the schemas are identical, so we peek at one):
+
+```{r tables}
+tabs <- ds.omop.tables(symbol = "omop", conns = conns)
+show_tbl(head(tabs$nairobi[, c("table_name", "schema_category", "has_person_id")], 12))
+```
+
+Inspect a table's columns:
+
+```{r columns}
+show_tbl(ds.omop.columns("measurement", symbol = "omop", conns = conns)$nairobi)
+```
+
+How big is a table? `ds.omop.table.stats()` returns safe row/patient counts:
+
+```{r tablestats}
+st <- ds.omop.table.stats("condition_occurrence", symbol = "omop", conns = conns)$per_site$nairobi
+show_tbl(data.frame(rows = st$rows, persons = st$persons))
+```
+
+::: {.callout-tip collapse="true"}
+## Where would you look for...?
+diagnoses → `condition_occurrence`; medications → `drug_exposure`; lab values / vital signs → `measurement`; social facts → `observation`. Every one has a `person_id` linking a patient's records.
+:::
+
+---
+
+# 3. Who are these patients?
+
+Gender lives in `person.gender_concept_id`. Rank its values, pooled across all three sites:
+
+```{r gender}
+g <- ds.omop.concept.prevalence("person", concept_col = "gender_concept_id",
+                                scope = "pooled", symbol = "omop", conns = conns)
+show_tbl(g$pooled)
+```
+
+::: {.callout-important}
+## Concepts translate themselves
+You got `MALE` / `FEMALE`, not codes like `8507` / `8532`. Any `*_concept_id` column is automatically translated to readable labels — **concept translation is on by default** everywhere in dsOMOP. You never memorise codes.
+:::
+
+::: {.callout-note}
+## A real-world aside: de-identification
+Intensive-care data is de-identified by shifting dates. For this teaching dataset the dates have been re-anchored so ages are realistic, but remember: in real clinical data, **dates are often deliberately distorted while ages and time-intervals are preserved**. Always derive age from the data, never assume the calendar year means "now". (We'll get proper age from the recipe in Section 7.)
+:::
+
+---
+
+# 4. Discovering what was recorded
+
+The most common diagnoses (ranked by distinct patients):
+
+```{r topcond}
+pc <- ds.omop.concept.prevalence("condition_occurrence", metric = "persons",
+                                 top_n = 10, scope = "pooled", symbol = "omop", conns = conns)
+show_tbl(pc$pooled)
+```
+
+Rows with `suppressed = TRUE` describe too few patients to report safely — the disclosure filter at work.
+
+Don't know a concept's code? **Search** for it:
+
+```{r search}
+show_tbl(ds.omop.concept.search("hypertension", domain = "Condition",
+                                limit = 5, symbol = "omop", conns = conns))
+```
+
+And **look up** codes you already have:
+
+```{r lookup}
+show_tbl(ds.omop.concept.lookup(c(320128, 432867, 3027018),
+                                symbol = "omop", conns = conns))
+```
+
+::: {.callout-tip collapse="true"}
+## Your turn
+Find the `concept_id` for a condition that interests you with `ds.omop.concept.search(..., domain = "Condition")`.
+:::
+
+---
+
+# 5. A numeric variable: heart rate
+
+Measurements store a number in `value_as_number`. Take **heart rate** (`concept_id = 3027018`) and get a safe statistical summary:
+
+```{r hr-stats}
+cs <- ds.omop.column.stats("measurement", "value_as_number", concept_id = 3027018,
+                           scope = "pooled", symbol = "omop", conns = conns)
+show_tbl(cs$pooled)
+```
+
+::: {.callout-important}
+You get `n`, `mean`, `sd` — but **not** the true min/max (exact extremes could identify a patient). When you need a range, use the disclosure-safe 5th–95th-percentile band.
+:::
+
+A picture of the distribution. `ds.omop.value.histogram()` returns disclosure-safe **bins** (per site); we combine the sites' bin counts and draw them:
+
+```{r hr-hist, fig.width=7, fig.height=4}
+h <- ds.omop.value.histogram("measurement", value_col = "value_as_number",
+                             concept_id = 3027018, symbol = "omop", conns = conns)
+bins <- do.call(rbind, h$per_site)            # stack the three sites' bins
+bins <- subset(bins, !is.na(count))           # drop suppressed bins
+bins <- aggregate(count ~ bin_start, data = bins, FUN = sum)
+bins <- bins[order(bins$bin_start), ]
+barplot(bins$count, names.arg = round(bins$bin_start), las = 2,
+        col = "#4C72B0", border = NA,
+        xlab = "Heart rate (bpm)", ylab = "records",
+        main = "Heart rate across the federation")
+```
+
+::: {.callout-tip collapse="true"}
+## What shape is it?
+Roughly symmetric and unimodal, centred near the mean. Compare that with a skewed lab like serum creatinine (`3016723`), where a long right tail pulls the mean above the median.
+:::
+
+---
+
+# 6. A categorical variable: heart rhythm
+
+Some measurements store a *category* in `value_as_concept_id`. Heart **rhythm** (`concept_id = 3022318`) is the classic example. Count how often each value occurs:
+
+```{r rhythm}
+rh <- ds.omop.value.counts("measurement", "value_as_concept_id",
+                           concept_id = 3022318, symbol = "omop", conns = conns)
+show_tbl(rh$pooled)
+```
+
+::: {.callout-important}
+## Two kinds of measurement
+A **numeric** measurement (heart rate *value*) → summarise with mean / sd / histogram. A **categorical** one (heart *rhythm*) → count each level. And again the coded values came back as readable labels (`Sinus rhythm`, `Atrial fibrillation`, ...).
+:::
+
+---
+
+# 7. The recipe: building an analysis table
+
+Single aggregates are great for exploring, but to **model** anything we need a table with **one row per patient** and **one column per variable**. In dsOMOP you describe that table with a **recipe** and the servers build it for you — still without sending any rows.
+
+A recipe has four elements:
+
+| Element | What it is |
+|---|---|
+| **variables** | the columns you want — each an `omop_variable(...)` (a `person` column, or something built from a `concept_id`) |
+| **filters** | optional row/population restrictions applied **during** extraction (Section 8) |
+| **format** | *how* each variable is summarised per patient: `"sex_mf"`, `"binary"` (0/1 presence), `"count"`, `"mean"`, `"sd"`, ... (and `omop_variable_age()` builds age) |
+| **output** | `omop_output(name, type = "wide")` — `"wide"` means one row per patient, exactly what a model needs |
+
+Let's build a person-level table mixing all the variable types we've met — a categorical (`sex`), two numerics (`age`, mean `heart_rate`) and two binary condition flags (`hypertension` = 320128, `hyperlipidemia` = 432867):
+
+```{r recipe-build}
+rec <- omop_recipe(
+  variables = list(
+    omop_variable(table = "person", column = "gender_concept_id", format = "sex_mf", name = "sex"),
+    omop_variable_age(name = "age"),
+    omop_variable(table = "measurement", concept_id = 3027018, format = "mean",   name = "heart_rate"),
+    omop_variable(table = "condition_occurrence", concept_id = 320128, format = "binary", name = "hypertension"),
+    omop_variable(table = "condition_occurrence", concept_id = 432867, format = "binary", name = "hyperlipidemia")
+  ),
+  outputs = omop_output(name = "study", type = "wide")
+)
+```
+
+**First, preview** — a server-side dry run that reports the expected columns and a *banded* patient count, **without building anything**:
+
+```{r preview}
+recipe_preview(rec, symbol = "omop", conns = conns)
+```
+
+**Then execute** — this builds the table on each server. We map the output named `study` to a server-side symbol `M`:
+
+```{r execute}
+recipe_execute(rec, out = c(study = "M"), symbol = "omop", conns = conns)
+```
+
+**Then check what you downloaded** — never trust a table you haven't inspected:
+
+```{r check-cols}
+ds.colnames("M", datasources = conns)
+ds.dim("M", datasources = conns)
+```
+
+```{r check-summaries}
+# numeric: a summary; categorical/binary: frequency tables
+ds.summary("M$age", datasources = conns)[[1]][["quantiles & mean"]]
+```
+
+```{r check-tables}
+tab_sex <- ds.table("M$sex", datasources = conns)$output.list[["TABLES.COMBINED_all.sources_counts"]]
+show_tbl(as.data.frame(tab_sex))
+tab_htn <- ds.table("M$hypertension", datasources = conns)$output.list[["TABLES.COMBINED_all.sources_counts"]]
+show_tbl(as.data.frame(tab_htn))
+```
+
+---
+
+# 8. Filtering at extraction
+
+Often you only want a **subpopulation**. The cleanest way is to filter **while extracting** — add a `filters` element to the recipe so the servers only ever build the rows you asked for. Here we keep only patients **aged 65+**:
+
+```{r recipe-filtered}
+rec_old <- omop_recipe(
+  variables = list(
+    omop_variable(table = "person", column = "gender_concept_id", format = "sex_mf", name = "sex"),
+    omop_variable_age(name = "age"),
+    omop_variable(table = "condition_occurrence", concept_id = 320128, format = "binary", name = "hypertension")
+  ),
+  filters  = list(elderly = omop_filter_age(min = 65)),
+  outputs  = omop_output(name = "study", type = "wide")
+)
+recipe_execute(rec_old, out = c(study = "E"), symbol = "omop", conns = conns)
+```
+
+**Check the filter did what you meant** — the minimum age should now be 65, and the cohort smaller:
+
+```{r filtered-check}
+ds.dim("E", datasources = conns)
+ds.summary("E$age", datasources = conns)[[1]][["quantiles & mean"]]
+```
+
+::: {.callout-note}
+Allowed filters are the *safe* ones — `omop_filter_age()`, ranges (`>=`, `>`, `<=`, `<`, `between`), and membership — because they can only ever **shrink** a population. The per-patient gate still runs on the result, so a filter can never bypass suppression.
+:::
+
+---
+
+# 9. A real model: what predicts hypertension?
+
+We have a person-level table `M`. Let's ask a genuine question: **does hypertension become more likely with age, and does sex or having hyperlipidemia matter?** A logistic regression (`family = "binomial"`), fitted jointly across the three hospitals:
+
+```{r glm, results='hide'}
+fit <- ds.glm(
+  formula = "M$hypertension ~ M$age + M$sex + M$hyperlipidemia",
+  family  = "binomial", datasources = conns)
+```
+
+```{r glm-table}
+co <- fit$coefficients
+res <- data.frame(
+  term    = rownames(co),
+  OR      = round(co[, "P_OR"], 2),
+  CI_low  = round(co[, "low0.95CI.P_OR"], 2),
+  CI_high = round(co[, "high0.95CI.P_OR"], 2),
+  p_value = signif(co[, "p-value"], 3),
+  row.names = NULL)
+show_tbl(res)
+```
+
+::: {.callout-important}
+## Reading the result (the `OR` column = odds ratio)
+- **age** is a clear, significant predictor (odds of hypertension rise a few percent per year of age) — clinically sensible.
+- **sex** and **hyperlipidemia** are *not* significant here (p well above 0.05, confidence intervals crossing 1).
+
+A real study gives a **mixed** answer like this — one clear effect and some nulls. That's honest science, produced without ever touching a patient record. (On a ~100-patient demo, power is limited; the message is the *method*, not a definitive clinical claim.)
+:::
+
+```{r logout}
+DSI::datashield.logout(conns)
+```
+
+---
+
+# Where to go next
+
+You now have the full toolkit: **connect → explore → summarise (numeric & categorical) → recipe (variables / filters / format / output) → preview → execute → check → model**, all under a disclosure filter that kept every patient private.
+
+::: {.callout-note}
+## Coming next
+A second vignette takes these exact tools to a **larger dataset (GiBleed, ~2,700 patients)** to run a more powerful study — and the companion **exercise sheet** lets you practise everything here on new variables and a new model.
+:::

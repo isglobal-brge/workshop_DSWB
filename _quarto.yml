@@ -44,7 +44,7 @@ website:
             href: dsomop.Rmd
             icon: database-fill
           - text: "OMOP Exercises"
-            href: omop-exercises.qmd
+            href: omop-exercises.Rmd
             icon: clipboard-check
       - text: "Schedule"
         href: schedule.qmd

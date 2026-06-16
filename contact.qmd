@@ -45,10 +45,9 @@ format:
 
       <div class="contact-card__actions">
         <a class="contact-social" href="mailto:david.sarrat@isglobal.org" aria-label="Email David"><i class="bi bi-envelope-fill"></i></a>
-        <a class="contact-social" href="https://www.linkedin.com/in/davidsarratgonzalez" target="_blank" rel="noopener" aria-label="LinkedIn David"><i class="bi bi-linkedin"></i></a>
-        <a class="contact-social" href="https://davidsarratgonzalez.github.io" target="_blank" rel="noopener" aria-label="David's Website"><i class="bi bi-globe"></i></a>
+        <a class="contact-social" href="https://www.linkedin.com/in/davidsarrat" target="_blank" rel="noopener" aria-label="LinkedIn David"><i class="bi bi-linkedin"></i></a>
         <a class="contact-social" href="https://orcid.org/0000-0002-9064-3303" target="_blank" rel="noopener" aria-label="ORCID David"><i class="fab fa-orcid"></i></a>
-        <a class="contact-social" href="https://github.com/davidsarratgonzalez" target="_blank" rel="noopener" aria-label="GitHub David"><i class="bi bi-github"></i></a>
+        <a class="contact-social" href="https://github.com/davidsarrat" target="_blank" rel="noopener" aria-label="GitHub David"><i class="bi bi-github"></i></a>
       </div>
     </div>
   </div>

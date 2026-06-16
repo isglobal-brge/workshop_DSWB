@@ -1,300 +1,162 @@
-## ----libraries, message=FALSE-------------------------------------------------
+## ----setup, include=FALSE-----------------------------------------------------
+library(knitr)
+knitr::opts_chunk$set(comment = "#>", collapse = FALSE)
+# small helper: render a data.frame as a clean table
+show_tbl <- function(x, ...) knitr::kable(x, ...)
+
+
+## ----libs---------------------------------------------------------------------
 library(DSI)
 library(DSOpal)
 library(dsBaseClient)
 library(dsOMOPClient)
-library(dsOMOPHelper)
-library(dsTidyverseClient)
 
 
-## ----connection---------------------------------------------------------------
-builder <- newDSLoginBuilder()
-builder$append(server="opal-demo",
-              url="https://opal-demo.obiba.org/",
-              user="dsuser",
-              password="P@ssw0rd",
-              driver = "OpalDriver",
-              profile = "omop")
+## ----login--------------------------------------------------------------------
+builder <- DSI::newDSLoginBuilder()
+for (s in c("nairobi", "douala", "dakar"))
+  builder$append(server = s, url = paste0("https://", s, ".datashield.live"),
+                 user = "ethiopia", password = "P@ssw0rd", profile = "omop")
+conns <- DSI::datashield.login(logins = builder$build())
 
-logindata <- builder$build()
-conns <- datashield.login(logins=logindata)
-
-
-## ----setup--------------------------------------------------------------------
-helper <- ds.omop.helper(
-    connections = conns,
-    resource = "omop_demo.mimiciv", 
-    symbol = "mimiciv"
-)
-
-
-## ----ls-----------------------------------------------------------------------
-ds.ls()
-
-
-## ----summary------------------------------------------------------------------
-ds.summary("mimiciv")
+ds.omop.connect(resource = "omop_demo.mimic", symbol = "omop", conns = conns)
 
 
 ## ----tables-------------------------------------------------------------------
-helper$tables()
+tabs <- ds.omop.tables(symbol = "omop", conns = conns)
+show_tbl(head(tabs$nairobi[, c("table_name", "schema_category", "has_person_id")], 12))
 
 
-## ----columns_condition_occurrence---------------------------------------------
-helper$columns("condition_occurrence")
+## ----columns------------------------------------------------------------------
+show_tbl(ds.omop.columns("measurement", symbol = "omop", conns = conns)$nairobi)
 
 
-## ----columns_measurement------------------------------------------------------
-helper$columns("measurement")
+## ----tablestats---------------------------------------------------------------
+st <- ds.omop.table.stats("condition_occurrence", symbol = "omop", conns = conns)$per_site$nairobi
+show_tbl(data.frame(rows = st$rows, persons = st$persons))
 
 
-## ----columns_observation------------------------------------------------------
-helper$columns("observation")
+## ----gender-------------------------------------------------------------------
+g <- ds.omop.concept.prevalence("person", concept_col = "gender_concept_id",
+                                scope = "pooled", symbol = "omop", conns = conns)
+show_tbl(g$pooled)
 
 
-## ----concepts_condition_occurrence--------------------------------------------
-condition_list <- helper$concepts("condition_occurrence")
-condition_list
+## ----topcond------------------------------------------------------------------
+pc <- ds.omop.concept.prevalence("condition_occurrence", metric = "persons",
+                                 top_n = 10, scope = "pooled", symbol = "omop", conns = conns)
+show_tbl(pc$pooled)
 
 
-## ----concepts_measurement-----------------------------------------------------
-measurement_list <- helper$concepts("measurement")
-measurement_list
+## ----search-------------------------------------------------------------------
+show_tbl(ds.omop.concept.search("hypertension", domain = "Condition",
+                                limit = 5, symbol = "omop", conns = conns))
 
 
-## ----concepts_observation-----------------------------------------------------
-observation_list <- helper$concepts("observation")
-observation_list
+## ----lookup-------------------------------------------------------------------
+show_tbl(ds.omop.concept.lookup(c(320128, 432867, 3027018),
+                                symbol = "omop", conns = conns))
 
 
-## ----save_concepts, eval=FALSE------------------------------------------------
-# # Create a data directory if it doesn't exist
-# dir.create("data", showWarnings = FALSE)
-# 
-# # Save the concept catalogs as CSV files
-# write.csv(condition_list, file = "data/condition_list.csv")
-# write.csv(measurement_list, file = "data/measurement_list.csv")
-# write.csv(observation_list, file = "data/observation_list.csv")
+## ----hr-stats-----------------------------------------------------------------
+cs <- ds.omop.column.stats("measurement", "value_as_number", concept_id = 3027018,
+                           scope = "pooled", symbol = "omop", conns = conns)
+show_tbl(cs$pooled)
 
 
-## ----columns_measurement_2----------------------------------------------------
-helper$columns("measurement")
+## ----hr-hist, fig.width=7, fig.height=4---------------------------------------
+h <- ds.omop.value.histogram("measurement", value_col = "value_as_number",
+                             concept_id = 3027018, symbol = "omop", conns = conns)
+bins <- do.call(rbind, h$per_site)            # stack the three sites' bins
+bins <- subset(bins, !is.na(count))           # drop suppressed bins
+bins <- aggregate(count ~ bin_start, data = bins, FUN = sum)
+bins <- bins[order(bins$bin_start), ]
+barplot(bins$count, names.arg = round(bins$bin_start), las = 2,
+        col = "#4C72B0", border = NA,
+        xlab = "Heart rate (bpm)", ylab = "records",
+        main = "Heart rate across the federation")
 
 
-## ----auto---------------------------------------------------------------------
-helper$auto(
-    table = "measurement",
-    concepts = 3004249,
-    columns = "value_as_number"
+## ----rhythm-------------------------------------------------------------------
+rh <- ds.omop.value.counts("measurement", "value_as_concept_id",
+                           concept_id = 3022318, symbol = "omop", conns = conns)
+show_tbl(rh$pooled)
+
+
+## ----recipe-build-------------------------------------------------------------
+rec <- omop_recipe(
+  variables = list(
+    omop_variable(table = "person", column = "gender_concept_id", format = "sex_mf", name = "sex"),
+    omop_variable_age(name = "age"),
+    omop_variable(table = "measurement", concept_id = 3027018, format = "mean",   name = "heart_rate"),
+    omop_variable(table = "condition_occurrence", concept_id = 320128, format = "binary", name = "hypertension"),
+    omop_variable(table = "condition_occurrence", concept_id = 432867, format = "binary", name = "hyperlipidemia")
+  ),
+  outputs = omop_output(name = "study", type = "wide")
 )
 
 
-## ----summary_2----------------------------------------------------------------
-ds.summary("mimiciv")
+## ----preview------------------------------------------------------------------
+recipe_preview(rec, symbol = "omop", conns = conns)
 
 
-## ----data---------------------------------------------------------------------
-ds.summary("mimiciv$systolic_blood_pressure.value_as_number")
+## ----execute------------------------------------------------------------------
+recipe_execute(rec, out = c(study = "M"), symbol = "omop", conns = conns)
 
 
-## ----rename_sbp, warning=FALSE------------------------------------------------
-ds.rename(
-  df.name = "mimiciv",
-  tidy_expr = list(sbp = systolic_blood_pressure.value_as_number),
-  newobj = "mimiciv")
+## ----check-cols---------------------------------------------------------------
+ds.colnames("M", datasources = conns)
+ds.dim("M", datasources = conns)
 
 
-## ----colnames-----------------------------------------------------------------
-ds.colnames("mimiciv")
+## ----check-summaries----------------------------------------------------------
+# numeric: a summary; categorical/binary: frequency tables
+ds.summary("M$age", datasources = conns)[[1]][["quantiles & mean"]]
 
 
-## ----histogram_sbp------------------------------------------------------------
-ds.histogram("mimiciv$sbp")
+## ----check-tables-------------------------------------------------------------
+tab_sex <- ds.table("M$sex", datasources = conns)$output.list[["TABLES.COMBINED_all.sources_counts"]]
+show_tbl(as.data.frame(tab_sex))
+tab_htn <- ds.table("M$hypertension", datasources = conns)$output.list[["TABLES.COMBINED_all.sources_counts"]]
+show_tbl(as.data.frame(tab_htn))
 
 
-## ----columns_observation_2----------------------------------------------------
-helper$columns("observation")
-
-
-## ----auto_marital_status------------------------------------------------------
-helper$auto(
-    table = "observation",
-    concepts = 40766231,
-    columns = "value_as_concept_id"
+## ----recipe-filtered----------------------------------------------------------
+rec_old <- omop_recipe(
+  variables = list(
+    omop_variable(table = "person", column = "gender_concept_id", format = "sex_mf", name = "sex"),
+    omop_variable_age(name = "age"),
+    omop_variable(table = "condition_occurrence", concept_id = 320128, format = "binary", name = "hypertension")
+  ),
+  filters  = list(elderly = omop_filter_age(min = 65)),
+  outputs  = omop_output(name = "study", type = "wide")
 )
+recipe_execute(rec_old, out = c(study = "E"), symbol = "omop", conns = conns)
 
 
-## ----summary_3----------------------------------------------------------------
-ds.summary("mimiciv")
+## ----filtered-check-----------------------------------------------------------
+ds.dim("E", datasources = conns)
+ds.summary("E$age", datasources = conns)[[1]][["quantiles & mean"]]
 
 
-## ----summary_marital_status---------------------------------------------------
-ds.summary("mimiciv$marital_status_nhanes.value_as_concept_id")
+## ----glm, results='hide'------------------------------------------------------
+fit <- ds.glm(
+  formula = "M$hypertension ~ M$age + M$sex + M$hyperlipidemia",
+  family  = "binomial", datasources = conns)
 
 
-## ----colnames_3---------------------------------------------------------------
-ds.colnames("mimiciv")
-
-
-## ----summary_gender-----------------------------------------------------------
-ds.summary("mimiciv$gender_concept_id")
-
-
-## ----rename_gender, warning=FALSE---------------------------------------------
-ds.rename(
-  df.name = "mimiciv",
-  tidy_expr = list(gender = gender_concept_id),
-  newobj = "mimiciv")
-
-
-## ----filter_gender------------------------------------------------------------
-ds.make(newobj = "gender_filter", toAssign = "c('female')")
-
-
-## ----subset_gender------------------------------------------------------------
-ds.dataFrameSubset(
-  df.name = "mimiciv",
-  V1.name = "mimiciv$gender",
-  V2.name = "gender_filter",
-  Boolean.operator = "==",
-  newobj = "mimiciv",
-  datasources = conns,
-  notify.of.progress = FALSE
-)
-
-
-## ----summary_female-----------------------------------------------------------
-ds.summary("mimiciv$gender")
-
-
-## ----helper_2-----------------------------------------------------------------
-helper <- ds.omop.helper(
-    connections = conns,
-    resource = "omop_demo.mimiciv", 
-    symbol = "mimiciv"
-)
-
-
-## ----summary_4----------------------------------------------------------------
-ds.summary("mimiciv")
-
-
-## ----summary_female_2---------------------------------------------------------
-ds.summary("mimiciv$gender_concept_id")
-
-
-## ----concepts_condition_occurrence_2------------------------------------------
-condition_list
-
-
-## ----concepts_observation_2---------------------------------------------------
-observation_list
-
-
-## ----concepts_measurement_2---------------------------------------------------
-measurement_list
-
-
-## ----auto_copd----------------------------------------------------------------
-helper$auto(
-    table = "condition_occurrence",
-    concepts = c(255573, 317009),
-    columns = "condition_occurrence_id"
-)
-
-
-## ----auto_tobacco-------------------------------------------------------------
-helper$auto(
-    table = "observation",
-    concepts = 4005823,
-    columns = "observation_id"
-)
-
-
-## ----summary_5----------------------------------------------------------------
-ds.summary("mimiciv")
-
-
-## ----transform_copd-----------------------------------------------------------
-# Convert COPD ID to numeric
-ds.asNumeric(
-    x.name = "mimiciv$chronic_obstructive_lung_disease.condition_occurrence_id",
-    newobj = "copd_numeric",
-    datasources = conns
-)
-
-# Convert numeric COPD to boolean
-ds.Boole(
-    V1 = "copd_numeric",
-    V2 = 0,
-    Boolean.operator = "!=",
-    numeric.output = TRUE,
-    na.assign = 0,
-    newobj = "copd",
-    datasources = conns
-)
-
-
-## ----table_copd_boolean-------------------------------------------------------
-ds.table("copd")
-
-
-## ----transform_tobacco--------------------------------------------------------
-# Convert tobacco ID to numeric
-ds.asNumeric(
-    x.name = "mimiciv$tobacco_user.observation_id",
-    newobj = "tobacco_numeric",
-    datasources = conns
-)
-
-# Convert numeric tobacco to boolean 
-ds.Boole(
-    V1 = "tobacco_numeric",
-    V2 = 0,
-    Boolean.operator = "!=",
-    numeric.output = TRUE,
-    na.assign = 0,
-    newobj = "tobacco",
-    datasources = conns
-)
-
-
-## ----transform_asthma---------------------------------------------------------
-# Convert asthma ID to numeric 
-ds.asNumeric(
-    x.name = "mimiciv$asthma.condition_occurrence_id",
-    newobj = "asthma_numeric", 
-    datasources = conns
-)
-
-# Convert numeric asthma to boolean
-ds.Boole(
-    V1 = "asthma_numeric",
-    V2 = 0,
-    Boolean.operator = "!=", 
-    numeric.output = TRUE,
-    na.assign = 0,
-    newobj = "asthma",
-    datasources = conns
-)
-
-
-## ----table_tobacco_boolean----------------------------------------------------
-ds.table("tobacco")
-
-
-## ----table_asthma_boolean-----------------------------------------------------
-ds.table("asthma")
-
-
-## ----glm_copd_tobacco---------------------------------------------------------
-ds.glm(
-    formula = "copd ~ tobacco + asthma",
-    family = "binomial",
-    datasources = conns
-)
+## ----glm-table----------------------------------------------------------------
+co <- fit$coefficients
+res <- data.frame(
+  term    = rownames(co),
+  OR      = round(co[, "P_OR"], 2),
+  CI_low  = round(co[, "low0.95CI.P_OR"], 2),
+  CI_high = round(co[, "high0.95CI.P_OR"], 2),
+  p_value = signif(co[, "p-value"], 3),
+  row.names = NULL)
+show_tbl(res)
 
 
 ## ----logout-------------------------------------------------------------------
-datashield.logout(conns)
+DSI::datashield.logout(conns)
 

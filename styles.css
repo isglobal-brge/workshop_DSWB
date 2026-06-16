@@ -460,11 +460,13 @@ a:hover {
 }
 
 .contact-card__actions {
-  display: flex;
-  gap: 0.5rem;
-  justify-content: center;   /* center horizontally */
-  align-items: center;        /* center vertically */
-  margin-top: 0.75rem;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);  /* 2 buttons per row */
+  gap: 0.9rem;
+  justify-items: center;
+  align-items: center;
+  max-width: 11rem;
+  margin: 0.9rem auto 0;     /* center the 2x2 block */
 }
 
 .contact-card__actions .btn {
@@ -509,8 +511,8 @@ a:hover {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 2.5rem;
-  height: 2.5rem;
+  width: 3.4rem;
+  height: 3.4rem;
   border-radius: 50%;
   border: 1px solid #dee2e6;
   color: #333;
@@ -519,7 +521,7 @@ a:hover {
   transition: all 0.2s ease;
 }
 
-.contact-social + .contact-social { margin-left: 0.5rem; }
+.contact-social + .contact-social { margin-left: 0; }  /* spacing handled by grid gap */
 
 .contact-social:hover {
   border-color: #e47200;
@@ -531,7 +533,7 @@ a:hover {
 
 /* Ensure the icon is perfectly centered */
 .contact-social i {
-  font-size: 1.1rem;
+  font-size: 1.5rem;
   line-height: 1;
 }
 

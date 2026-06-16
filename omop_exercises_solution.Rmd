@@ -1,499 +1,128 @@
 ---
-title: "DataSHIELD OMOP Practical Exercises"
-subtitle: "Learning to explore and analyze OMOP data with DataSHIELD"
-freeze: true
-format: 
+title: "dsOMOP — Exercises (Solutions)"
+format:
   html:
-    code-copy: false
-    toc: true
-    toc-depth: 3
+    code-copy: true
 execute:
-  eval: true
-  echo: true
   warning: false
+  message: false
   error: true
 ---
 
-<a href="#" onclick="event.preventDefault(); fetch('https://raw.githubusercontent.com/isglobal-brge/workshop_DSWB/main/omop_exercises_solution.R').then(response => response.blob()).then(blob => { const url = window.URL.createObjectURL(blob); const a = document.createElement('a'); a.style.display = 'none'; a.href = url; a.download = 'omop_exercises_solution.R'; document.body.appendChild(a); a.click(); window.URL.revokeObjectURL(url); }); return false;" class="btn btn-primary btn-sm">
-<i class="bi bi-download"></i> Run the solution yourself!
-</a>
-
-# Solution
-
-## Setup
-
-First, let's load the required libraries and configure SSL settings:
-
-```{r setup}
-# Load required libraries
-library(DSI)
-library(DSOpal)
-library(dsBaseClient)
-library(dsOMOPClient)
-library(dsOMOPHelper)
-
-# Configure SSL settings (for self-signed certificates)
-library(httr)
-httr::set_config(httr::config(ssl_verifypeer = 0L, ssl_verifyhost = 0L))
+```{r setup, include=FALSE}
+library(knitr)
+knitr::opts_chunk$set(comment = "#>")
+show_tbl <- function(x, ...) knitr::kable(x, ...)
 ```
 
-# Exercise 1: Server Connection and Initial Data Exploration
+```{r connect}
+library(DSI); library(DSOpal); library(dsBaseClient); library(dsOMOPClient)
 
-Let's connect to the mystery dataset and see what we can discover!
-
-## Exercise 1: Connect to the server and explore the data structure
-
-```{r exercise1}
-# Create a connection to the OMOP DataSHIELD server
-builder <- newDSLoginBuilder()
-builder$append(server="aphrc",
-               url="https://44.201.204.234:9090",
-               user="administrator",
-               password="password",
-               driver = "OpalDriver",
-               profile = "omop")
-
-logindata <- builder$build()
-conns <- datashield.login(logins=logindata)
-
-# Create a dsOMOPHelper instance
-o <- ds.omop.helper(
-  connections = conns,
-  resource = "omop.study_1", 
-  symbol = "data"
-)
-
-# Check the initial data summary
-ds.summary("data")
+builder <- DSI::newDSLoginBuilder()
+for (s in c("nairobi", "douala", "dakar"))
+  builder$append(server = s, url = paste0("https://", s, ".datashield.live"),
+                 user = "ethiopia", password = "P@ssw0rd", profile = "omop")
+conns <- DSI::datashield.login(logins = builder$build())
+ds.omop.connect(resource = "omop_demo.mimic", symbol = "omop", conns = conns)
 ```
 
-# Exercise 2: Who Are We Studying?
+# Exercise 1 — A new numeric variable
 
-Let's investigate the characteristics of our study population.
+```{r e1, fig.width=7, fig.height=4}
+show_tbl(ds.omop.column.stats("measurement", "value_as_number", concept_id = 21492239,
+                              scope = "pooled", symbol = "omop", conns = conns)$pooled)
 
-## Exercise 2: Who Are We Studying?
-
-### Task 2.1: Gender distribution
-
-```{r exercise2-gender}
-# First Clue - Gender Distribution
-ds.table("data$gender_concept_id")
+h <- ds.omop.value.histogram("measurement", value_col = "value_as_number",
+                             concept_id = 21492239, symbol = "omop", conns = conns)
+bins <- do.call(rbind, h$per_site)
+bins <- subset(bins, !is.na(count))
+bins <- aggregate(count ~ bin_start, data = bins, FUN = sum)
+bins <- bins[order(bins$bin_start), ]
+barplot(bins$count, names.arg = round(bins$bin_start), las = 2, col = "#4C72B0", border = NA,
+        xlab = "Systolic BP (mmHg)", ylab = "records", main = "Systolic blood pressure")
 ```
 
-**Observation**: All participants are female! This is our first clue.
+> **Answer.** Systolic blood pressure is roughly **symmetric** (mean ≈ median, ~115–120 mmHg), with a **wider spread** than heart rate (sd ≈ 22 vs ≈ 19). A broad-but-symmetric distribution is typical of blood pressure.
 
-### Task 2.2: Age distribution
+# Exercise 2 — A new categorical variable
 
-```{r exercise2-age}
-# Second Clue - Age Distribution
-ds.assign(
-  toAssign = "2025 - data$year_of_birth",
-  newobj = "age",
-  datasources = conns
-)
-
-# Age statistics
-ds.mean("age", datasources = conns)
-ds.quantileMean("age", datasources = conns)
+```{r e2}
+rh <- ds.omop.value.counts("observation", "value_as_concept_id", concept_id = 40766231,
+                           symbol = "omop", conns = conns)
+show_tbl(rh$per_site$nairobi)
 ```
 
-**Observation**: Women of reproductive age (roughly 30-45)
+> **Answer.** The most common status is **Never married**, followed by **Married** and **Widowed**. Some categories are suppressed on this ~100-patient cohort (small-cell control).
 
-### Task 2.3: Sample size
+# Exercise 3 — Find a concept yourself
 
-```{r exercise2-size}
-# Sample Size
-ds.dim("data")
+```{r e3}
+show_tbl(ds.omop.concept.search("hyperlipidemia", domain = "Condition",
+                                symbol = "omop", conns = conns))
 ```
 
-We have 188 female participants of reproductive age. What might they have in common?
+> **Answer.** Hyperlipidemia is **`concept_id = 432867`**, present in about **45** of the ~100 patients — one of the most common conditions in this ICU cohort.
 
-# Exercise 3: What Was Measured?
+# Exercise 4 — Build your own recipe
 
-Now let's explore what types of data were collected.
+```{r e4}
+rec <- omop_recipe(
+  variables = list(
+    omop_variable(table = "person", column = "gender_concept_id", format = "sex_mf", name = "sex"),
+    omop_variable_age(name = "age"),
+    omop_variable(table = "measurement", concept_id = 21492239, format = "mean", name = "systolic_bp"),
+    omop_variable(table = "condition_occurrence", concept_id = 432867, format = "binary", name = "hyperlipidemia")),
+  outputs = omop_output(name = "study", type = "wide"))
 
-## Exercise 3: What Was Measured?
-
-### Task 3.1: Available conditions
-
-```{r exercise3-conditions}
-# Explore Conditions (Diagnoses)
-cond_concepts <- o$concepts("condition_occurrence")
-cond_concepts
+recipe_execute(rec, out = c(study = "D"), symbol = "omop", conns = conns)
+ds.colnames("D", datasources = conns)
+ds.dim("D", datasources = conns)
+ds.summary("D$systolic_bp", datasources = conns)[[1]][["quantiles & mean"]]
 ```
 
-**Reveal**: Depression during and after pregnancy! This is a maternal mental health study.
+> **Answer.** `D` has one row per patient with `sex`, `age`, `systolic_bp`, `hyperlipidemia` (plus `person_id`); ~100 patients combined, mean systolic BP near 120 mmHg.
 
-### Task 3.2: Clinical measurements
+# Exercise 5 — Filter at extraction
 
-```{r exercise3-measurements}
-# Explore Measurements
-meas_concepts <- o$concepts("measurement")
-meas_concepts
+```{r e5}
+rec_old <- omop_recipe(
+  variables = list(
+    omop_variable(table = "person", column = "gender_concept_id", format = "sex_mf", name = "sex"),
+    omop_variable_age(name = "age"),
+    omop_variable(table = "condition_occurrence", concept_id = 432867, format = "binary", name = "hyperlipidemia")),
+  filters  = list(older = omop_filter_age(min = 60)),
+  outputs  = omop_output(name = "study", type = "wide"))
+recipe_execute(rec_old, out = c(study = "D_old"), symbol = "omop", conns = conns)
+
+ds.dim("D_old", datasources = conns)
+ds.summary("D_old$age", datasources = conns)[[1]][["quantiles & mean"]]
 ```
 
-The Edinburgh Postnatal Depression Scale - a standard tool for screening maternal depression
+> **Answer.** The filter is applied **during** extraction, so the servers only build patients aged 60+. The cohort shrinks and the minimum age is now 60.
 
-### Task 3.3: Social and demographic factors
+# Exercise 6 — A model
 
-```{r exercise3-observations}
-# Explore Observations
-obs_concepts <- o$concepts("observation")
-obs_concepts
+```{r e6, results='hide'}
+rec_h <- omop_recipe(
+  variables = list(
+    omop_variable(table = "person", column = "gender_concept_id", format = "sex_mf", name = "sex"),
+    omop_variable_age(name = "age"),
+    omop_variable(table = "condition_occurrence", concept_id = 432867, format = "binary", name = "hyperlipidemia")),
+  outputs = omop_output(name = "study", type = "wide"))
+recipe_execute(rec_h, out = c(study = "H"), symbol = "omop", conns = conns)
+fit <- ds.glm("H$hyperlipidemia ~ H$age + H$sex", family = "binomial", datasources = conns)
 ```
 
-**Key factors**: Employment, marital status, household size, religion, education  
-These social determinants can influence mental health outcomes!
-
-# Exercise 4: Building Your Analysis Dataset
-
-Let's retrieve the variables we need for our analysis.
-
-## Exercise 4: Building Your Analysis Dataset
-
-### Task 4.1: Retrieving Edinburgh Postnatal Depression Scale
-
-```{r exercise4-edinburgh}
-o$auto(tables="measurement", 
-       concepts=4164838,
-       columns="value_as_number")
-
-# Check data structure after adding Edinburgh scale
-ds.summary("data")
+```{r e6-table}
+co <- fit$coefficients
+show_tbl(data.frame(
+  term = rownames(co), OR = round(co[, "P_OR"], 2),
+  CI_low = round(co[, "low0.95CI.P_OR"], 2), CI_high = round(co[, "high0.95CI.P_OR"], 2),
+  p_value = signif(co[, "p-value"], 3), row.names = NULL))
 ```
 
-✓ **Added**: edinburgh_postnatal_depression_scale.value_as_number
+> **Answer.** **age** is a strong, significant predictor of hyperlipidemia (odds rise with age, p < 0.001) — clinically sensible, since cholesterol problems accumulate over a lifetime. **sex** is not significant. A clean, honest single-predictor result.
 
-### Task 4.2: Retrieving social determinants
-
-```{r exercise4-social}
-# Employment status
-o$auto(tables="observation",
-       concepts=44804285,
-       columns="value_as_concept_id")
-
-# Other social factors (marital status, household size, religious affiliation)
-o$auto(tables="observation",
-       concepts=c(4053609, 4075500, 4052017),
-       columns="value_as_concept_id")
-
-# Education level
-o$auto(tables="observation",
-       concepts=42528763,
-       columns="value_as_concept_id")
-
-# Current variables in our dataset
-current_vars <- ds.colnames("data")[[1]]
-current_vars
-```
-
-✓ **Added social factors**: employment, marital_status, number_in_household, religious_affiliation
-
-### Task 4.3: Retrieving depression diagnoses
-
-```{r exercise4-diagnoses}
-# Retrieve the Diagnoses
-o$auto(tables="condition_occurrence",
-       concepts=c(4239471, 37312479),
-       columns="condition_occurrence_id")
-
-# Final check
-ds.summary("data")
-```
-
-### Summary of Retrieved Variables
-
-**Clinical Measurement**:
-
-- Edinburgh Postnatal Depression Scale (continuous score)
-
-**Social/Demographic Factors**:
-
-- Employment status
-- Marital status
-- Number in household
-- Religious affiliation
-- Education level
-
-**Clinical Diagnoses**:
-
-- Antenatal depression (during pregnancy)
-- Postpartum depression (after delivery)
-
-# Exercise 5: The Data Transformation Challenge
-
-The depression diagnoses are stored as IDs. Let's understand why we need to transform them.
-
-## Exercise 5: The Data Transformation Challenge
-
-The depression diagnoses are stored as condition_occurrence_id values (long ID numbers). We need to transform these into analyzable boolean (0/1) variables.
-
-```{r exercise5}
-
-# Let's see what columns we have now
-current_cols <- ds.colnames("data")[[1]]
-depression_cols <- grep("depression.*condition_occurrence_id", current_cols, value = TRUE)
-# Depression-related columns:
-depression_cols
-```
-
-# Exercise 6: Converting OMOP IDs to Boolean Variables
-
-Here's how we transform the condition IDs into analyzable format:
-
-## Exercise 6: Converting OMOP IDs to Boolean Variables
-
-Here's how we transform the condition IDs into analyzable format:
-
-```{r exercise6-function}
-
-# Function to convert OMOP IDs to boolean variables
-convert_to_boolean <- function(table, variable_name, id_type, conns) {
-  
-  # Step 1: Construct the full variable name
-  full_variable_name <- paste0(table, "$", variable_name, ".", id_type)
-  
-  # Step 2: Convert to numeric (IDs are often stored as strings)
-  new_numeric_name <- paste0(variable_name, "_numeric")
-  ds.asNumeric(
-    x.name = full_variable_name, 
-    newobj = new_numeric_name, 
-    datasources = conns
-  )
-  
-  # Step 3: Convert to boolean (1 if ID exists, 0 if not)
-  ds.Boole(
-    V1 = new_numeric_name, 
-    V2 = 0, 
-    Boolean.operator = "!=", 
-    numeric.output = TRUE, 
-    na.assign = 0, 
-    newobj = variable_name,
-    datasources = conns
-  )
-}
-
-```
-
-### Convert depression variables to boolean format
-
-```{r exercise6-convert}
-# Convert antenatal depression to boolean
-convert_to_boolean("data", "antenatal_depression", "condition_occurrence_id", conns)
-
-# Convert postpartum depression to boolean
-convert_to_boolean("data", "postpartum_depression", "condition_occurrence_id", conns)
-
-```
-
-### Check the distribution of the new variables
-
-```{r exercise6-prevalence}
-# Antenatal depression prevalence
-ds.table("antenatal_depression")
-
-# Postpartum depression prevalence
-ds.table("postpartum_depression")
-```
-
-# Exercise 7: Understanding Depression Patterns
-
-Let's explore the depression patterns in our data.
-
-## Exercise 7: Understanding Depression Patterns
-
-### Edinburgh Score Distribution
-
-```{r exercise7-edinburgh}
-
-# Create a histogram of Edinburgh scores
-ds.assign(
-  toAssign = "data$edinburgh_postnatal_depression_scale.value_as_number",
-  newobj = "edinburgh_score",
-  datasources = conns
-)
-
-# Edinburgh score distribution
-ds.histogram("edinburgh_score", datasources = conns)
-```
-
-### Edinburgh Score Statistics
-
-```{r exercise7-stats}
-# Calculate summary statistics for Edinburgh scores
-mean_score <- ds.mean("edinburgh_score", datasources = conns)
-var_score <- ds.var("edinburgh_score", datasources = conns)
-quantiles <- ds.quantileMean("edinburgh_score", datasources = conns)
-
-list(
-  Mean = mean_score$Global.Mean[1],
-  Variance = var_score$Global.Variance[1],
-  Quantiles = quantiles
-)
-```
-
-### Cross-tabulation of Depression Types
-
-```{r exercise7-crosstab}
-# Create a cross-tabulation of depression types
-ds.table(rvar = "antenatal_depression", cvar = "postpartum_depression", datasources = conns)
-```
-
-# Exercise 8: Correlation Analysis
-
-Let's explore correlations between variables.
-
-## Exercise 8: Correlation Analysis
-
-### Prepare Variables for Correlation
-
-```{r exercise8-prep}
-
-# Create simplified variable names
-ds.assign("data$employment.value_as_concept_id", "employment", conns)
-ds.assign("data$number_in_household.value_as_concept_id", "household_size", conns)
-
-# Create a dataset for correlation
-variable_list <- c("edinburgh_score", "age", "antenatal_depression", "postpartum_depression")
-ds.dataFrame(
-  x = variable_list,
-  newobj = "cor_data",
-  datasources = conns
-)
-
-```
-
-### Correlation Matrix
-
-```{r exercise8-cor}
-# Calculate the correlation matrix
-cor_matrix <- ds.cor("cor_data", datasources = conns)
-cor_matrix
-```
-
-# Exercise 9: Building Statistical Models
-
-Now let's test some hypotheses with statistical models.
-
-## Exercise 9: Building Statistical Models
-
-### Prepare Modeling Dataset
-
-```{r exercise9-prep}
-
-# Prepare all variables
-ds.assign("data$marital_status.value_as_concept_id", "marital_status", conns)
-ds.assign("data$religious_affiliation.value_as_concept_id", "religion", conns)
-
-# Create modeling dataset
-model_vars <- c(
-  "edinburgh_score",
-  "age",
-  "employment",
-  "marital_status",
-  "household_size",
-  "religion",
-  "antenatal_depression",
-  "postpartum_depression"
-)
-
-ds.cbind(
-  x = model_vars,
-  DataSHIELD.checks = FALSE,
-  newobj = "model_data",
-  datasources = conns
-)
-
-```
-
-### Model 1: Simple Linear Regression
-
-**Research question**: Do age and employment affect depression severity?
-
-```{r exercise9-model1}
-
-model1 <- ds.glm(
-  formula = "edinburgh_score ~ age + employment",
-  data = "model_data",
-  family = "gaussian",
-  datasources = conns
-)
-
-# NOTE: we use gaussian for the linear regression because edinburgh_score 
-# is a continuous variable
-
-# Display results
-model1$coefficients[, c("Estimate", "Std. Error", "p-value")]
-```
-
-### Model 2: Logistic Regression
-
-**Research question**: What predicts postpartum depression?
-
-```{r exercise9-model2}
-
-model2 <- ds.glm(
-  formula = "postpartum_depression ~ antenatal_depression + edinburgh_score + age",
-  data = "model_data",
-  family = "binomial",
-  datasources = conns
-)
-
-# NOTE: we use binomial for the logistic regression because postpartum_depression 
-# is a binary variable
-
-# Display results with odds ratios
-coef2 <- as.data.frame(model2$coefficients)
-coef2[, c("Estimate", "P_OR", "low0.95CI.P_OR", "high0.95CI.P_OR", "p-value")]
-```
-
-### Model 3: Comprehensive Model
-
-**Research question**: How do social factors influence depression severity?
-
-```{r exercise9-model3}
-
-model3 <- ds.glm(
-  formula = "edinburgh_score ~ age + employment + marital_status + household_size + antenatal_depression + postpartum_depression",
-  data = "model_data",
-  family = "gaussian",
-  datasources = conns
-)
-
-# Display results
-coef3 <- as.data.frame(model3$coefficients)
-coef3[, c("Estimate", "Std. Error", "p-value")]
-```
-
-
-# Challenge: Create Your Own Research Question
-
-This is just an example of how you can create your own research question:
-
-**Research question**: Does employment modify the effect of antenatal depression?
-
-```{r exercise10}
-
-model4 <- ds.glm(
-  formula = "edinburgh_score ~ antenatal_depression * employment + age",
-  data = "model_data",
-  family = "gaussian",
-  datasources = conns
-)
-
-# Look for interaction terms
-coef4 <- as.data.frame(model4$coefficients)
-interaction_terms <- grep(":", rownames(coef4), value = TRUE)
-if(length(interaction_terms) > 0) {
-  coef4[interaction_terms, c("Estimate", "Std. Error", "p-value")]
-}
-```
-
-# Clean Up
-
-Always remember to log out from the servers!
-
-```{r cleanup}
-# Very important!!!
-datashield.logout(conns)
+```{r logout}
+DSI::datashield.logout(conns)
 ```
