@@ -4,26 +4,35 @@ title: "OMOP CDM Presentation"
 
 ## Introduction to the OMOP Common Data Model
 
-<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; background: #f0f0f0; border: 1px solid #ddd; border-radius: 8px;">
-  <iframe 
-    src="dsomop_slides.pdf" 
+The presentation is a live web page. Preview it below, open it **fullscreen**, or visit it directly:
+
+::: {.text-center .mb-3}
+<a href="https://davidsarrat.github.io/dsomop_ethiopia" target="_blank" rel="noopener" class="btn btn-primary">
+<i class="bi bi-box-arrow-up-right"></i> Open the presentation
+</a>
+<button type="button" onclick="omopPresFullscreen()" class="btn btn-outline-primary">
+<i class="bi bi-arrows-fullscreen"></i> Fullscreen
+</button>
+:::
+
+<div style="position: relative; padding-bottom: 62.5%; height: 0; overflow: hidden; max-width: 100%; background: #f0f0f0; border: 1px solid #ddd; border-radius: 8px;">
+  <iframe
+    id="omop-pres-iframe"
+    src="https://davidsarrat.github.io/dsomop_ethiopia"
     style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;"
-    title="OMOP CDM Presentation Slides">
+    title="dsOMOP Ethiopia presentation"
+    allowfullscreen>
   </iframe>
 </div>
 
-::: {.callout-tip}
-## Having trouble viewing the slides?
-If the embedded viewer doesn't work properly, you can download the slides using the button below.
-:::
-
-### Download Slides
-
-::: {.text-center .mt-4}
-<a href="dsomop_slides.pdf" download class="btn btn-primary">
-<i class="bi bi-download"></i> Download Presentation (PDF)
-</a>
-:::
+<script>
+function omopPresFullscreen() {
+  var f = document.getElementById('omop-pres-iframe');
+  if (f.requestFullscreen) { f.requestFullscreen(); }
+  else if (f.webkitRequestFullscreen) { f.webkitRequestFullscreen(); }
+  else if (f.msRequestFullscreen) { f.msRequestFullscreen(); }
+}
+</script>
 
 ### Useful resources
 

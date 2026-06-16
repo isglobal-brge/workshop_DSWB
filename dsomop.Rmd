@@ -183,7 +183,7 @@ ds.omop.value.counts("measurement", "value_as_concept_id", concept_id = 3022318,
 ## How to read this
 - The first argument (`"measurement"`) is the **table** we look in; `concept_id = 3022318` is the measurement; `value_as_concept_id` is the column we count. (For a social fact you'd look in `"observation"` instead.)
 - **`concept_name`** is each answer's translated label; **`value`** is its raw concept code (e.g. `45877096` = "Sinus rhythm").
-- **`concept_0`** (value `0`) is OMOP's **unmapped** bucket — records whose value didn't map to a standard concept. It is *not* suppression and not a bug.
+- **"No matching concept"** (value `0`) is OMOP's reserved label for records whose value didn't map to a standard concept — *not* suppression and not a bug.
 :::
 
 # 7. The recipe: building analysis tables

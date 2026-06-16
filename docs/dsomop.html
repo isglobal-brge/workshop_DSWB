@@ -611,7 +611,7 @@ Note
 #&gt; [1] 99.0466
 #&gt; 
 #&gt; $sd
-#&gt; [1] 18.6612
+#&gt; [1] 18.661
 #&gt; 
 #&gt; 
 #&gt; $douala
@@ -662,7 +662,7 @@ Note
 #&gt; [1] 95.73897
 #&gt; 
 #&gt; $sd
-#&gt; [1] 19.25921</code></pre>
+#&gt; [1] 19.25911</code></pre>
 </div>
 </div>
 <p>Its distribution — again with <code>plot = TRUE</code>:</p>
@@ -720,13 +720,13 @@ Note
 #&gt; 2 45883018 1280        10 Atrial fibrillation
 #&gt; 3 45879290  625        20   Sinus tachycardia
 #&gt; 4 21499419  245         5   Sinus bradycardia
-#&gt; 5        0   30         5           concept_0
+#&gt; 5        0   30         5 No matching concept
 #&gt; 
 #&gt; $douala
 #&gt;      value    n n_persons        concept_name
 #&gt; 1 45877096 1750        20        Sinus rhythm
 #&gt; 2 45879290 1100        15   Sinus tachycardia
-#&gt; 3        0  585         0           concept_0
+#&gt; 3        0  585         0 No matching concept
 #&gt; 4 45883018  405         5 Atrial fibrillation
 #&gt; 5 21499419   65        10   Sinus bradycardia
 #&gt; 
@@ -737,14 +737,14 @@ Note
 #&gt; 3 45879290  575        25   Sinus tachycardia
 #&gt; 4 21499419   75         5   Sinus bradycardia
 #&gt; 5 45884784   55         0 AV block-1st degree
-#&gt; 6        0   50         5           concept_0
+#&gt; 6        0   50         5 No matching concept
 #&gt; 
 #&gt; $pooled
 #&gt;      n        concept_name    value
 #&gt; 1 6530        Sinus rhythm 45877096
 #&gt; 2 2400 Atrial fibrillation 45883018
 #&gt; 3 2300   Sinus tachycardia 45879290
-#&gt; 4  665           concept_0        0
+#&gt; 4  665 No matching concept        0
 #&gt; 5  385   Sinus bradycardia 21499419</code></pre>
 </div>
 </div>
@@ -761,7 +761,7 @@ Note
 <ul>
 <li>The first argument (<code>"measurement"</code>) is the <strong>table</strong> we look in; <code>concept_id = 3022318</code> is the measurement; <code>value_as_concept_id</code> is the column we count. (For a social fact you’d look in <code>"observation"</code> instead.)</li>
 <li><strong><code>concept_name</code></strong> is each answer’s translated label; <strong><code>value</code></strong> is its raw concept code (e.g.&nbsp;<code>45877096</code> = “Sinus rhythm”).</li>
-<li><strong><code>concept_0</code></strong> (value <code>0</code>) is OMOP’s <strong>unmapped</strong> bucket — records whose value didn’t map to a standard concept. It is <em>not</em> suppression and not a bug.</li>
+<li><strong>“No matching concept”</strong> (value <code>0</code>) is OMOP’s reserved label for records whose value didn’t map to a standard concept — <em>not</em> suppression and not a bug.</li>
 </ul>
 </div>
 </div>
