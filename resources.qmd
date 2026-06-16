@@ -21,7 +21,6 @@ The following resources may be of interest for those wanting to learn more about
 ### dsOMOP
 - [dsOMOP website](https://isglobal-brge.github.io/dsOMOP/)
 - [dsOMOPClient vignette](https://isglobal-brge.github.io/dsOMOPClient/)
-- [dsOMOPHelper vignette](https://isglobal-brge.github.io/dsOMOPHelper/)
 
 ### Publications
 - [List of DataSHIELD publications](https://papers.datashield.org)

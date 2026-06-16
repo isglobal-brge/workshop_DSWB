@@ -19,9 +19,12 @@ show_tbl <- function(x, ...) knitr::kable(x, ...)
 library(DSI); library(DSOpal); library(dsBaseClient); library(dsOMOPClient)
 
 builder <- DSI::newDSLoginBuilder()
-for (s in c("nairobi", "douala", "dakar"))
-  builder$append(server = s, url = paste0("https://", s, ".datashield.live"),
-                 user = "ethiopia", password = "P@ssw0rd", profile = "omop")
+builder$append(server = "nairobi", url = "https://nairobi.datashield.live",
+               user = "ethiopia", password = "P@ssw0rd", profile = "omop")
+builder$append(server = "douala",  url = "https://douala.datashield.live",
+               user = "ethiopia", password = "P@ssw0rd", profile = "omop")
+builder$append(server = "dakar",   url = "https://dakar.datashield.live",
+               user = "ethiopia", password = "P@ssw0rd", profile = "omop")
 conns <- DSI::datashield.login(logins = builder$build())
 ds.omop.connect(resource = "omop_demo.mimic", symbol = "omop", conns = conns)
 ```
