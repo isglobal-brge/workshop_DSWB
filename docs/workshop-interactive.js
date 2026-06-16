@@ -86,28 +86,8 @@ document.addEventListener('DOMContentLoaded', function() {
         observer.observe(el);
     });
 
-    // Add copy functionality to code blocks
-    document.querySelectorAll('pre').forEach(block => {
-        const button = document.createElement('button');
-        button.className = 'code-copy-button';
-        button.innerHTML = '<i class="bi bi-clipboard"></i> Copy';
-        
-        button.addEventListener('click', async () => {
-            const code = block.querySelector('code').innerText;
-            try {
-                await navigator.clipboard.writeText(code);
-                button.innerHTML = '<i class="bi bi-check"></i> Copied!';
-                setTimeout(() => {
-                    button.innerHTML = '<i class="bi bi-clipboard"></i> Copy';
-                }, 2000);
-            } catch (err) {
-                console.error('Failed to copy:', err);
-            }
-        });
-        
-        block.style.position = 'relative';
-        block.appendChild(button);
-    });
+    // Native Quarto code-copy button is used (code-copy: true); no custom copy
+    // button here, to avoid a duplicate "Copy" control on each code block.
 
     // Add smooth scrolling to anchor links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {

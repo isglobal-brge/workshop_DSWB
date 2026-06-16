@@ -101,7 +101,7 @@ format:
           <script src="workshop-interactive.js"></script>
     
     code-copy: true
-    code-overflow: wrap
+    code-overflow: scroll
     
 execute:
   freeze: auto

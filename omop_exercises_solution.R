@@ -1,27 +1,8 @@
----
-title: "dsOMOP — Exercises (Solutions)"
-subtitle: "Worked answers with real federated output"
-format:
-  html:
-    df-print: kable
-execute:
-  warning: false
-  message: false
-  error: true
----
-
-<a href="#" onclick="event.preventDefault(); fetch('https://raw.githubusercontent.com/isglobal-brge/workshop_DSWB/main/omop_exercises_solution.R').then(response => response.blob()).then(blob => { const url = window.URL.createObjectURL(blob); const a = document.createElement('a'); a.style.display = 'none'; a.href = url; a.download = 'omop_exercises_solution.R'; document.body.appendChild(a); a.click(); window.URL.revokeObjectURL(url); }); return false;" class="btn btn-primary btn-sm">
-<i class="bi bi-download"></i> Download the solutions (.R)
-</a>
-<a href="omop-exercises.html" class="btn btn-outline-secondary btn-sm">
-<i class="bi bi-arrow-left"></i> Back to the exercises
-</a>
-
-```{r setup, include=FALSE}
+## ----setup, include=FALSE-----------------------------------------------------
 knitr::opts_chunk$set(comment = "#>")
-```
 
-```{r connect}
+
+## ----connect------------------------------------------------------------------
 library(DSI); library(DSOpal); library(dsBaseClient); library(dsOMOPClient)
 
 builder <- DSI::newDSLoginBuilder()
@@ -33,9 +14,9 @@ builder$append(server = "dakar",   url = "https://dakar.datashield.live",
                user = "ethiopia", password = "P@ssw0rd", profile = "omop")
 conns <- DSI::datashield.login(logins = builder$build())
 ds.omop.connect(resource = "omop_demo.mimic", symbol = "omop", conns = conns)
-```
 
-```{r draw-hist, include=FALSE}
+
+## ----draw-hist, include=FALSE-------------------------------------------------
 # Same federation-wide histogram helper as the tutorial.
 draw_hist <- function(concept_id, nbins, xlab, main, col = "#4C72B0", digits = 0) {
   h <- ds.omop.value.histogram("measurement", value_col = "value_as_number",
@@ -50,45 +31,31 @@ draw_hist <- function(concept_id, nbins, xlab, main, col = "#4C72B0", digits = 0
   barplot(as.numeric(agg), names.arg = ctr, las = 2, col = col, border = NA,
           xlab = xlab, ylab = "records", main = main)
 }
-```
 
-# Exercise 1 — Find a concept yourself
 
-```{r e1}
+## ----e1-----------------------------------------------------------------------
 ds.omop.concept.search("alcohol", domain = "Condition",
                        symbol = "omop", conns = conns)$pooled[, c("concept_id", "concept_name")]
 
 prev <- ds.omop.concept.prevalence("condition_occurrence", metric = "persons",
                                    top_n = 15, scope = "pooled", symbol = "omop", conns = conns)$pooled
 prev[prev$concept_id == 433753, ]
-```
 
-> **Answer.** Alcohol abuse is **`concept_id = 433753`**, recorded in roughly **55 of the ~100** patients — one of the most common conditions in this ICU extract.
 
-# Exercise 2 — A new numeric variable
-
-```{r e2, fig.width=7, fig.height=4}
+## ----e2, fig.width=7, fig.height=4--------------------------------------------
 ds.omop.column.stats("measurement", "value_as_number", concept_id = 21492239,
                      scope = "pooled", symbol = "omop", conns = conns)$pooled
 
 draw_hist(21492239, nbins = 9, xlab = "Systolic BP (mmHg)",
           main = "Systolic blood pressure across the federation")
-```
 
-> **Answer.** Systolic BP averages ~**115 mmHg**. Its histogram has a central bulk with only a **mild right lean** — much closer to **symmetric** than creatinine's long tail. Its spread (sd ~22) is wider than heart rate's relative to its mean.
 
-# Exercise 3 — A new categorical variable
-
-```{r e3}
+## ----e3-----------------------------------------------------------------------
 ds.omop.value.counts("observation", "value_as_concept_id", concept_id = 40766231,
                      scope = "pooled", symbol = "omop", conns = conns)$pooled
-```
 
-> **Answer.** The most common marital status is **Never married**, followed by Married, Widowed and Divorced. (Categorical values live in `value_as_concept_id`, not `value_as_number`.)
 
-# Exercise 4 — Build your own recipe
-
-```{r e4}
+## ----e4-----------------------------------------------------------------------
 rec <- omop_recipe(
   variables = list(
     omop_variable(table = "person", column = "gender_concept_id", format = "sex_mf", name = "sex"),
@@ -103,13 +70,9 @@ recipe_execute(rec, out = c(study = "D"), symbol = "omop", conns = conns)
 ds.colnames("D", datasources = conns)
 ds.dim("D", datasources = conns)
 ds.summary("D$systolic_bp", datasources = conns)[[1]][["quantiles & mean"]]
-```
 
-> **Answer.** `D` has one row per patient with `person_id, sex, age, systolic_bp, alcohol_abuse, n_visits` (~100 patients combined). The systolic-BP mean is ~115 mmHg — the table the server built matches the recipe.
 
-# Exercise 5 — Filter at extraction
-
-```{r e5}
+## ----e5-----------------------------------------------------------------------
 rec_sub <- omop_recipe(
   variables = list(
     omop_variable(table = "person", column = "gender_concept_id", format = "sex_mf", name = "sex"),
@@ -125,13 +88,9 @@ rec_sub <- omop_recipe(
 recipe_execute(rec_sub, out = c(study = "DSUB"), symbol = "omop", conns = conns)
 ds.dim("DSUB", datasources = conns)
 as.data.frame(ds.table("DSUB$sex", datasources = conns)$output.list[["TABLES.COMBINED_all.sources_counts"]])
-```
 
-> **Answer.** The cohort shrinks (the filters are applied **during** extraction, so the servers only ever build males aged 60+), and the `sex` table confirms every remaining patient is **male**.
 
-# Exercise 6 — A model
-
-```{r e6, results='hide'}
+## ----e6, results='hide'-------------------------------------------------------
 rec_h <- omop_recipe(
   variables = list(
     omop_variable(table = "person", column = "gender_concept_id", format = "sex_mf", name = "sex"),
@@ -141,9 +100,9 @@ rec_h <- omop_recipe(
   output = omop_output(name = "study", type = "wide"))
 recipe_execute(rec_h, out = c(study = "H"), symbol = "omop", conns = conns)
 fit <- ds.glm(formula = "H$hypertension ~ H$age + H$sex", family = "binomial", datasources = conns)
-```
 
-```{r e6-table}
+
+## ----e6-table-----------------------------------------------------------------
 co <- fit$coefficients
 data.frame(
   term    = rownames(co),
@@ -153,10 +112,8 @@ data.frame(
   p_value = signif(co[, "p-value"], 3),
   row.names = NULL
 )
-```
 
-> **Answer.** **Age** is the significant predictor — the odds of hypertension rise a few percent per year (OR > 1, p < 0.05, CI above 1) — which is clinically sensible. **Sex** is not significant (CI crossing 1). On ~100 patients, confidence intervals are wide; the lesson is the *method*, not a definitive effect size.
 
-```{r logout}
+## ----logout-------------------------------------------------------------------
 DSI::datashield.logout(conns)
-```
+

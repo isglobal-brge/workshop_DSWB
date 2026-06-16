@@ -1,34 +1,42 @@
 ---
-title: "dsOMOP — Exercises"
-subtitle: "Practise the federated-analysis toolkit on new MIMIC variables and a new model"
+title: "dsOMOP — Exercises (MIMIC)"
+subtitle: "Practise the federated-analysis toolkit on new variables and a new model"
 format:
   html:
-    code-copy: true
+    df-print: kable
 execute:
   eval: false
 ---
 
-<a href="#" onclick="event.preventDefault(); fetch('https://raw.githubusercontent.com/isglobal-brge/workshop_DSWB/main/omop-exercises.Rmd').then(response => response.blob()).then(blob => { const url = window.URL.createObjectURL(blob); const a = document.createElement('a'); a.style.display = 'none'; a.href = url; a.download = 'omop-exercises.Rmd'; document.body.appendChild(a); a.click(); window.URL.revokeObjectURL(url); }); return false;" class="btn btn-primary btn-sm">
-<i class="bi bi-download"></i> Download this worksheet (.Rmd)
+<a href="#" onclick="event.preventDefault(); fetch('https://raw.githubusercontent.com/isglobal-brge/workshop_DSWB/main/omop-exercises.R').then(response => response.blob()).then(blob => { const url = window.URL.createObjectURL(blob); const a = document.createElement('a'); a.style.display = 'none'; a.href = url; a.download = 'omop-exercises.R'; document.body.appendChild(a); a.click(); window.URL.revokeObjectURL(url); }); return false;" class="btn btn-primary btn-sm">
+<i class="bi bi-download"></i> Download the worksheet (.R)
+</a>
+<a href="#" onclick="event.preventDefault(); fetch('https://raw.githubusercontent.com/isglobal-brge/workshop_DSWB/main/omop-exercises.Rmd').then(response => response.blob()).then(blob => { const url = window.URL.createObjectURL(blob); const a = document.createElement('a'); a.style.display = 'none'; a.href = url; a.download = 'omop-exercises.Rmd'; document.body.appendChild(a); a.click(); window.URL.revokeObjectURL(url); }); return false;" class="btn btn-outline-primary btn-sm">
+<i class="bi bi-download"></i> Source (.Rmd)
 </a>
 <a href="omop_exercises_solution.html" target="_blank" class="btn btn-success btn-sm">
 <i class="bi bi-check-circle"></i> View solutions
 </a>
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(comment = "#>", eval = FALSE)
+```
+
 # How to use this sheet
 
-Everything you need you **already did once** in the tutorial. Each exercise has a blank code block (`# YOUR CODE HERE`) and a **collapsed hint** — try it yourself first. Write your answers to the questions in plain words. We stay on the **MIMIC** dataset throughout.
+Everything you need you **already did once** in the [tutorial](dsomop.html). Each exercise gives you a **code skeleton** with blanks marked `____` and a `# STEP` comment telling you what to do — fill in the blanks, run it, and **check the output**. A collapsed **hint** is there if you get stuck. We stay on the **MIMIC** dataset, but use *new* variables. The [worked solutions](omop_exercises_solution.html) (with real output) are one click away.
 
 ::: {.callout-important}
 ## Reminders
 - Connect with `profile = "omop"`.
 - Pooled summaries: pass `scope = "pooled"` and read the `$pooled` slot.
+- Anchor age with `year = 2024` (this extract's collection year).
 - **Check the output after every step.**
 :::
 
 ## Setup (run this first)
 
-```{r setup}
+```{r setup-conn}
 library(DSI); library(DSOpal); library(dsBaseClient); library(dsOMOPClient)
 
 builder <- DSI::newDSLoginBuilder()
@@ -44,110 +52,156 @@ ds.omop.connect(resource = "omop_demo.mimic", symbol = "omop", conns = conns)
 
 ---
 
-# Exercise 1 — A new numeric variable
+# Exercise 1 — Find a concept yourself
 
-In the tutorial we summarised **heart rate**. Do the same for **systolic blood pressure** (`concept_id = 21492239`): get its safe statistics, then draw its histogram.
+You suspect **alcohol abuse** is recorded. Find its `concept_id`, then see how many patients have it.
 
 ```{r e1}
-# YOUR CODE HERE
+# STEP 1 — search the Condition domain for "alcohol abuse" to get its concept_id
+ds.omop.concept.search("____", domain = "Condition", symbol = "omop", conns = conns)$pooled
+
+# STEP 2 — find it in the pooled condition prevalence (ranked by distinct patients)
+ds.omop.concept.prevalence("condition_occurrence", metric = "persons",
+                           top_n = 15, scope = "pooled", symbol = "omop", conns = conns)$pooled
 ```
 
-**Question:** Is systolic blood pressure roughly symmetric, or skewed? How does its spread compare to heart rate's?
+**Question:** What is the `concept_id`, and roughly how many patients have it?
 
 ::: {.callout-tip collapse="true"}
 ## Hint
-`ds.omop.column.stats("measurement", "value_as_number", concept_id = 21492239, scope = "pooled", symbol = "omop", conns = conns)$pooled` for the numbers. For the picture, reuse the tutorial's recipe: get the per-site bins with `ds.omop.value.histogram("measurement", value_col = "value_as_number", concept_id = 21492239, symbol = "omop", conns = conns)`, then aggregate `count` over `bin_start` and `barplot()`.
+Search the term `"alcohol"`. You are looking for *Alcohol abuse* (`concept_id = 433753`); read its `n_persons` from the prevalence table.
 :::
 
-# Exercise 2 — A new categorical variable
+# Exercise 2 — A new numeric variable
 
-The tutorial used **heart rhythm**. Explore **marital status** (`concept_id = 40766231`, in the `observation` table): count how often each value occurs.
+The tutorial summarised heart rate and creatinine. Do the same for **systolic blood pressure** (`concept_id = 21492239`): get its safe statistics and draw its histogram.
 
 ```{r e2}
-# YOUR CODE HERE
+# STEP 1 — disclosure-safe summary (pooled): n, mean, sd, p05-p95
+ds.omop.column.stats("measurement", "value_as_number", concept_id = ____,
+                     scope = "pooled", symbol = "omop", conns = conns)$pooled
+
+# STEP 2 — its shape: pull the per-site bins, then draw them
+h <- ds.omop.value.histogram("measurement", value_col = "value_as_number",
+                             concept_id = ____, symbol = "omop", conns = conns)
+# combine h$per_site (drop NA counts), put midpoints on a common grid, then barplot()
+```
+
+**Question:** Is systolic blood pressure roughly symmetric, or skewed like creatinine?
+
+::: {.callout-tip collapse="true"}
+## Hint
+Use `concept_id = 21492239` in both calls. For the picture, reuse the tutorial's `draw_hist()` helper (copy it across), e.g. `draw_hist(21492239, nbins = 9, xlab = "Systolic BP (mmHg)", main = "Systolic BP")`. Its mean is ~115 mmHg.
+:::
+
+# Exercise 3 — A new categorical variable
+
+The tutorial counted heart **rhythm**. Explore **marital status** (`concept_id = 40766231`, in the `observation` table): count how often each value occurs.
+
+```{r e3}
+# STEP — marital status is a CODED value, so it lives in value_as_concept_id. Count it, pooled.
+ds.omop.value.counts("observation", "____", concept_id = 40766231,
+                     scope = "pooled", symbol = "omop", conns = conns)$pooled
 ```
 
 **Question:** What is the most common marital status?
 
 ::: {.callout-tip collapse="true"}
 ## Hint
-Marital status is a coded value, so it lives in `value_as_concept_id`:
-`ds.omop.value.counts("observation", "value_as_concept_id", concept_id = 40766231, symbol = "omop", conns = conns)`
-:::
-
-# Exercise 3 — Find a concept yourself
-
-You suspect **hyperlipidemia** is common. Find its `concept_id` by searching, then check how prevalent it is.
-
-```{r e3}
-# YOUR CODE HERE
-```
-
-**Question:** What is the concept_id, and how many patients have it?
-
-::: {.callout-tip collapse="true"}
-## Hint
-`ds.omop.concept.search("hyperlipidemia", domain = "Condition", symbol = "omop", conns = conns)` to get the id, then look for it in `ds.omop.concept.prevalence("condition_occurrence", metric = "persons", top_n = 15, scope = "pooled", symbol = "omop", conns = conns)$pooled`.
+The column is `"value_as_concept_id"` (categorical measurements/observations store their code there, not in `value_as_number`).
 :::
 
 # Exercise 4 — Build your own recipe
 
-Build a person-level table `D` with four columns: **sex**, **age**, the **mean systolic blood pressure**, and a **binary flag for hyperlipidemia** (the concept from Exercise 3). Preview it, execute it, then check the columns, dimensions and a summary.
+Build a wide person-level table `D` with: **sex**, **age** (anchored to 2024), the **mean systolic blood pressure**, a **binary alcohol-abuse flag** (the concept from Exercise 1), and a **count of hospital visits**. Then ratify what the server built and summarise it.
 
 ```{r e4}
-# YOUR CODE HERE
+# STEP 1 — write the recipe: fill the format of each variable and the age anchor year
+rec <- omop_recipe(
+  variables = list(
+    omop_variable(table = "person", column = "gender_concept_id", format = "sex_mf", name = "sex"),
+    omop_variable_age(name = "age", year = ____),
+    omop_variable(table = "measurement", concept_id = 21492239, format = "____", name = "systolic_bp"),
+    omop_variable(table = "condition_occurrence", concept_id = 433753, format = "____", name = "alcohol_abuse"),
+    omop_variable(table = "visit_occurrence", format = "count", name = "n_visits")
+  ),
+  output = omop_output(name = "study", type = "wide"))
+
+# STEP 2 — execute into a server symbol D, then RATIFY it was built as you expected
+recipe_execute(rec, out = c(study = "D"), symbol = "omop", conns = conns)
+ds.colnames("D", datasources = conns)
+ds.dim("D", datasources = conns)
+
+# STEP 3 — summarise the systolic_bp column
+ds.summary("D$systolic_bp", datasources = conns)[[1]][["quantiles & mean"]]
 ```
 
 ::: {.callout-tip collapse="true"}
 ## Hint
-```r
-rec <- omop_recipe(
-  variables = list(
-    omop_variable(table = "person", column = "gender_concept_id", format = "sex_mf", name = "sex"),
-    omop_variable_age(name = "age"),
-    omop_variable(table = "measurement", concept_id = 21492239, format = "mean", name = "systolic_bp"),
-    omop_variable(table = "condition_occurrence", concept_id = 432867, format = "binary", name = "hyperlipidemia")),
-  outputs = omop_output(name = "study", type = "wide"))
-recipe_preview(rec, symbol = "omop", conns = conns)
-recipe_execute(rec, out = c(study = "D"), symbol = "omop", conns = conns)
-ds.colnames("D", datasources = conns); ds.dim("D", datasources = conns)
-```
+`year = 2024`; a *mean* lab value is `format = "mean"`; a yes/no condition flag is `format = "binary"`. `D` should have one row per patient with `person_id, sex, age, systolic_bp, alcohol_abuse, n_visits`.
 :::
 
 # Exercise 5 — Filter at extraction
 
-Re-extract, but this time keep only the **older patients (age ≥ 60)** as `D_old`, by adding a **filter** to the recipe. Then check the age range to confirm the filter worked.
+Re-extract, but keep only **male** patients **aged 60+**, as `DSUB`. Confirm the cohort shrank and that everyone is male.
 
 ```{r e5}
-# YOUR CODE HERE
+# STEP — add a filters = list(...) with a sex filter and an age filter
+rec_sub <- omop_recipe(
+  variables = list(
+    omop_variable(table = "person", column = "gender_concept_id", format = "sex_mf", name = "sex"),
+    omop_variable_age(name = "age", year = 2024),
+    omop_variable(table = "condition_occurrence", concept_id = 433753, format = "binary", name = "alcohol_abuse")
+  ),
+  filters = list(
+    male  = omop_filter_sex("____"),
+    older = omop_filter_age(min = ____, year = 2024)
+  ),
+  output = omop_output(name = "study", type = "wide"))
+
+recipe_execute(rec_sub, out = c(study = "DSUB"), symbol = "omop", conns = conns)
+ds.dim("DSUB", datasources = conns)
+as.data.frame(ds.table("DSUB$sex", datasources = conns)$output.list[["TABLES.COMBINED_all.sources_counts"]])
 ```
 
-**Question:** How many patients remain, and what is the new minimum age?
+**Question:** How many patients remain, and is every one of them male?
 
 ::: {.callout-tip collapse="true"}
 ## Hint
-Add `filters = list(older = omop_filter_age(min = 60))` to your `omop_recipe(...)` and execute into `D_old`, then `ds.dim("D_old", ...)` and `ds.summary("D_old$age", ...)[[1]]`. Filtering during extraction means the servers only ever build the rows you asked for.
+`omop_filter_sex("M")` and `omop_filter_age(min = 60, year = 2024)`. Filters can only shrink a population, so the count drops.
 :::
 
 # Exercise 6 — A model
 
-Using a person-level table with `sex`, `age` and `hyperlipidemia`, fit a logistic regression: **does the chance of hyperlipidemia change with age or differ by sex?**
+Build a table with **sex**, **age** and a **binary hypertension** flag (`concept_id = 320128`), then fit a logistic regression of hypertension on age and sex.
 
 ```{r e6}
-# YOUR CODE HERE
+# STEP 1 — recipe + execute into H
+rec_h <- omop_recipe(
+  variables = list(
+    omop_variable(table = "person", column = "gender_concept_id", format = "sex_mf", name = "sex"),
+    omop_variable_age(name = "age", year = 2024),
+    omop_variable(table = "condition_occurrence", concept_id = 320128, format = "binary", name = "hypertension")
+  ),
+  output = omop_output(name = "study", type = "wide"))
+recipe_execute(rec_h, out = c(study = "H"), symbol = "omop", conns = conns)
+
+# STEP 2 — fit the logistic model: fill in the two predictors
+fit <- ds.glm(formula = "H$hypertension ~ H$____ + H$____",
+              family = "binomial", datasources = conns)
+fit$coefficients
 ```
 
-**Question:** Which predictors are significant (p < 0.05)? Is the result clinically sensible?
+**Question:** Which predictor is significant (p < 0.05)? Is the direction clinically sensible?
 
 ::: {.callout-tip collapse="true"}
 ## Hint
-Build a recipe with `sex`, `omop_variable_age()` and a binary `hyperlipidemia` (432867), execute into `H`, then
-`ds.glm("H$hyperlipidemia ~ H$age + H$sex", family = "binomial", datasources = conns)$coefficients`.
+The predictors are `H$age` and `H$sex`. Read the `p-value` column; `age` should be the significant one (odds of hypertension rise with age). On ~100 patients, expect wide confidence intervals.
 :::
 
 # Open challenge
 
-Pick **any** condition that interests you (use `ds.omop.concept.search`), add it to a recipe, and explore whether it is associated with age or sex. There is no single right answer — the skill is running the workflow correctly and reading the result honestly.
+Pick **any** condition that interests you (find it with `ds.omop.concept.search`), add it to a recipe as a binary flag, and explore whether it is associated with age or sex. There is no single right answer — the skill is running the workflow correctly and reading the result honestly.
 
 ```{r challenge}
 # YOUR CODE HERE
