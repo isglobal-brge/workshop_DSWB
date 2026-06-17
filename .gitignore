@@ -3,3 +3,5 @@
 **/*.quarto_ipynb
 
 .claude/
+
+dsflower_output/

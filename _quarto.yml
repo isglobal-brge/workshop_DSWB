@@ -52,6 +52,9 @@ website:
           - text: "GiBleed Exercises"
             href: gibleed-exercises.Rmd
             icon: clipboard-check
+          - text: "Federated ML (dsFlower)"
+            href: dsflower.Rmd
+            icon: diagram-3-fill
       - text: "Schedule"
         href: schedule.qmd
         icon: calendar3
