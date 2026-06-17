@@ -28,6 +28,209 @@
     "text": "Setup (run this first)\n\nlibrary(DSI); library(DSOpal); library(dsBaseClient); library(dsOMOPClient)\n\nbuilder &lt;- DSI::newDSLoginBuilder()\nbuilder$append(server = \"nairobi\", url = \"https://nairobi.datashield.live\",\n               user = \"ethiopia\", password = \"P@ssw0rd\", profile = \"omop\")\nbuilder$append(server = \"douala\",  url = \"https://douala.datashield.live\",\n               user = \"ethiopia\", password = \"P@ssw0rd\", profile = \"omop\")\nbuilder$append(server = \"dakar\",   url = \"https://dakar.datashield.live\",\n               user = \"ethiopia\", password = \"P@ssw0rd\", profile = \"omop\")\nconns &lt;- DSI::datashield.login(logins = builder$build())\nds.omop.connect(resource = \"omop_demo.gibleed\", symbol = \"omop\", conns = conns)"
   },
   {
+    "objectID": "dsflower.html",
+    "href": "dsflower.html",
+    "title": "Federated machine learning with dsFlower",
+    "section": "",
+    "text": "Download the R script (.R)    Source (.Rmd) \n\nWelcome\nSo far in this workshop you have used DataSHIELD to compute summary statistics and regression models (ds.glm) across federated sites. Those methods send a formula to each server, which returns aggregated numbers.\nThis tutorial does something different: it trains a machine-learning model with Flower — the popular federated-learning framework — underneath DataSHIELD, using the dsFlower package. Each hospital trains a logistic-regression model on its own patients, and only the model weights are combined. We will:\n\nconnect to the three sites and load a breast-cancer dataset,\nlook at what’s in the data,\ntrain a model federated across all three hospitals, and\nmake predictions for new patients.\n\n\n\n\n\n\n\nImportantWhat makes this special\n\n\n\nThe model is trained with Secure Aggregation (SecAgg+): each site’s weight update is cryptographically masked, so not even the researcher running the training can see any individual hospital’s contribution — only the final averaged model. And the whole thing runs over Tor, so the federation works even when the hospital servers are behind a firewall/NAT and cannot expose any public address. No VPN, no port-forwarding, no public IP.\n\n\n\n\n\n\n\n\nNoteThis is a presenter-led demo\n\n\n\nUnlike the other tutorials, the code below is not executed when this page is built — federated training needs a Flower SuperLink and Tor running on your own laptop (started automatically by ds.flower.tor.up()), plus the dsFlowerClient package. The outputs shown are the real results of a live run against nairobi, dakar and douala. To run it yourself, install dsFlowerClient and execute the downloaded .R script.\n\n\n\n\n1. Connect and load the data\nThe dataset is the classic Wisconsin breast-cancer cohort (569 patients), split across the three hospitals. Each row is a tumour with 30 cell-nucleus measurements; the target malignant is 1 for malignant, 0 for benign.\n\nlibrary(DSI); library(DSOpal); library(dsBaseClient); library(dsFlowerClient)\n\n\nbuilder &lt;- DSI::newDSLoginBuilder()\nbuilder$append(server = \"nairobi\", url = \"https://nairobi.datashield.live\",\n               user = \"ethiopia\", password = \"P@ssw0rd\",\n               table = \"dsflower_demo.breast_cancer\")\nbuilder$append(server = \"dakar\",   url = \"https://dakar.datashield.live\",\n               user = \"ethiopia\", password = \"P@ssw0rd\",\n               table = \"dsflower_demo.breast_cancer\")\nbuilder$append(server = \"douala\",  url = \"https://douala.datashield.live\",\n               user = \"ethiopia\", password = \"P@ssw0rd\",\n               table = \"dsflower_demo.breast_cancer\")\nconns &lt;- DSI::datashield.login(logins = builder$build(), assign = TRUE, symbol = \"D\")\n\nThe table is now loaded into the symbol D on every server.\n\n\n2. What’s in the data?\nAlways look before you model. How many patients does each site hold?\n\nds.dim(\"D\", datasources = conns)\n\n$`dimensions of D in nairobi`\n[1] 190  31\n$`dimensions of D in dakar`\n[1] 190  31\n$`dimensions of D in douala`\n[1] 189  31\n$`dimensions of D in combined studies`\n[1] 569  31\n569 patients in total — but no site sees more than its own ~190. There are 30 feature columns plus the malignant target:\n\nfeatures &lt;- setdiff(ds.colnames(\"D\", datasources = conns)[[1]], \"malignant\")\nlength(features)   # 30 predictors\n\nAnd the outcome we want to predict — how many benign vs malignant, pooled across all three hospitals?\n\nds.table(\"D$malignant\", datasources = conns)\n\nD$malignant\n  0   1\n357 212\n357 benign and 212 malignant — a healthy class balance to learn from.\n\n\n3. Bring the federation to your laptop (over Tor)\nA Flower model needs a central SuperLink that the hospital SuperNodes dial into. Normally that means you must expose a public server — impossible from a laptop behind NAT. dsFlower solves this by publishing your SuperLink as a Tor hidden service: each hospital connects out through Tor, so nothing needs a public address.\nOne call starts a SuperLink on your machine, publishes it as a .onion, and brings all three nodes onto Tor:\n\nds.flower.tor.up(conns)\n\nSuperLink started (PID: 99435)\n  Fleet API (SuperNodes): 127.0.0.1:9092\n  Control API (flwr run): 127.0.0.1:9093\nPublishing SuperLink as a Tor hidden service (bootstrapping Tor)...\n  SuperLink onion: kx3ffiojuk625h5e2ouyiulw3g3cehp36jnxcrxisqqoqkcbu5mevoqd.onion:9092\nBringing nodes onto Tor...\nTor transport ready.\n\n\n\n\n\n\nTipWhat just happened\n\n\n\nYour laptop is now reachable by the hospitals at a .onion address that exists only for this session. Tor trades a little speed for the ability to federate with zero infrastructure — no VPN, no cloud host, no firewall changes. When you tear it down (Section 6) the onion disappears.\n\n\n\n\n4. Train the model — federated, with Secure Aggregation\nNow the actual training. We fit a federated logistic regression (sklearn_logreg) with the FedAvg strategy for 5 rounds, under the clinical_default privacy profile (which enforces Secure Aggregation):\n\nfit &lt;- ds.flower.fit(\n  conns,\n  symbol   = \"D\",\n  target   = \"malignant\",\n  features = features,\n  model    = \"sklearn_logreg\",\n  strategy = \"fedavg\",\n  privacy  = \"clinical_default\",   # enforces Secure Aggregation (SecAgg+)\n  rounds   = 5L,\n  verbose  = TRUE\n)\n\n[ROUND 1] Secure aggregation commencing. ... sampled 3 clients (out of 3)\n          aggregate_fit: received 3 results and 0 failures\n          Secure aggregation completed.\n...\n[ROUND 5] Secure aggregation completed.\n[SUMMARY] Run finished 5 round(s) in 236.89s\nModel saved to ./dsflower_output/sklearn_logreg_FedAvg_5r_...\n\n\n\n\n\n\nNoteRead the log\n\n\n\nEvery round shows Secure aggregation commencing → completed, and received 3 results and 0 failures — all three hospitals contributed, and each update was masked so no individual contribution was ever visible. The model that comes back is the averaged logistic regression, trained on all 569 patients without any of them leaving their hospital.\n\n\n\n\n5. Make predictions for new patients\nThe trained model is an ordinary object you can predict with. Here are six new patients (three benign, three malignant) the model has never seen:\n\nnew_patients &lt;- read.csv(\"https://raw.githubusercontent.com/isglobal-brge/workshop_DSWB/main/data/breast_cancer_new_patients.csv\")\n\nprob &lt;- ds.flower.predict(fit, new_patients[, features], type = \"prob\")\n\ndata.frame(\n  actual      = new_patients$malignant,\n  predicted   = as.integer(prob &gt;= 0.5),\n  P_malignant = round(prob, 3)\n)\n\n  actual predicted P_malignant\n1      0         0       0.025\n2      0         0       0.000\n3      0         0       0.004\n4      1         1       1.000\n5      1         1       1.000\n6      1         1       1.000\nAll six correct — the federated model cleanly separates benign from malignant, with calibrated probabilities. A model trained across three hospitals, predicting for a new patient, with no raw data ever shared.\n\n\n6. Tear down\nStop the SuperNodes, remove the Tor onion, and log out:\n\nds.flower.tor.down(conns)\nDSI::datashield.logout(conns)\n\n\n\n\nWhere to go next\nYou have now trained a federated machine-learning model and used it to predict — the same DataSHIELD principle (data never moves), extended from summary statistics to full ML via Flower.\n\n\n\n\n\n\nTipA note on speed and scale\n\n\n\nTor makes the federation work from anywhere, but it is not fast — this 5-round run took ~4 minutes, most of it network latency. For a tiny logistic regression that overhead dominates; for larger models on a trusted network you can swap the transport for a direct or coordinator-based one. The point of Tor here is reach: training across locked-down hospital servers that can’t expose anything.\n\n\n\n\n\n\n\n\nNoteOther models\n\n\n\ndsFlower ships templates beyond logistic regression — pytorch_* neural networks (with patient-level differential privacy via Opacus) and xgboost. The workflow is identical: ds.flower.tor.up() → ds.flower.fit(model = ...) → ds.flower.predict()."
+  },
+  {
+    "objectID": "DataSHIELD_workshop_DSWB_resources.html",
+    "href": "DataSHIELD_workshop_DSWB_resources.html",
+    "title": "DataSHIELD Workshop: Data Science Without Borders",
+    "section": "",
+    "text": "Download this R file"
+  },
+  {
+    "objectID": "DataSHIELD_workshop_DSWB_resources.html#tasks",
+    "href": "DataSHIELD_workshop_DSWB_resources.html#tasks",
+    "title": "DataSHIELD Workshop: Data Science Without Borders",
+    "section": "Tasks",
+    "text": "Tasks\nComplete the following tasks:\n\nLoad the data into a DataSHIELD session\nSummarize the variable IMC\nCreate a histogram of the variable trig\nAssess whether diabetes is associated with hipercol, IMC, hdl and col_tot in separate univariate models\nEstimate a multivariate model for the variable diabetes, including only those variables that were significant in the univariate models"
+  },
+  {
+    "objectID": "resources.html",
+    "href": "resources.html",
+    "title": "Resources",
+    "section": "",
+    "text": "Workshop Materials\n\nResources Workshop Repository\n\nThe following resources may be of interest for those wanting to learn more about DataSHIELD and OMOP CDM:\n\n\nDataSHIELD\n\nDataSHIELD Beginners Tutorial\ndsTidyverseClient vignette\n\n\n\nResources and Opal integration\n\nresourcer: Examples of resources\n\n\n\nOHDSI / OMOP CDM\n\nThe Book of OHDSI – Common Data Model\nThe Book of OHDSI – Standardized Vocabularies\n\n\n\ndsOMOP\n\ndsOMOP website\ndsOMOPClient vignette\n\n\n\nPublications\n\nList of DataSHIELD publications\ndsOMOP paper\n\n\n\nGetting ready for the workshop Contact instructors"
+  },
+  {
+    "objectID": "index.html#combining-datashield-with-omop-cdm",
+    "href": "index.html#combining-datashield-with-omop-cdm",
+    "title": "Data Science Without Borders Workshop",
+    "section": "Combining DataSHIELD with OMOP CDM",
+    "text": "Combining DataSHIELD with OMOP CDM\nWelcome to the workshop where federated data analysis meets standardized clinical data!\nThis hands-on session will introduce you to the combination of DataSHIELD’s federated analysis capabilities and the OMOP Common Data Model (CDM) for clinical databases using the dsOMOP framework.\n\n\n    This project (PID2021-122855OB-I00) has received funding from MCIN /AEI /10.13039/501100011033 / FEDER, UE.\n\n\n\nInstitutions behind this workshop\n\n        \n\n\n\nWhat is DataSHIELD?\n\n\nDataSHIELD is an open-source platform that enables analysis of sensitive data without sharing individual-level records. Analyses are executed where the data reside; only vetted, non-disclosive summaries are returned. This privacy-by-design approach combines:\n\nRobust disclosure control on outputs\nRole-based governance and auditable workflows\nSecure, federated compute across institutions\n\nThis makes DataSHIELD ideal when regulations, ethics, or governance restrict data movement but collaborative analysis is essential.\n\n\n\n\nDataSHIELD is also a community-driven, open-source initiative with contributors from universities, research institutes, and health systems. The community steers method development, governance rules, disclosure controls, and software evolution through open collaboration, ensuring transparency, interoperability, and best practices for secure multi-site analytics.\n\n\n\n\n\n\nImportantA milestone to celebrate!\n\n\n\nDuring our collaboration, we will be deploying the first African federated clinical data analysis network using DataSHIELD!\n\n\n\n\nWhat are OHDSI and the OMOP CDM?\n\n\nThe OHDSI community maintains the OMOP Common Data Model (CDM), a widely adopted standard that harmonizes the structure and vocabularies of observational health data (EHRs, claims, registries). Standardization enables large-scale, reproducible analytics and consistency across diverse datasets.\nOHDSI (Observational Health Data Sciences and Informatics) is a global, open-science collaborative that develops data standards, vocabularies, methods, and software for observational health research. OHDSI fosters reproducible research, open tools, and shared best practices to scale evidence generation across diverse data networks.\n\n\n\n\n\n\nWhat is dsOMOP?\n\n\ndsOMOP is a suite of packages that connects OMOP CDM databases to DataSHIELD. It streamlines access to standardized tables and vocabularies under DataSHIELD’s privacy model so you can:\n\nDiscover and explore OMOP CDM content securely\nBuild cohorts and run cross-site summary queries\nPerform federated, standardized analyses on harmonized clinical data"
+  },
+  {
+    "objectID": "index.html#federated-standardized-analysis",
+    "href": "index.html#federated-standardized-analysis",
+    "title": "Data Science Without Borders Workshop",
+    "section": "Federated standardized analysis",
+    "text": "Federated standardized analysis\nThis combination of technologies enables powerful federated analysis with strong privacy guarantees:\n\nPrivacy by design: Individual-level data never leave the hosting institution.\nDisclosure control: Automated safeguards prevent re-identification via output checks.\nSecurity and governance: Role-based access, auditability, and institutional control.\nStandardization: OMOP CDM ensures consistent structure and meaning across networks.\nReproducibility: Shared code and common semantics for comparable results."
+  },
+  {
+    "objectID": "index.html#workshop-content",
+    "href": "index.html#workshop-content",
+    "title": "Data Science Without Borders Workshop",
+    "section": "Workshop content",
+    "text": "Workshop content\n\n\n\nBlock 1 — Working with DataSHIELD\n\nConnect to remote nodes and manage sessions\nAssign and aggregate safely without exposing rows\nRun common statistics under disclosure thresholds\nUnderstand privacy, security, and governance in practice\n\n\n\n\nBlock 2 — OMOP CDM via dsOMOP\n\nConnect to OMOP CDM databases through DataSHIELD\nExplore standardized tables and vocabularies\nBuild cohorts and run summary queries across sites\nPerform federated, reproducible analyses on harmonized data\n\n\n\n\n\n\nGetting ready for the workshop Workshop schedule"
+  },
+  {
+    "objectID": "dsomop-workshop.html#workshop-overview",
+    "href": "dsomop-workshop.html#workshop-overview",
+    "title": "dsOMOP Workshop",
+    "section": "Workshop Overview",
+    "text": "Workshop Overview\nThe dsOMOP workshop focuses on the integration of DataSHIELD with the OMOP Common Data Model (CDM). This powerful combination enables federated analysis of standardized observational health data across multiple institutions while maintaining data privacy and security.\n\nWhat You’ll Learn\n\n\n\n\n\nOMOP CDM Fundamentals\nUnderstand the structure and principles of the OMOP Common Data Model and its standardized vocabularies.\n\n\n\n\n\n\n\nETL Processes\nLearn to transform local health data into OMOP CDM format using established tools and methodologies.\n\n\n\n\n\n\n\n\n\nFederated OMOP Analysis\nMaster techniques for analyzing OMOP data across multiple sites using DataSHIELD without sharing individual records.\n\n\n\n\n\n\n\nMulti-Site Studies\nDesign and implement collaborative research studies using standardized data models and federated analysis."
+  },
+  {
+    "objectID": "dsomop-workshop.html#workshop-content",
+    "href": "dsomop-workshop.html#workshop-content",
+    "title": "dsOMOP Workshop",
+    "section": "Workshop Content",
+    "text": "Workshop Content\n\nDay 1: OMOP CDM Introduction\n\nOMOP CDM structure and concepts\nStandardized vocabularies (SNOMED, ICD, LOINC)\nData quality assessment\nOMOP tools ecosystem\n\n\n\nDay 2: Data Transformation\n\nETL design principles\nWhiteRabbit and Rabbit-in-a-Hat\nVocabulary mapping with Usagi\nData validation procedures\n\n\n\nDay 3: Federated OMOP Analysis\n\ndsOMOP package introduction\nCohort definition across sites\nFederated descriptive analytics\nCross-site comparisons"
+  },
+  {
+    "objectID": "dsomop-workshop.html#prerequisites",
+    "href": "dsomop-workshop.html#prerequisites",
+    "title": "dsOMOP Workshop",
+    "section": "Prerequisites",
+    "text": "Prerequisites\n\nCompletion of DataSHIELD workshop (recommended)\nUnderstanding of clinical data structures\nBasic SQL knowledge (helpful)\nCompleted Getting Started setup"
+  },
+  {
+    "objectID": "dsomop-workshop.html#workshop-materials",
+    "href": "dsomop-workshop.html#workshop-materials",
+    "title": "dsOMOP Workshop",
+    "section": "Workshop Materials",
+    "text": "Workshop Materials\nComprehensive materials provided: - OMOP CDM documentation and guides - ETL mapping templates - dsOMOP package documentation - Real-world case studies - Practice datasets in OMOP format"
+  },
+  {
+    "objectID": "dsomop-workshop.html#use-cases",
+    "href": "dsomop-workshop.html#use-cases",
+    "title": "dsOMOP Workshop",
+    "section": "Use Cases",
+    "text": "Use Cases\nLearn through practical examples: - Multi-site pharmacovigilance studies - Comparative effectiveness research - Disease natural history studies - Health outcomes research\n\n\nGet Started View Schedule"
+  },
+  {
+    "objectID": "datashield-presentation.html",
+    "href": "datashield-presentation.html",
+    "title": "DataSHIELD Presentation",
+    "section": "",
+    "text": "TipHaving trouble viewing the slides?\n\n\n\nIf the embedded viewer doesn’t work properly, you can download the slides using the button below.\n\n\n\n\n\n  Download Presentation (PDF) \n\n\n\nContinue to DataSHIELD Workshop"
+  },
+  {
+    "objectID": "datashield-presentation.html#introduction-to-datashield",
+    "href": "datashield-presentation.html#introduction-to-datashield",
+    "title": "DataSHIELD Presentation",
+    "section": "",
+    "text": "TipHaving trouble viewing the slides?\n\n\n\nIf the embedded viewer doesn’t work properly, you can download the slides using the button below.\n\n\n\n\n\n  Download Presentation (PDF) \n\n\n\nContinue to DataSHIELD Workshop"
+  },
+  {
+    "objectID": "contact.html",
+    "href": "contact.html",
+    "title": "Contact",
+    "section": "",
+    "text": "Feel free to contact us with any questions, suggestions or comments!\n\n\n  \n    \n      \n      \n        \n      \n    \n    \n      Juan R González, PhD\n\n      \n        \n        \n        \n        \n      \n    \n  \n\n  \n    \n      \n      \n        \n      \n    \n    \n      David Sarrat González"
+  },
+  {
+    "objectID": "datashield-workshop.html#workshop-overview",
+    "href": "datashield-workshop.html#workshop-overview",
+    "title": "DataSHIELD Workshop",
+    "section": "Workshop Overview",
+    "text": "Workshop Overview\nDataSHIELD is a pioneering approach that enables researchers to analyze data across multiple sites without physically sharing individual-level data. This workshop will provide comprehensive training on implementing and using DataSHIELD for collaborative health research while maintaining the highest standards of data privacy and security.\n\nWhat You’ll Learn\n\n\n\n\n\nPrivacy-Preserving Analytics\nLearn the principles of federated analysis and how DataSHIELD enables secure computation across distributed datasets.\n\n\n\n\n\n\n\nServer Configuration\nUnderstand how to set up and configure DataSHIELD servers (Opal) and manage data access permissions.\n\n\n\n\n\n\n\n\n\nR Client Programming\nMaster the DataSHIELD R client packages and learn to write efficient federated analysis scripts.\n\n\n\n\n\n\n\nStatistical Methods\nExplore available statistical functions and learn when and how to apply them in federated settings."
+  },
+  {
+    "objectID": "datashield-workshop.html#workshop-content",
+    "href": "datashield-workshop.html#workshop-content",
+    "title": "DataSHIELD Workshop",
+    "section": "Workshop Content",
+    "text": "Workshop Content\n\nDay 1: Foundations\n\nIntroduction to DataSHIELD concepts\nUnderstanding the client-server architecture\nSetting up your analysis environment\nFirst federated analysis\n\n\n\nDay 2: Core Methods\n\nDescriptive statistics across sites\nData visualization in federated settings\nHandling missing data\nQuality control procedures\n\n\n\nDay 3: Advanced Analytics\n\nRegression modeling\nSurvival analysis\nMachine learning approaches\nCustom function development"
+  },
+  {
+    "objectID": "datashield-workshop.html#prerequisites",
+    "href": "datashield-workshop.html#prerequisites",
+    "title": "DataSHIELD Workshop",
+    "section": "Prerequisites",
+    "text": "Prerequisites\n\nBasic R programming knowledge\nUnderstanding of statistical concepts\nFamiliarity with health data structures\nCompleted Getting Started setup"
+  },
+  {
+    "objectID": "datashield-workshop.html#workshop-materials",
+    "href": "datashield-workshop.html#workshop-materials",
+    "title": "DataSHIELD Workshop",
+    "section": "Workshop Materials",
+    "text": "Workshop Materials\nAll materials will be provided including: - Lecture slides and notes - Hands-on exercise notebooks - Sample datasets - Code examples and solutions\n\n\nGet Started View Schedule"
+  },
+  {
+    "objectID": "getting-started.html",
+    "href": "getting-started.html",
+    "title": "Getting Started",
+    "section": "",
+    "text": "This page provides simple instructions to install R and all required packages for the workshop."
+  },
+  {
+    "objectID": "getting-started.html#setup-instructions",
+    "href": "getting-started.html#setup-instructions",
+    "title": "Getting Started",
+    "section": "",
+    "text": "This page provides simple instructions to install R and all required packages for the workshop."
+  },
+  {
+    "objectID": "getting-started.html#step-1-install-r-and-rstudio",
+    "href": "getting-started.html#step-1-install-r-and-rstudio",
+    "title": "Getting Started",
+    "section": "Step 1: Install R and RStudio",
+    "text": "Step 1: Install R and RStudio\n\nInstall R\n\nGo to CRAN\nDownload R for your operating system (Windows, Mac, or Linux)\nRun the installer and follow the instructions\n\n\n\nInstall RStudio\n\nGo to Posit RStudio\nDownload the free RStudio Desktop\nInstall RStudio after R is installed"
+  },
+  {
+    "objectID": "getting-started.html#step-2-install-required-r-packages",
+    "href": "getting-started.html#step-2-install-required-r-packages",
+    "title": "Getting Started",
+    "section": "Step 2: Install Required R Packages",
+    "text": "Step 2: Install Required R Packages\nOpen RStudio and run the following commands to install all necessary packages:\ninstall.packages(\"devtools\")\ninstall.packages(\"DSI\")\ninstall.packages(\"DSOpal\")\ninstall.packages(\"opalr\")\ninstall.packages(\n  \"dsTidyverseClient\",\n  repos = c(\"https://molgenis.r-universe.dev\", \"https://cloud.r-project.org\")\n)\ndevtools::install_github(\"datashield/dsBaseClient\", force = TRUE)\ndevtools::install_github(\"isglobal-brge/dsOMOPClient\")\ndevtools::install_github(\"isglobal-brge/dsOmicsClient\")\ninstall.packages(\"metafor\")\ninstall.packages(\"readr\")\ninstall.packages(\"knitr\")\n\n\nView workshop schedule Contact instructors"
+  },
+  {
+    "objectID": "omop-presentation.html",
+    "href": "omop-presentation.html",
+    "title": "OMOP CDM Presentation",
+    "section": "",
+    "text": "The presentation is a live web page. Preview it below, open it fullscreen, or visit it directly:\n\n  Open the presentation    Fullscreen \n\n\n \n\n\n\n\n\nThe Book of OHDSI\nOMOP CDM Documentation\nOHDSI Forums\ndsOMOP website\n\n\n\nContinue to the dsOMOP Workshop"
+  },
+  {
+    "objectID": "omop-presentation.html#introduction-to-the-omop-common-data-model",
+    "href": "omop-presentation.html#introduction-to-the-omop-common-data-model",
+    "title": "OMOP CDM Presentation",
+    "section": "",
+    "text": "The presentation is a live web page. Preview it below, open it fullscreen, or visit it directly:\n\n  Open the presentation    Fullscreen \n\n\n \n\n\n\n\n\nThe Book of OHDSI\nOMOP CDM Documentation\nOHDSI Forums\ndsOMOP website\n\n\n\nContinue to the dsOMOP Workshop"
+  },
+  {
+    "objectID": "schedule.html",
+    "href": "schedule.html",
+    "title": "Workshop Schedule",
+    "section": "",
+    "text": "The DataSHIELD Without Borders workshop will be delivered over four days at the following institution:\n\n\n\n\n\n\n\n\n\nDates\nInstitution\nLocation\n\n\n\n\nJune 15–18, 2026\nArmauer Hansen Research Institute (AHRI)\nAddis Ababa, Ethiopia"
+  },
+  {
+    "objectID": "schedule.html#workshop-location-and-dates",
+    "href": "schedule.html#workshop-location-and-dates",
+    "title": "Workshop Schedule",
+    "section": "",
+    "text": "The DataSHIELD Without Borders workshop will be delivered over four days at the following institution:\n\n\n\n\n\n\n\n\n\nDates\nInstitution\nLocation\n\n\n\n\nJune 15–18, 2026\nArmauer Hansen Research Institute (AHRI)\nAddis Ababa, Ethiopia"
+  },
+  {
+    "objectID": "schedule.html#daily-timetable",
+    "href": "schedule.html#daily-timetable",
+    "title": "Workshop Schedule",
+    "section": "Daily Timetable",
+    "text": "Daily Timetable\nThe same timetable applies to each of the four days:\n\n\n\n\n\n\nTime\n\n\nActivity\n\n\n\n\n\n\n09:00 – 10:30\n\n\nWorkshop session\n\n\n\n\n10:30 – 11:00\n\n\nCoffee break\n\n\n\n\n11:00 – 13:00\n\n\nWorkshop session\n\n\n\n\n13:00 – 14:00\n\n\nLunch"
+  },
+  {
+    "objectID": "schedule.html#topics-by-day",
+    "href": "schedule.html#topics-by-day",
+    "title": "Workshop Schedule",
+    "section": "Topics by Day",
+    "text": "Topics by Day\n\n\n\n\n\nDay\n\n\nTopics\n\n\n\n\n\n\nMondayJune 15, 2026\n\n\nIntroduction to DataSHIELD and Opal; DataSHIELD with tables\n\n\n\n\nTuesdayJune 16, 2026\n\n\nDataSHIELD with resources\n\n\n\n\nWednesdayJune 17, 2026\n\n\nOMOP CDM and DataSHIELD with OMOP databases (dsOMOP)\n\n\n\n\nThursdayJune 18, 2026\n\n\nOpen hands-on session, exploring other packages (dsFlower, dsImaging…)\n\n\n\n\n\n\n\nGetting ready for the workshop Contact instructors"
+  },
+  {
     "objectID": "DataSHIELD_workshop_DSWB_tables.html",
     "href": "DataSHIELD_workshop_DSWB_tables.html",
     "title": "DataSHIELD Workshop: Data Science Without Borders",
@@ -98,202 +301,6 @@
     "text": "At the end of your RStudio Server analysis:\nYou can save your workspace:\n\ndatashield.workspace_save(conns = conns, ws = \"workspace2025\")\n\nDon’t forget to log out! Using:\n\ndatashield.logout(conns)\n\nYou can restore your workspace, the next time you want to continue with your analysis\n\nconns &lt;- datashield.login(logins = logindata, \n                          assign = TRUE, symbol = \"D\")\nds.ls()\ndatashield.logout(conns)\n\nconns &lt;- datashield.login(logins = logindata, restore = \"workspace2025\")\nds.ls()\n\nAlso you can delete unwanted workspaces using the datashield.workspace_rm\nIn Rstudio Server: DON’T forget to use the orange “quit the current R session” button (top right of browser screen) before closing the tab- otherwise you will experience an error message the next time you try to log in."
   },
   {
-    "objectID": "schedule.html",
-    "href": "schedule.html",
-    "title": "Workshop Schedule",
-    "section": "",
-    "text": "The DataSHIELD Without Borders workshop will be delivered over four days at the following institution:\n\n\n\n\n\n\n\n\n\nDates\nInstitution\nLocation\n\n\n\n\nJune 15–18, 2026\nArmauer Hansen Research Institute (AHRI)\nAddis Ababa, Ethiopia"
-  },
-  {
-    "objectID": "schedule.html#workshop-location-and-dates",
-    "href": "schedule.html#workshop-location-and-dates",
-    "title": "Workshop Schedule",
-    "section": "",
-    "text": "The DataSHIELD Without Borders workshop will be delivered over four days at the following institution:\n\n\n\n\n\n\n\n\n\nDates\nInstitution\nLocation\n\n\n\n\nJune 15–18, 2026\nArmauer Hansen Research Institute (AHRI)\nAddis Ababa, Ethiopia"
-  },
-  {
-    "objectID": "schedule.html#daily-timetable",
-    "href": "schedule.html#daily-timetable",
-    "title": "Workshop Schedule",
-    "section": "Daily Timetable",
-    "text": "Daily Timetable\nThe same timetable applies to each of the four days:\n\n\n\n\n\n\nTime\n\n\nActivity\n\n\n\n\n\n\n09:00 – 10:30\n\n\nWorkshop session\n\n\n\n\n10:30 – 11:00\n\n\nCoffee break\n\n\n\n\n11:00 – 13:00\n\n\nWorkshop session\n\n\n\n\n13:00 – 14:00\n\n\nLunch"
-  },
-  {
-    "objectID": "schedule.html#topics-by-day",
-    "href": "schedule.html#topics-by-day",
-    "title": "Workshop Schedule",
-    "section": "Topics by Day",
-    "text": "Topics by Day\n\n\n\n\n\nDay\n\n\nTopics\n\n\n\n\n\n\nMondayJune 15, 2026\n\n\nIntroduction to DataSHIELD and Opal; DataSHIELD with tables\n\n\n\n\nTuesdayJune 16, 2026\n\n\nDataSHIELD with resources\n\n\n\n\nWednesdayJune 17, 2026\n\n\nOMOP CDM and DataSHIELD with OMOP databases (dsOMOP)\n\n\n\n\nThursdayJune 18, 2026\n\n\nOpen hands-on session, exploring other packages (dsFlower, dsImaging…)\n\n\n\n\n\n\n\nGetting ready for the workshop Contact instructors"
-  },
-  {
-    "objectID": "omop-presentation.html",
-    "href": "omop-presentation.html",
-    "title": "OMOP CDM Presentation",
-    "section": "",
-    "text": "The presentation is a live web page. Preview it below, open it fullscreen, or visit it directly:\n\n  Open the presentation    Fullscreen \n\n\n \n\n\n\n\n\nThe Book of OHDSI\nOMOP CDM Documentation\nOHDSI Forums\ndsOMOP website\n\n\n\nContinue to the dsOMOP Workshop"
-  },
-  {
-    "objectID": "omop-presentation.html#introduction-to-the-omop-common-data-model",
-    "href": "omop-presentation.html#introduction-to-the-omop-common-data-model",
-    "title": "OMOP CDM Presentation",
-    "section": "",
-    "text": "The presentation is a live web page. Preview it below, open it fullscreen, or visit it directly:\n\n  Open the presentation    Fullscreen \n\n\n \n\n\n\n\n\nThe Book of OHDSI\nOMOP CDM Documentation\nOHDSI Forums\ndsOMOP website\n\n\n\nContinue to the dsOMOP Workshop"
-  },
-  {
-    "objectID": "getting-started.html",
-    "href": "getting-started.html",
-    "title": "Getting Started",
-    "section": "",
-    "text": "This page provides simple instructions to install R and all required packages for the workshop."
-  },
-  {
-    "objectID": "getting-started.html#setup-instructions",
-    "href": "getting-started.html#setup-instructions",
-    "title": "Getting Started",
-    "section": "",
-    "text": "This page provides simple instructions to install R and all required packages for the workshop."
-  },
-  {
-    "objectID": "getting-started.html#step-1-install-r-and-rstudio",
-    "href": "getting-started.html#step-1-install-r-and-rstudio",
-    "title": "Getting Started",
-    "section": "Step 1: Install R and RStudio",
-    "text": "Step 1: Install R and RStudio\n\nInstall R\n\nGo to CRAN\nDownload R for your operating system (Windows, Mac, or Linux)\nRun the installer and follow the instructions\n\n\n\nInstall RStudio\n\nGo to Posit RStudio\nDownload the free RStudio Desktop\nInstall RStudio after R is installed"
-  },
-  {
-    "objectID": "getting-started.html#step-2-install-required-r-packages",
-    "href": "getting-started.html#step-2-install-required-r-packages",
-    "title": "Getting Started",
-    "section": "Step 2: Install Required R Packages",
-    "text": "Step 2: Install Required R Packages\nOpen RStudio and run the following commands to install all necessary packages:\ninstall.packages(\"devtools\")\ninstall.packages(\"DSI\")\ninstall.packages(\"DSOpal\")\ninstall.packages(\"opalr\")\ninstall.packages(\n  \"dsTidyverseClient\",\n  repos = c(\"https://molgenis.r-universe.dev\", \"https://cloud.r-project.org\")\n)\ndevtools::install_github(\"datashield/dsBaseClient\", force = TRUE)\ndevtools::install_github(\"isglobal-brge/dsOMOPClient\")\ndevtools::install_github(\"isglobal-brge/dsOmicsClient\")\ninstall.packages(\"metafor\")\ninstall.packages(\"readr\")\ninstall.packages(\"knitr\")\n\n\nView workshop schedule Contact instructors"
-  },
-  {
-    "objectID": "datashield-workshop.html#workshop-overview",
-    "href": "datashield-workshop.html#workshop-overview",
-    "title": "DataSHIELD Workshop",
-    "section": "Workshop Overview",
-    "text": "Workshop Overview\nDataSHIELD is a pioneering approach that enables researchers to analyze data across multiple sites without physically sharing individual-level data. This workshop will provide comprehensive training on implementing and using DataSHIELD for collaborative health research while maintaining the highest standards of data privacy and security.\n\nWhat You’ll Learn\n\n\n\n\n\nPrivacy-Preserving Analytics\nLearn the principles of federated analysis and how DataSHIELD enables secure computation across distributed datasets.\n\n\n\n\n\n\n\nServer Configuration\nUnderstand how to set up and configure DataSHIELD servers (Opal) and manage data access permissions.\n\n\n\n\n\n\n\n\n\nR Client Programming\nMaster the DataSHIELD R client packages and learn to write efficient federated analysis scripts.\n\n\n\n\n\n\n\nStatistical Methods\nExplore available statistical functions and learn when and how to apply them in federated settings."
-  },
-  {
-    "objectID": "datashield-workshop.html#workshop-content",
-    "href": "datashield-workshop.html#workshop-content",
-    "title": "DataSHIELD Workshop",
-    "section": "Workshop Content",
-    "text": "Workshop Content\n\nDay 1: Foundations\n\nIntroduction to DataSHIELD concepts\nUnderstanding the client-server architecture\nSetting up your analysis environment\nFirst federated analysis\n\n\n\nDay 2: Core Methods\n\nDescriptive statistics across sites\nData visualization in federated settings\nHandling missing data\nQuality control procedures\n\n\n\nDay 3: Advanced Analytics\n\nRegression modeling\nSurvival analysis\nMachine learning approaches\nCustom function development"
-  },
-  {
-    "objectID": "datashield-workshop.html#prerequisites",
-    "href": "datashield-workshop.html#prerequisites",
-    "title": "DataSHIELD Workshop",
-    "section": "Prerequisites",
-    "text": "Prerequisites\n\nBasic R programming knowledge\nUnderstanding of statistical concepts\nFamiliarity with health data structures\nCompleted Getting Started setup"
-  },
-  {
-    "objectID": "datashield-workshop.html#workshop-materials",
-    "href": "datashield-workshop.html#workshop-materials",
-    "title": "DataSHIELD Workshop",
-    "section": "Workshop Materials",
-    "text": "Workshop Materials\nAll materials will be provided including: - Lecture slides and notes - Hands-on exercise notebooks - Sample datasets - Code examples and solutions\n\n\nGet Started View Schedule"
-  },
-  {
-    "objectID": "contact.html",
-    "href": "contact.html",
-    "title": "Contact",
-    "section": "",
-    "text": "Feel free to contact us with any questions, suggestions or comments!\n\n\n  \n    \n      \n      \n        \n      \n    \n    \n      Juan R González, PhD\n\n      \n        \n        \n        \n        \n      \n    \n  \n\n  \n    \n      \n      \n        \n      \n    \n    \n      David Sarrat González"
-  },
-  {
-    "objectID": "datashield-presentation.html",
-    "href": "datashield-presentation.html",
-    "title": "DataSHIELD Presentation",
-    "section": "",
-    "text": "TipHaving trouble viewing the slides?\n\n\n\nIf the embedded viewer doesn’t work properly, you can download the slides using the button below.\n\n\n\n\n\n  Download Presentation (PDF) \n\n\n\nContinue to DataSHIELD Workshop"
-  },
-  {
-    "objectID": "datashield-presentation.html#introduction-to-datashield",
-    "href": "datashield-presentation.html#introduction-to-datashield",
-    "title": "DataSHIELD Presentation",
-    "section": "",
-    "text": "TipHaving trouble viewing the slides?\n\n\n\nIf the embedded viewer doesn’t work properly, you can download the slides using the button below.\n\n\n\n\n\n  Download Presentation (PDF) \n\n\n\nContinue to DataSHIELD Workshop"
-  },
-  {
-    "objectID": "dsomop-workshop.html#workshop-overview",
-    "href": "dsomop-workshop.html#workshop-overview",
-    "title": "dsOMOP Workshop",
-    "section": "Workshop Overview",
-    "text": "Workshop Overview\nThe dsOMOP workshop focuses on the integration of DataSHIELD with the OMOP Common Data Model (CDM). This powerful combination enables federated analysis of standardized observational health data across multiple institutions while maintaining data privacy and security.\n\nWhat You’ll Learn\n\n\n\n\n\nOMOP CDM Fundamentals\nUnderstand the structure and principles of the OMOP Common Data Model and its standardized vocabularies.\n\n\n\n\n\n\n\nETL Processes\nLearn to transform local health data into OMOP CDM format using established tools and methodologies.\n\n\n\n\n\n\n\n\n\nFederated OMOP Analysis\nMaster techniques for analyzing OMOP data across multiple sites using DataSHIELD without sharing individual records.\n\n\n\n\n\n\n\nMulti-Site Studies\nDesign and implement collaborative research studies using standardized data models and federated analysis."
-  },
-  {
-    "objectID": "dsomop-workshop.html#workshop-content",
-    "href": "dsomop-workshop.html#workshop-content",
-    "title": "dsOMOP Workshop",
-    "section": "Workshop Content",
-    "text": "Workshop Content\n\nDay 1: OMOP CDM Introduction\n\nOMOP CDM structure and concepts\nStandardized vocabularies (SNOMED, ICD, LOINC)\nData quality assessment\nOMOP tools ecosystem\n\n\n\nDay 2: Data Transformation\n\nETL design principles\nWhiteRabbit and Rabbit-in-a-Hat\nVocabulary mapping with Usagi\nData validation procedures\n\n\n\nDay 3: Federated OMOP Analysis\n\ndsOMOP package introduction\nCohort definition across sites\nFederated descriptive analytics\nCross-site comparisons"
-  },
-  {
-    "objectID": "dsomop-workshop.html#prerequisites",
-    "href": "dsomop-workshop.html#prerequisites",
-    "title": "dsOMOP Workshop",
-    "section": "Prerequisites",
-    "text": "Prerequisites\n\nCompletion of DataSHIELD workshop (recommended)\nUnderstanding of clinical data structures\nBasic SQL knowledge (helpful)\nCompleted Getting Started setup"
-  },
-  {
-    "objectID": "dsomop-workshop.html#workshop-materials",
-    "href": "dsomop-workshop.html#workshop-materials",
-    "title": "dsOMOP Workshop",
-    "section": "Workshop Materials",
-    "text": "Workshop Materials\nComprehensive materials provided: - OMOP CDM documentation and guides - ETL mapping templates - dsOMOP package documentation - Real-world case studies - Practice datasets in OMOP format"
-  },
-  {
-    "objectID": "dsomop-workshop.html#use-cases",
-    "href": "dsomop-workshop.html#use-cases",
-    "title": "dsOMOP Workshop",
-    "section": "Use Cases",
-    "text": "Use Cases\nLearn through practical examples: - Multi-site pharmacovigilance studies - Comparative effectiveness research - Disease natural history studies - Health outcomes research\n\n\nGet Started View Schedule"
-  },
-  {
-    "objectID": "index.html#combining-datashield-with-omop-cdm",
-    "href": "index.html#combining-datashield-with-omop-cdm",
-    "title": "Data Science Without Borders Workshop",
-    "section": "Combining DataSHIELD with OMOP CDM",
-    "text": "Combining DataSHIELD with OMOP CDM\nWelcome to the workshop where federated data analysis meets standardized clinical data!\nThis hands-on session will introduce you to the combination of DataSHIELD’s federated analysis capabilities and the OMOP Common Data Model (CDM) for clinical databases using the dsOMOP framework.\n\n\n    This project (PID2021-122855OB-I00) has received funding from MCIN /AEI /10.13039/501100011033 / FEDER, UE.\n\n\n\nInstitutions behind this workshop\n\n        \n\n\n\nWhat is DataSHIELD?\n\n\nDataSHIELD is an open-source platform that enables analysis of sensitive data without sharing individual-level records. Analyses are executed where the data reside; only vetted, non-disclosive summaries are returned. This privacy-by-design approach combines:\n\nRobust disclosure control on outputs\nRole-based governance and auditable workflows\nSecure, federated compute across institutions\n\nThis makes DataSHIELD ideal when regulations, ethics, or governance restrict data movement but collaborative analysis is essential.\n\n\n\n\nDataSHIELD is also a community-driven, open-source initiative with contributors from universities, research institutes, and health systems. The community steers method development, governance rules, disclosure controls, and software evolution through open collaboration, ensuring transparency, interoperability, and best practices for secure multi-site analytics.\n\n\n\n\n\n\nImportantA milestone to celebrate!\n\n\n\nDuring our collaboration, we will be deploying the first African federated clinical data analysis network using DataSHIELD!\n\n\n\n\nWhat are OHDSI and the OMOP CDM?\n\n\nThe OHDSI community maintains the OMOP Common Data Model (CDM), a widely adopted standard that harmonizes the structure and vocabularies of observational health data (EHRs, claims, registries). Standardization enables large-scale, reproducible analytics and consistency across diverse datasets.\nOHDSI (Observational Health Data Sciences and Informatics) is a global, open-science collaborative that develops data standards, vocabularies, methods, and software for observational health research. OHDSI fosters reproducible research, open tools, and shared best practices to scale evidence generation across diverse data networks.\n\n\n\n\n\n\nWhat is dsOMOP?\n\n\ndsOMOP is a suite of packages that connects OMOP CDM databases to DataSHIELD. It streamlines access to standardized tables and vocabularies under DataSHIELD’s privacy model so you can:\n\nDiscover and explore OMOP CDM content securely\nBuild cohorts and run cross-site summary queries\nPerform federated, standardized analyses on harmonized clinical data"
-  },
-  {
-    "objectID": "index.html#federated-standardized-analysis",
-    "href": "index.html#federated-standardized-analysis",
-    "title": "Data Science Without Borders Workshop",
-    "section": "Federated standardized analysis",
-    "text": "Federated standardized analysis\nThis combination of technologies enables powerful federated analysis with strong privacy guarantees:\n\nPrivacy by design: Individual-level data never leave the hosting institution.\nDisclosure control: Automated safeguards prevent re-identification via output checks.\nSecurity and governance: Role-based access, auditability, and institutional control.\nStandardization: OMOP CDM ensures consistent structure and meaning across networks.\nReproducibility: Shared code and common semantics for comparable results."
-  },
-  {
-    "objectID": "index.html#workshop-content",
-    "href": "index.html#workshop-content",
-    "title": "Data Science Without Borders Workshop",
-    "section": "Workshop content",
-    "text": "Workshop content\n\n\n\nBlock 1 — Working with DataSHIELD\n\nConnect to remote nodes and manage sessions\nAssign and aggregate safely without exposing rows\nRun common statistics under disclosure thresholds\nUnderstand privacy, security, and governance in practice\n\n\n\n\nBlock 2 — OMOP CDM via dsOMOP\n\nConnect to OMOP CDM databases through DataSHIELD\nExplore standardized tables and vocabularies\nBuild cohorts and run summary queries across sites\nPerform federated, reproducible analyses on harmonized data\n\n\n\n\n\n\nGetting ready for the workshop Workshop schedule"
-  },
-  {
-    "objectID": "resources.html",
-    "href": "resources.html",
-    "title": "Resources",
-    "section": "",
-    "text": "Workshop Materials\n\nResources Workshop Repository\n\nThe following resources may be of interest for those wanting to learn more about DataSHIELD and OMOP CDM:\n\n\nDataSHIELD\n\nDataSHIELD Beginners Tutorial\ndsTidyverseClient vignette\n\n\n\nResources and Opal integration\n\nresourcer: Examples of resources\n\n\n\nOHDSI / OMOP CDM\n\nThe Book of OHDSI – Common Data Model\nThe Book of OHDSI – Standardized Vocabularies\n\n\n\ndsOMOP\n\ndsOMOP website\ndsOMOPClient vignette\n\n\n\nPublications\n\nList of DataSHIELD publications\ndsOMOP paper\n\n\n\nGetting ready for the workshop Contact instructors"
-  },
-  {
-    "objectID": "DataSHIELD_workshop_DSWB_resources.html",
-    "href": "DataSHIELD_workshop_DSWB_resources.html",
-    "title": "DataSHIELD Workshop: Data Science Without Borders",
-    "section": "",
-    "text": "Download this R file"
-  },
-  {
-    "objectID": "DataSHIELD_workshop_DSWB_resources.html#tasks",
-    "href": "DataSHIELD_workshop_DSWB_resources.html#tasks",
-    "title": "DataSHIELD Workshop: Data Science Without Borders",
-    "section": "Tasks",
-    "text": "Tasks\nComplete the following tasks:\n\nLoad the data into a DataSHIELD session\nSummarize the variable IMC\nCreate a histogram of the variable trig\nAssess whether diabetes is associated with hipercol, IMC, hdl and col_tot in separate univariate models\nEstimate a multivariate model for the variable diabetes, including only those variables that were significant in the univariate models"
-  },
-  {
     "objectID": "dsomop.html",
     "href": "dsomop.html",
     "title": "Federated OMOP analysis with dsOMOP",
@@ -301,11 +308,11 @@
     "text": "Download the R script (.R)    Source (.Rmd)"
   },
   {
-    "objectID": "dsomop.html#start-simple",
-    "href": "dsomop.html#start-simple",
+    "objectID": "dsomop.html#start-simple-sex-and-age",
+    "href": "dsomop.html#start-simple-sex-and-age",
     "title": "Federated OMOP analysis with dsOMOP",
-    "section": "7.1 Start simple",
-    "text": "7.1 Start simple\nThe smallest useful recipe: just sex and age. Preview it (a server-side dry run that builds nothing), then execute it into a server-side symbol M0.\n\nrec0 &lt;- omop_recipe(\n  variables = list(\n    omop_variable(table = \"person\", column = \"gender_concept_id\", format = \"sex_mf\", name = \"sex\"),\n    omop_variable_age(name = \"age\", year = 2024)\n  ),\n  output = omop_output(name = \"study\", type = \"wide\")\n)\nrecipe_execute(rec0, out = c(study = \"M0\"), symbol = \"omop\", conns = conns)\n\nAlways inspect what the server built — confirm the table exists, with the columns and the number of rows you expected:\n\nds.colnames(\"M0\", datasources = conns)\n\n#&gt; $nairobi\n#&gt; [1] \"person_id\" \"sex\"       \"age\"      \n#&gt; \n#&gt; $douala\n#&gt; [1] \"person_id\" \"sex\"       \"age\"      \n#&gt; \n#&gt; $dakar\n#&gt; [1] \"person_id\" \"sex\"       \"age\"\n\nds.dim(\"M0\", datasources = conns)\n\n#&gt; $`dimensions of M0 in nairobi`\n#&gt; [1] 35  3\n#&gt; \n#&gt; $`dimensions of M0 in douala`\n#&gt; [1] 25  3\n#&gt; \n#&gt; $`dimensions of M0 in dakar`\n#&gt; [1] 40  3\n#&gt; \n#&gt; $`dimensions of M0 in combined studies`\n#&gt; [1] 100   3\n\n\n\n\n\n\n\n\nNoteWhy year = 2024?\n\n\n\nAge needs a reference year. This MIMIC extract runs through 2024, so we anchor age there rather than to today — otherwise every rebuild of this page would silently age the patients. For your own data, set year = to its collection year (or use reference = \"index\" for age at cohort entry). The age filter in Section 8 takes the same year = so the two always agree."
+    "section": "7.1 Start simple — sex and age",
+    "text": "7.1 Start simple — sex and age\n\nrec0 &lt;- omop_recipe(\n  variables = list(\n    omop_variable(table = \"person\", column = \"gender_concept_id\", format = \"sex_mf\", name = \"sex\"),\n    omop_variable_age(name = \"age\", year = 2024)\n  ),\n  output = omop_output(name = \"study\", type = \"wide\")\n)\nrecipe_execute(rec0, out = c(study = \"M0\"), symbol = \"omop\", conns = conns)\n\nAlways inspect what the server built, then look at each variable:\n\nds.colnames(\"M0\", datasources = conns)\n\n#&gt; $nairobi\n#&gt; [1] \"person_id\" \"sex\"       \"age\"      \n#&gt; \n#&gt; $douala\n#&gt; [1] \"person_id\" \"sex\"       \"age\"      \n#&gt; \n#&gt; $dakar\n#&gt; [1] \"person_id\" \"sex\"       \"age\"\n\nds.dim(\"M0\", datasources = conns)\n\n#&gt; $`dimensions of M0 in nairobi`\n#&gt; [1] 35  3\n#&gt; \n#&gt; $`dimensions of M0 in douala`\n#&gt; [1] 25  3\n#&gt; \n#&gt; $`dimensions of M0 in dakar`\n#&gt; [1] 40  3\n#&gt; \n#&gt; $`dimensions of M0 in combined studies`\n#&gt; [1] 100   3\n\n\n\nds.table(\"M0$sex\", datasources = conns)\n\n#&gt; \n#&gt;  Data in all studies were valid \n#&gt; \n#&gt; Study 1 :  No errors reported from this study\n#&gt; Study 2 :  No errors reported from this study\n#&gt; Study 3 :  No errors reported from this study\n\n\n#&gt; $output.list\n#&gt; $output.list$TABLE_rvar.by.study_row.props\n#&gt;       study\n#&gt; M0$sex   nairobi    douala     dakar\n#&gt;     F  0.4418605 0.2093023 0.3488372\n#&gt;     M  0.2807018 0.2807018 0.4385965\n#&gt;     NA       NaN       NaN       NaN\n#&gt; \n#&gt; $output.list$TABLE_rvar.by.study_col.props\n#&gt;       study\n#&gt; M0$sex   nairobi douala dakar\n#&gt;     F  0.5428571   0.36 0.375\n#&gt;     M  0.4571429   0.64 0.625\n#&gt;     NA 0.0000000   0.00 0.000\n#&gt; \n#&gt; $output.list$TABLE_rvar.by.study_counts\n#&gt;       study\n#&gt; M0$sex nairobi douala dakar\n#&gt;     F       19      9    15\n#&gt;     M       16     16    25\n#&gt;     NA       0      0     0\n#&gt; \n#&gt; $output.list$TABLES.COMBINED_all.sources_proportions\n#&gt; M0$sex\n#&gt;    F    M   NA \n#&gt; 0.43 0.57 0.00 \n#&gt; \n#&gt; $output.list$TABLES.COMBINED_all.sources_counts\n#&gt; M0$sex\n#&gt;  F  M NA \n#&gt; 43 57  0 \n#&gt; \n#&gt; \n#&gt; $validity.message\n#&gt; [1] \"Data in all studies were valid\"\n\n\n\nds.summary(\"M0$age\", datasources = conns)\n\n#&gt; $nairobi\n#&gt; $nairobi$class\n#&gt; [1] \"integer\"\n#&gt; \n#&gt; $nairobi$length\n#&gt; [1] 35\n#&gt; \n#&gt; $nairobi$`quantiles & mean`\n#&gt;       5%      10%      25%      50%      75%      90%      95%     Mean \n#&gt; 38.90000 46.40000 52.00000 63.00000 76.50000 86.00000 88.90000 63.88571 \n#&gt; \n#&gt; \n#&gt; $douala\n#&gt; $douala$class\n#&gt; [1] \"integer\"\n#&gt; \n#&gt; $douala$length\n#&gt; [1] 25\n#&gt; \n#&gt; $douala$`quantiles & mean`\n#&gt;   5%  10%  25%  50%  75%  90%  95% Mean \n#&gt; 34.8 39.6 46.0 58.0 69.0 84.2 85.8 59.0 \n#&gt; \n#&gt; \n#&gt; $dakar\n#&gt; $dakar$class\n#&gt; [1] \"integer\"\n#&gt; \n#&gt; $dakar$length\n#&gt; [1] 40\n#&gt; \n#&gt; $dakar$`quantiles & mean`\n#&gt;     5%    10%    25%    50%    75%    90%    95%   Mean \n#&gt; 32.750 47.600 59.000 65.500 74.250 83.100 88.050 64.975\n\n\n\n\n\n\n\n\nNoteWhy year = 2024?\n\n\n\nAge needs a reference year. This extract runs through 2024, so we anchor age there rather than to “today” (which would drift on every rebuild). The age filter in Section 8 takes the same year =."
   },
   {
     "objectID": "dsomop.html#grow-it-numbers-flags-and-counts",
@@ -315,11 +322,18 @@
     "text": "7.2 Grow it — numbers, flags and counts\nMix the variable types we met: a categorical (sex), a numeric mean (heart_rate), two binary condition flags, and a count (n_visits):\n\nrec &lt;- omop_recipe(\n  variables = list(\n    omop_variable(table = \"person\", column = \"gender_concept_id\", format = \"sex_mf\", name = \"sex\"),\n    omop_variable_age(name = \"age\", year = 2024),\n    omop_variable(table = \"measurement\", concept_id = 3027018, format = \"mean\", name = \"heart_rate\"),\n    omop_variable(table = \"condition_occurrence\", concept_id = 320128, format = \"binary\", name = \"hypertension\"),\n    omop_variable(table = \"condition_occurrence\", concept_id = 432867, format = \"binary\", name = \"hyperlipidemia\"),\n    omop_variable(table = \"visit_occurrence\", format = \"count\", name = \"n_visits\")\n  ),\n  output = omop_output(name = \"study\", type = \"wide\")\n)\nrecipe_execute(rec, out = c(study = \"M\"), symbol = \"omop\", conns = conns)\nds.colnames(\"M\", datasources = conns)\n\n#&gt; $nairobi\n#&gt; [1] \"person_id\"      \"heart_rate\"     \"hypertension\"   \"hyperlipidemia\" \"n_visits\"       \"sex\"            \"age\"           \n#&gt; \n#&gt; $douala\n#&gt; [1] \"person_id\"      \"heart_rate\"     \"hypertension\"   \"hyperlipidemia\" \"n_visits\"       \"sex\"            \"age\"           \n#&gt; \n#&gt; $dakar\n#&gt; [1] \"person_id\"      \"heart_rate\"     \"hypertension\"   \"hyperlipidemia\" \"n_visits\"       \"sex\"            \"age\"\n\nds.dim(\"M\", datasources = conns)\n\n#&gt; $`dimensions of M in nairobi`\n#&gt; [1] 35  7\n#&gt; \n#&gt; $`dimensions of M in douala`\n#&gt; [1] 25  7\n#&gt; \n#&gt; $`dimensions of M in dakar`\n#&gt; [1] 40  7\n#&gt; \n#&gt; $`dimensions of M in combined studies`\n#&gt; [1] 100   7\n\n\nLook at every variable in its natural way. Numeric columns → a quantile summary:\n\nds.summary(\"M$age\",        datasources = conns)\n\n#&gt; $nairobi\n#&gt; $nairobi$class\n#&gt; [1] \"integer\"\n#&gt; \n#&gt; $nairobi$length\n#&gt; [1] 35\n#&gt; \n#&gt; $nairobi$`quantiles & mean`\n#&gt;       5%      10%      25%      50%      75%      90%      95%     Mean \n#&gt; 38.90000 46.40000 52.00000 63.00000 76.50000 86.00000 88.90000 63.88571 \n#&gt; \n#&gt; \n#&gt; $douala\n#&gt; $douala$class\n#&gt; [1] \"integer\"\n#&gt; \n#&gt; $douala$length\n#&gt; [1] 25\n#&gt; \n#&gt; $douala$`quantiles & mean`\n#&gt;   5%  10%  25%  50%  75%  90%  95% Mean \n#&gt; 34.8 39.6 46.0 58.0 69.0 84.2 85.8 59.0 \n#&gt; \n#&gt; \n#&gt; $dakar\n#&gt; $dakar$class\n#&gt; [1] \"integer\"\n#&gt; \n#&gt; $dakar$length\n#&gt; [1] 40\n#&gt; \n#&gt; $dakar$`quantiles & mean`\n#&gt;     5%    10%    25%    50%    75%    90%    95%   Mean \n#&gt; 32.750 47.600 59.000 65.500 74.250 83.100 88.050 64.975\n\nds.summary(\"M$heart_rate\", datasources = conns)\n\n#&gt; $nairobi\n#&gt; $nairobi$class\n#&gt; [1] \"numeric\"\n#&gt; \n#&gt; $nairobi$length\n#&gt; [1] 35\n#&gt; \n#&gt; $nairobi$`quantiles & mean`\n#&gt;        5%       10%       25%       50%       75%       90%       95%      Mean \n#&gt;  68.85334  70.28388  78.92535  88.44355  98.68583 104.52308 107.79092  88.63992 \n#&gt; \n#&gt; \n#&gt; $douala\n#&gt; $douala$class\n#&gt; [1] \"numeric\"\n#&gt; \n#&gt; $douala$length\n#&gt; [1] 25\n#&gt; \n#&gt; $douala$`quantiles & mean`\n#&gt;        5%       10%       25%       50%       75%       90%       95%      Mean \n#&gt;  73.13263  77.11273  79.79085  86.91329  96.96841 108.92189 110.63490  89.68117 \n#&gt; \n#&gt; \n#&gt; $dakar\n#&gt; $dakar$class\n#&gt; [1] \"numeric\"\n#&gt; \n#&gt; $dakar$length\n#&gt; [1] 40\n#&gt; \n#&gt; $dakar$`quantiles & mean`\n#&gt;        5%       10%       25%       50%       75%       90%       95%      Mean \n#&gt;  66.18848  68.79545  76.51913  86.10011  96.25817 106.42000 107.06135  87.10134\n\nds.summary(\"M$n_visits\",   datasources = conns)\n\n#&gt; $nairobi\n#&gt; $nairobi$class\n#&gt; [1] \"integer\"\n#&gt; \n#&gt; $nairobi$length\n#&gt; [1] 35\n#&gt; \n#&gt; $nairobi$`quantiles & mean`\n#&gt;       5%      10%      25%      50%      75%      90%      95%     Mean \n#&gt;  1.00000  1.00000  1.50000  3.00000  8.50000 29.80000 39.20000 10.54286 \n#&gt; \n#&gt; \n#&gt; $douala\n#&gt; $douala$class\n#&gt; [1] \"integer\"\n#&gt; \n#&gt; $douala$length\n#&gt; [1] 25\n#&gt; \n#&gt; $douala$`quantiles & mean`\n#&gt;    5%   10%   25%   50%   75%   90%   95%  Mean \n#&gt;  1.00  1.00  2.00  3.00 14.00 26.00 62.00 12.92 \n#&gt; \n#&gt; \n#&gt; $dakar\n#&gt; $dakar$class\n#&gt; [1] \"integer\"\n#&gt; \n#&gt; $dakar$length\n#&gt; [1] 40\n#&gt; \n#&gt; $dakar$`quantiles & mean`\n#&gt;   5%  10%  25%  50%  75%  90%  95% Mean \n#&gt;  1.0  1.0  1.0  2.0  4.0  8.3 13.1  4.0\n\n\nCategorical / binary columns → a frequency table:\n\nds.table(\"M$sex\",            datasources = conns)\n\n#&gt; \n#&gt;  Data in all studies were valid \n#&gt; \n#&gt; Study 1 :  No errors reported from this study\n#&gt; Study 2 :  No errors reported from this study\n#&gt; Study 3 :  No errors reported from this study\n\n\n#&gt; $output.list\n#&gt; $output.list$TABLE_rvar.by.study_row.props\n#&gt;      study\n#&gt; M$sex   nairobi    douala     dakar\n#&gt;    F  0.4418605 0.2093023 0.3488372\n#&gt;    M  0.2807018 0.2807018 0.4385965\n#&gt;    NA       NaN       NaN       NaN\n#&gt; \n#&gt; $output.list$TABLE_rvar.by.study_col.props\n#&gt;      study\n#&gt; M$sex   nairobi douala dakar\n#&gt;    F  0.5428571   0.36 0.375\n#&gt;    M  0.4571429   0.64 0.625\n#&gt;    NA 0.0000000   0.00 0.000\n#&gt; \n#&gt; $output.list$TABLE_rvar.by.study_counts\n#&gt;      study\n#&gt; M$sex nairobi douala dakar\n#&gt;    F       19      9    15\n#&gt;    M       16     16    25\n#&gt;    NA       0      0     0\n#&gt; \n#&gt; $output.list$TABLES.COMBINED_all.sources_proportions\n#&gt; M$sex\n#&gt;    F    M   NA \n#&gt; 0.43 0.57 0.00 \n#&gt; \n#&gt; $output.list$TABLES.COMBINED_all.sources_counts\n#&gt; M$sex\n#&gt;  F  M NA \n#&gt; 43 57  0 \n#&gt; \n#&gt; \n#&gt; $validity.message\n#&gt; [1] \"Data in all studies were valid\"\n\n\n\nds.table(\"M$hypertension\",   datasources = conns)\n\n#&gt; \n#&gt;  Data in all studies were valid \n#&gt; \n#&gt; Study 1 :  No errors reported from this study\n#&gt; Study 2 :  No errors reported from this study\n#&gt; Study 3 :  No errors reported from this study\n\n\n#&gt; $output.list\n#&gt; $output.list$TABLE_rvar.by.study_row.props\n#&gt;               study\n#&gt; M$hypertension   nairobi    douala     dakar\n#&gt;             0  0.3617021 0.2340426 0.4042553\n#&gt;             1  0.3396226 0.2641509 0.3962264\n#&gt;             NA       NaN       NaN       NaN\n#&gt; \n#&gt; $output.list$TABLE_rvar.by.study_col.props\n#&gt;               study\n#&gt; M$hypertension   nairobi douala dakar\n#&gt;             0  0.4857143   0.44 0.475\n#&gt;             1  0.5142857   0.56 0.525\n#&gt;             NA 0.0000000   0.00 0.000\n#&gt; \n#&gt; $output.list$TABLE_rvar.by.study_counts\n#&gt;               study\n#&gt; M$hypertension nairobi douala dakar\n#&gt;             0       17     11    19\n#&gt;             1       18     14    21\n#&gt;             NA       0      0     0\n#&gt; \n#&gt; $output.list$TABLES.COMBINED_all.sources_proportions\n#&gt; M$hypertension\n#&gt;    0    1   NA \n#&gt; 0.47 0.53 0.00 \n#&gt; \n#&gt; $output.list$TABLES.COMBINED_all.sources_counts\n#&gt; M$hypertension\n#&gt;  0  1 NA \n#&gt; 47 53  0 \n#&gt; \n#&gt; \n#&gt; $validity.message\n#&gt; [1] \"Data in all studies were valid\"\n\n\n\nds.table(\"M$hyperlipidemia\", datasources = conns)\n\n#&gt; \n#&gt;  Data in all studies were valid \n#&gt; \n#&gt; Study 1 :  No errors reported from this study\n#&gt; Study 2 :  No errors reported from this study\n#&gt; Study 3 :  No errors reported from this study\n\n\n#&gt; $output.list\n#&gt; $output.list$TABLE_rvar.by.study_row.props\n#&gt;                 study\n#&gt; M$hyperlipidemia   nairobi    douala     dakar\n#&gt;               0  0.3773585 0.2452830 0.3773585\n#&gt;               1  0.3191489 0.2553191 0.4255319\n#&gt;               NA       NaN       NaN       NaN\n#&gt; \n#&gt; $output.list$TABLE_rvar.by.study_col.props\n#&gt;                 study\n#&gt; M$hyperlipidemia   nairobi douala dakar\n#&gt;               0  0.5714286   0.52   0.5\n#&gt;               1  0.4285714   0.48   0.5\n#&gt;               NA 0.0000000   0.00   0.0\n#&gt; \n#&gt; $output.list$TABLE_rvar.by.study_counts\n#&gt;                 study\n#&gt; M$hyperlipidemia nairobi douala dakar\n#&gt;               0       20     13    20\n#&gt;               1       15     12    20\n#&gt;               NA       0      0     0\n#&gt; \n#&gt; $output.list$TABLES.COMBINED_all.sources_proportions\n#&gt; M$hyperlipidemia\n#&gt;    0    1   NA \n#&gt; 0.53 0.47 0.00 \n#&gt; \n#&gt; $output.list$TABLES.COMBINED_all.sources_counts\n#&gt; M$hyperlipidemia\n#&gt;  0  1 NA \n#&gt; 53 47  0 \n#&gt; \n#&gt; \n#&gt; $validity.message\n#&gt; [1] \"Data in all studies were valid\"\n\n\n\n\n\n\n\n\nNotebinary vs count\n\n\n\nformat = \"binary\" is does this patient have it at all? (0/1). format = \"count\" is how many records? — here n_visits is right-skewed (most patients few visits, a handful many)."
   },
   {
-    "objectID": "dsomop.html#one-recipe-several-tables-multiple-outputs",
-    "href": "dsomop.html#one-recipe-several-tables-multiple-outputs",
+    "objectID": "dsomop.html#one-recipe-several-tables",
+    "href": "dsomop.html#one-recipe-several-tables",
     "title": "Federated OMOP analysis with dsOMOP",
-    "section": "7.3 One recipe, several tables: multiple outputs",
-    "text": "7.3 One recipe, several tables: multiple outputs\nA recipe can declare more than one output, each selecting a different subset of the variables — so a single extraction can produce several purpose-built tables at once (e.g. a demographics table and a clinical table) instead of re-running the extraction. List them with outputs = list(...) and map each name to its own symbol:\n\nrec_multi &lt;- omop_recipe(\n  variables = list(\n    omop_variable(table = \"person\", column = \"gender_concept_id\", format = \"sex_mf\", name = \"sex\"),\n    omop_variable_age(name = \"age\", year = 2024),\n    omop_variable(table = \"measurement\", concept_id = 3027018, format = \"mean\", name = \"heart_rate\"),\n    omop_variable(table = \"condition_occurrence\", concept_id = 320128, format = \"binary\", name = \"hypertension\")\n  ),\n  outputs = list(\n    omop_output(name = \"demographics\", variables = c(\"sex\", \"age\"), type = \"wide\"),\n    omop_output(name = \"clinical\",     variables = c(\"heart_rate\", \"hypertension\"), type = \"wide\")\n  )\n)\nrecipe_execute(rec_multi, out = c(demographics = \"DEMO\", clinical = \"CLIN\"),\n               symbol = \"omop\", conns = conns)\n\nRatify that both tables were built, each with only its own columns (plus the person_id key that lets you join them later):\n\nds.colnames(\"DEMO\", datasources = conns)\n\n#&gt; $nairobi\n#&gt; [1] \"person_id\" \"sex\"       \"age\"      \n#&gt; \n#&gt; $douala\n#&gt; [1] \"person_id\" \"sex\"       \"age\"      \n#&gt; \n#&gt; $dakar\n#&gt; [1] \"person_id\" \"sex\"       \"age\"\n\nds.colnames(\"CLIN\", datasources = conns)\n\n#&gt; $nairobi\n#&gt; [1] \"person_id\"    \"heart_rate\"   \"hypertension\"\n#&gt; \n#&gt; $douala\n#&gt; [1] \"person_id\"    \"heart_rate\"   \"hypertension\"\n#&gt; \n#&gt; $dakar\n#&gt; [1] \"person_id\"    \"heart_rate\"   \"hypertension\""
+    "section": "7.3 One recipe, several tables",
+    "text": "7.3 One recipe, several tables\nA recipe can declare several outputs, each selecting a different subset of variables, so one extraction produces several purpose-built tables (e.g. a demographics table and a clinical one) — list them with outputs = list(...):\n\nrec_multi &lt;- omop_recipe(\n  variables = list(\n    omop_variable(table = \"person\", column = \"gender_concept_id\", format = \"sex_mf\", name = \"sex\"),\n    omop_variable_age(name = \"age\", year = 2024),\n    omop_variable(table = \"measurement\", concept_id = 3027018, format = \"mean\", name = \"heart_rate\"),\n    omop_variable(table = \"condition_occurrence\", concept_id = 320128, format = \"binary\", name = \"hypertension\")\n  ),\n  outputs = list(\n    omop_output(name = \"demographics\", variables = c(\"sex\", \"age\"), type = \"wide\"),\n    omop_output(name = \"clinical\",     variables = c(\"heart_rate\", \"hypertension\"), type = \"wide\")\n  )\n)\nrecipe_execute(rec_multi, out = c(demographics = \"DEMO\", clinical = \"CLIN\"),\n               symbol = \"omop\", conns = conns)\nds.colnames(\"DEMO\", datasources = conns)\n\n#&gt; $nairobi\n#&gt; [1] \"person_id\" \"sex\"       \"age\"      \n#&gt; \n#&gt; $douala\n#&gt; [1] \"person_id\" \"sex\"       \"age\"      \n#&gt; \n#&gt; $dakar\n#&gt; [1] \"person_id\" \"sex\"       \"age\"\n\nds.colnames(\"CLIN\", datasources = conns)\n\n#&gt; $nairobi\n#&gt; [1] \"person_id\"    \"heart_rate\"   \"hypertension\"\n#&gt; \n#&gt; $douala\n#&gt; [1] \"person_id\"    \"heart_rate\"   \"hypertension\"\n#&gt; \n#&gt; $dakar\n#&gt; [1] \"person_id\"    \"heart_rate\"   \"hypertension\""
+  },
+  {
+    "objectID": "dsomop.html#combine-criteria-and-or-and-nesting",
+    "href": "dsomop.html#combine-criteria-and-or-and-nesting",
+    "title": "Federated OMOP analysis with dsOMOP",
+    "section": "Combine criteria — AND, OR, and nesting",
+    "text": "Combine criteria — AND, OR, and nesting\nListing several filters combines them with AND. For OR (or any nested logic) wrap them in omop_filter_group(). Here, patients who have hypertension OR hyperlipidemia — a union, so this cohort is larger than either diagnosis on its own:\n\nrec_or &lt;- omop_recipe(\n  variables = list(\n    omop_variable(table = \"person\", column = \"gender_concept_id\", format = \"sex_mf\", name = \"sex\"),\n    omop_variable_age(name = \"age\", year = 2024)\n  ),\n  filters = list(\n    cardiometabolic = omop_filter_group(\n      omop_filter_has_concept(concept_id = 320128, table = \"condition_occurrence\"),  # hypertension\n      omop_filter_has_concept(concept_id = 432867, table = \"condition_occurrence\"),  # hyperlipidemia\n      operator = \"OR\"\n    )\n  ),\n  output = omop_output(name = \"study\", type = \"wide\")\n)\nrecipe_execute(rec_or, out = c(study = \"ORC\"), symbol = \"omop\", conns = conns)\nds.dim(\"ORC\", datasources = conns)\n\n#&gt; $`dimensions of ORC in nairobi`\n#&gt; [1] 23  3\n#&gt; \n#&gt; $`dimensions of ORC in douala`\n#&gt; [1] 19  3\n#&gt; \n#&gt; $`dimensions of ORC in dakar`\n#&gt; [1] 28  3\n#&gt; \n#&gt; $`dimensions of ORC in combined studies`\n#&gt; [1] 70  3\n\n\nSwitch operator = \"OR\" to \"AND\", or nest omop_filter_group()s inside each other, to express any combination.\n\n\n\n\n\n\nTipFiltering is a whole query language\n\n\n\nThese cover the OMOP model, and every one only ever shrinks the population (so all are disclosure-safe):\n\nPerson: omop_filter_sex(), omop_filter_age(), omop_filter_age_group()\nDiagnoses / drugs: omop_filter_has_concept(), omop_filter_not_has_concept(), omop_filter_concept_count()\nMeasurements: omop_filter_has_measurement(), omop_filter_missing_measurement(), omop_filter_value() (numeric threshold), omop_filter_value_concept()\nTime & utilisation: omop_filter_date_range(), omop_filter_visit_count(), omop_filter_prior_observation(), omop_filter_followup()\nCombine: omop_filter_group(..., operator = \"AND\" | \"OR\"), nested to any depth"
   },
   {
     "objectID": "gibleed.html",
@@ -341,26 +355,5 @@
     "title": "dsOMOP — Exercises (MIMIC)",
     "section": "Setup (run this first)",
     "text": "Setup (run this first)\n\nlibrary(DSI); library(DSOpal); library(dsBaseClient); library(dsOMOPClient)\n\nbuilder &lt;- DSI::newDSLoginBuilder()\nbuilder$append(server = \"nairobi\", url = \"https://nairobi.datashield.live\",\n               user = \"ethiopia\", password = \"P@ssw0rd\", profile = \"omop\")\nbuilder$append(server = \"douala\",  url = \"https://douala.datashield.live\",\n               user = \"ethiopia\", password = \"P@ssw0rd\", profile = \"omop\")\nbuilder$append(server = \"dakar\",   url = \"https://dakar.datashield.live\",\n               user = \"ethiopia\", password = \"P@ssw0rd\", profile = \"omop\")\nconns &lt;- DSI::datashield.login(logins = builder$build())\nds.omop.connect(resource = \"omop_demo.mimic\", symbol = \"omop\", conns = conns)"
-  },
-  {
-    "objectID": "dsomop.html#start-simple-sex-and-age",
-    "href": "dsomop.html#start-simple-sex-and-age",
-    "title": "Federated OMOP analysis with dsOMOP",
-    "section": "7.1 Start simple — sex and age",
-    "text": "7.1 Start simple — sex and age\n\nrec0 &lt;- omop_recipe(\n  variables = list(\n    omop_variable(table = \"person\", column = \"gender_concept_id\", format = \"sex_mf\", name = \"sex\"),\n    omop_variable_age(name = \"age\", year = 2024)\n  ),\n  output = omop_output(name = \"study\", type = \"wide\")\n)\nrecipe_execute(rec0, out = c(study = \"M0\"), symbol = \"omop\", conns = conns)\n\nAlways inspect what the server built, then look at each variable:\n\nds.colnames(\"M0\", datasources = conns)\n\n#&gt; $nairobi\n#&gt; [1] \"person_id\" \"sex\"       \"age\"      \n#&gt; \n#&gt; $douala\n#&gt; [1] \"person_id\" \"sex\"       \"age\"      \n#&gt; \n#&gt; $dakar\n#&gt; [1] \"person_id\" \"sex\"       \"age\"\n\nds.dim(\"M0\", datasources = conns)\n\n#&gt; $`dimensions of M0 in nairobi`\n#&gt; [1] 35  3\n#&gt; \n#&gt; $`dimensions of M0 in douala`\n#&gt; [1] 25  3\n#&gt; \n#&gt; $`dimensions of M0 in dakar`\n#&gt; [1] 40  3\n#&gt; \n#&gt; $`dimensions of M0 in combined studies`\n#&gt; [1] 100   3\n\n\n\nds.table(\"M0$sex\", datasources = conns)\n\n#&gt; \n#&gt;  Data in all studies were valid \n#&gt; \n#&gt; Study 1 :  No errors reported from this study\n#&gt; Study 2 :  No errors reported from this study\n#&gt; Study 3 :  No errors reported from this study\n\n\n#&gt; $output.list\n#&gt; $output.list$TABLE_rvar.by.study_row.props\n#&gt;       study\n#&gt; M0$sex   nairobi    douala     dakar\n#&gt;     F  0.4418605 0.2093023 0.3488372\n#&gt;     M  0.2807018 0.2807018 0.4385965\n#&gt;     NA       NaN       NaN       NaN\n#&gt; \n#&gt; $output.list$TABLE_rvar.by.study_col.props\n#&gt;       study\n#&gt; M0$sex   nairobi douala dakar\n#&gt;     F  0.5428571   0.36 0.375\n#&gt;     M  0.4571429   0.64 0.625\n#&gt;     NA 0.0000000   0.00 0.000\n#&gt; \n#&gt; $output.list$TABLE_rvar.by.study_counts\n#&gt;       study\n#&gt; M0$sex nairobi douala dakar\n#&gt;     F       19      9    15\n#&gt;     M       16     16    25\n#&gt;     NA       0      0     0\n#&gt; \n#&gt; $output.list$TABLES.COMBINED_all.sources_proportions\n#&gt; M0$sex\n#&gt;    F    M   NA \n#&gt; 0.43 0.57 0.00 \n#&gt; \n#&gt; $output.list$TABLES.COMBINED_all.sources_counts\n#&gt; M0$sex\n#&gt;  F  M NA \n#&gt; 43 57  0 \n#&gt; \n#&gt; \n#&gt; $validity.message\n#&gt; [1] \"Data in all studies were valid\"\n\n\n\nds.summary(\"M0$age\", datasources = conns)\n\n#&gt; $nairobi\n#&gt; $nairobi$class\n#&gt; [1] \"integer\"\n#&gt; \n#&gt; $nairobi$length\n#&gt; [1] 35\n#&gt; \n#&gt; $nairobi$`quantiles & mean`\n#&gt;       5%      10%      25%      50%      75%      90%      95%     Mean \n#&gt; 38.90000 46.40000 52.00000 63.00000 76.50000 86.00000 88.90000 63.88571 \n#&gt; \n#&gt; \n#&gt; $douala\n#&gt; $douala$class\n#&gt; [1] \"integer\"\n#&gt; \n#&gt; $douala$length\n#&gt; [1] 25\n#&gt; \n#&gt; $douala$`quantiles & mean`\n#&gt;   5%  10%  25%  50%  75%  90%  95% Mean \n#&gt; 34.8 39.6 46.0 58.0 69.0 84.2 85.8 59.0 \n#&gt; \n#&gt; \n#&gt; $dakar\n#&gt; $dakar$class\n#&gt; [1] \"integer\"\n#&gt; \n#&gt; $dakar$length\n#&gt; [1] 40\n#&gt; \n#&gt; $dakar$`quantiles & mean`\n#&gt;     5%    10%    25%    50%    75%    90%    95%   Mean \n#&gt; 32.750 47.600 59.000 65.500 74.250 83.100 88.050 64.975\n\n\n\n\n\n\n\n\nNoteWhy year = 2024?\n\n\n\nAge needs a reference year. This extract runs through 2024, so we anchor age there rather than to “today” (which would drift on every rebuild). The age filter in Section 8 takes the same year =."
-  },
-  {
-    "objectID": "dsomop.html#one-recipe-several-tables",
-    "href": "dsomop.html#one-recipe-several-tables",
-    "title": "Federated OMOP analysis with dsOMOP",
-    "section": "7.3 One recipe, several tables",
-    "text": "7.3 One recipe, several tables\nA recipe can declare several outputs, each selecting a different subset of variables, so one extraction produces several purpose-built tables (e.g. a demographics table and a clinical one) — list them with outputs = list(...):\n\nrec_multi &lt;- omop_recipe(\n  variables = list(\n    omop_variable(table = \"person\", column = \"gender_concept_id\", format = \"sex_mf\", name = \"sex\"),\n    omop_variable_age(name = \"age\", year = 2024),\n    omop_variable(table = \"measurement\", concept_id = 3027018, format = \"mean\", name = \"heart_rate\"),\n    omop_variable(table = \"condition_occurrence\", concept_id = 320128, format = \"binary\", name = \"hypertension\")\n  ),\n  outputs = list(\n    omop_output(name = \"demographics\", variables = c(\"sex\", \"age\"), type = \"wide\"),\n    omop_output(name = \"clinical\",     variables = c(\"heart_rate\", \"hypertension\"), type = \"wide\")\n  )\n)\nrecipe_execute(rec_multi, out = c(demographics = \"DEMO\", clinical = \"CLIN\"),\n               symbol = \"omop\", conns = conns)\nds.colnames(\"DEMO\", datasources = conns)\n\n#&gt; $nairobi\n#&gt; [1] \"person_id\" \"sex\"       \"age\"      \n#&gt; \n#&gt; $douala\n#&gt; [1] \"person_id\" \"sex\"       \"age\"      \n#&gt; \n#&gt; $dakar\n#&gt; [1] \"person_id\" \"sex\"       \"age\"\n\nds.colnames(\"CLIN\", datasources = conns)\n\n#&gt; $nairobi\n#&gt; [1] \"person_id\"    \"heart_rate\"   \"hypertension\"\n#&gt; \n#&gt; $douala\n#&gt; [1] \"person_id\"    \"heart_rate\"   \"hypertension\"\n#&gt; \n#&gt; $dakar\n#&gt; [1] \"person_id\"    \"heart_rate\"   \"hypertension\""
-  },
-  {
-    "objectID": "dsomop.html#combine-criteria-and-or-and-nesting",
-    "href": "dsomop.html#combine-criteria-and-or-and-nesting",
-    "title": "Federated OMOP analysis with dsOMOP",
-    "section": "Combine criteria — AND, OR, and nesting",
-    "text": "Combine criteria — AND, OR, and nesting\nListing several filters combines them with AND. For OR (or any nested logic) wrap them in omop_filter_group(). Here, patients who have hypertension OR hyperlipidemia — a union, so this cohort is larger than either diagnosis on its own:\n\nrec_or &lt;- omop_recipe(\n  variables = list(\n    omop_variable(table = \"person\", column = \"gender_concept_id\", format = \"sex_mf\", name = \"sex\"),\n    omop_variable_age(name = \"age\", year = 2024)\n  ),\n  filters = list(\n    cardiometabolic = omop_filter_group(\n      omop_filter_has_concept(concept_id = 320128, table = \"condition_occurrence\"),  # hypertension\n      omop_filter_has_concept(concept_id = 432867, table = \"condition_occurrence\"),  # hyperlipidemia\n      operator = \"OR\"\n    )\n  ),\n  output = omop_output(name = \"study\", type = \"wide\")\n)\nrecipe_execute(rec_or, out = c(study = \"ORC\"), symbol = \"omop\", conns = conns)\nds.dim(\"ORC\", datasources = conns)\n\n#&gt; $`dimensions of ORC in nairobi`\n#&gt; [1] 23  3\n#&gt; \n#&gt; $`dimensions of ORC in douala`\n#&gt; [1] 19  3\n#&gt; \n#&gt; $`dimensions of ORC in dakar`\n#&gt; [1] 28  3\n#&gt; \n#&gt; $`dimensions of ORC in combined studies`\n#&gt; [1] 70  3\n\n\nSwitch operator = \"OR\" to \"AND\", or nest omop_filter_group()s inside each other, to express any combination.\n\n\n\n\n\n\nTipFiltering is a whole query language\n\n\n\nThese cover the OMOP model, and every one only ever shrinks the population (so all are disclosure-safe):\n\nPerson: omop_filter_sex(), omop_filter_age(), omop_filter_age_group()\nDiagnoses / drugs: omop_filter_has_concept(), omop_filter_not_has_concept(), omop_filter_concept_count()\nMeasurements: omop_filter_has_measurement(), omop_filter_missing_measurement(), omop_filter_value() (numeric threshold), omop_filter_value_concept()\nTime & utilisation: omop_filter_date_range(), omop_filter_visit_count(), omop_filter_prior_observation(), omop_filter_followup()\nCombine: omop_filter_group(..., operator = \"AND\" | \"OR\"), nested to any depth"
   }
 ]
