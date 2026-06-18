@@ -1,6 +1,6 @@
 ---
 title: "Federated machine learning with dsFlower"
-subtitle: "Train a real model across three hospitals — without any data leaving its site, and without opening a single port"
+subtitle: "Three algorithms across three hospitals — no patient data ever leaves a site"
 format: html
 execute:
   warning: false
@@ -16,34 +16,30 @@ execute:
 </a>
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(comment = "#>", collapse = FALSE, eval = FALSE)
+knitr::opts_chunk$set(comment = "#>", collapse = FALSE)
 options(width = 200)
 ```
 
 # Welcome
 
-So far in this workshop you have used DataSHIELD to compute **summary statistics** and **regression models** (`ds.glm`) across federated sites. Those methods send a formula to each server, which returns aggregated numbers.
+So far in this workshop you have used DataSHIELD to compute **summary statistics** and **regression models** (`ds.glm`) across federated sites. This tutorial goes one step further: it trains **machine-learning models with [Flower](https://flower.ai)** — the popular federated-learning framework — *underneath* DataSHIELD, using the **dsFlower** package.
 
-This tutorial does something different: it trains a **machine-learning model with [Flower](https://flower.ai)** — the popular federated-learning framework — *underneath* DataSHIELD, using the **dsFlower** package. Each hospital trains a logistic-regression model **on its own patients**, and only the model weights are combined. We will:
+We will train **three different algorithms** and see where each shines:
 
-1. connect to the three sites and load a breast-cancer dataset,
-2. look at what's in the data,
-3. **train a model federated across all three hospitals**, and
-4. **make predictions** for new patients.
+1. **Logistic regression** — a simple linear classifier,
+2. a **neural network** (PyTorch), and
+3. **gradient boosting** (XGBoost),
+
+on **two datasets**: a breast-cancer cohort (is a tumour malignant?) and handwritten digits (which digit, 0–9?). For each one we will **look at the data first**, **train the model and watch the process**, and then **make predictions** on new, unseen samples.
 
 ::: {.callout-important}
 ## What makes this special
-The model is trained with **Secure Aggregation** (SecAgg+): each site's weight update is cryptographically masked, so not even the researcher running the training can see any individual hospital's contribution — only the final averaged model. And the whole thing runs **over Tor**, so the federation works even when the hospital servers are behind a firewall/NAT and cannot expose any public address. No VPN, no port-forwarding, no public IP.
+No record ever leaves its hospital. Each site trains on its own patients and shares only model updates, and those updates are combined with **Secure Aggregation** — cryptographically masked, so not even the researcher running the training can inspect any single hospital's contribution. Every model below is trained on the pooled population that no one was ever able to pool.
 :::
 
-::: {.callout-note}
-## This is a presenter-led demo
-Unlike the other tutorials, the code below is **not executed when this page is built** — federated training needs a Flower *SuperLink* and Tor running **on your own laptop** (started automatically by `ds.flower.tor.up()`), plus the `dsFlowerClient` package. The outputs shown are the **real results** of a live run against `nairobi`, `dakar` and `douala`. To run it yourself, install `dsFlowerClient` and execute the downloaded `.R` script.
-:::
+# 1. Connect
 
-# 1. Connect and load the data
-
-The dataset is the classic **Wisconsin breast-cancer** cohort (569 patients), split across the three hospitals. Each row is a tumour with 30 cell-nucleus measurements; the target `malignant` is `1` for malignant, `0` for benign.
+Log in to the three hospitals and load the three tables we will use. Then open the federated channel (a local Flower **SuperLink** that the hospitals connect to).
 
 ```{r libs}
 library(DSI); library(DSOpal); library(dsBaseClient); library(dsFlowerClient)
@@ -51,152 +47,166 @@ library(DSI); library(DSOpal); library(dsBaseClient); library(dsFlowerClient)
 
 ```{r login}
 builder <- DSI::newDSLoginBuilder()
-builder$append(server = "nairobi", url = "https://nairobi.datashield.live",
-               user = "ethiopia", password = "P@ssw0rd",
-               table = "dsflower_demo.breast_cancer")
-builder$append(server = "dakar",   url = "https://dakar.datashield.live",
-               user = "ethiopia", password = "P@ssw0rd",
-               table = "dsflower_demo.breast_cancer")
-builder$append(server = "douala",  url = "https://douala.datashield.live",
-               user = "ethiopia", password = "P@ssw0rd",
-               table = "dsflower_demo.breast_cancer")
-conns <- DSI::datashield.login(logins = builder$build(), assign = TRUE, symbol = "D")
+for (h in c("nairobi", "dakar", "douala")) {
+  builder$append(server = h, url = paste0("https://", h, ".datashield.live"),
+                 user = "ethiopia", password = "P@ssw0rd")
+}
+conns <- DSI::datashield.login(logins = builder$build())
+
+DSI::datashield.assign.table(conns, "D",  "dsflower_demo.breast_cancer")  # tumours (binary)
+DSI::datashield.assign.table(conns, "G",  "dsflower_demo.digits")          # digits 0-9
+DSI::datashield.assign.table(conns, "G4", "dsflower_demo.digits4")         # digits 0-3
 ```
 
-The table is now loaded into the symbol `D` on every server.
-
-# 2. What's in the data?
-
-Always look before you model. How many patients does each site hold?
-
-```{r dims}
-ds.dim("D", datasources = conns)
-```
-
-```
-$`dimensions of D in nairobi`
-[1] 190  31
-$`dimensions of D in dakar`
-[1] 190  31
-$`dimensions of D in douala`
-[1] 189  31
-$`dimensions of D in combined studies`
-[1] 569  31
-```
-
-569 patients in total — but no site sees more than its own ~190. There are 30 feature columns plus the `malignant` target:
-
-```{r features}
-features <- setdiff(ds.colnames("D", datasources = conns)[[1]], "malignant")
-length(features)   # 30 predictors
-```
-
-And the outcome we want to predict — how many benign vs malignant, pooled across all three hospitals?
-
-```{r outcome}
-ds.table("D$malignant", datasources = conns)
-```
-
-```
-D$malignant
-  0   1
-357 212
-```
-
-357 benign and 212 malignant — a healthy class balance to learn from.
-
-# 3. Bring the federation to your laptop (over Tor)
-
-A Flower model needs a central **SuperLink** that the hospital **SuperNodes** dial into. Normally that means *you* must expose a public server — impossible from a laptop behind NAT. `dsFlower` solves this by publishing your SuperLink as a **Tor hidden service**: each hospital connects out through Tor, so nothing needs a public address.
-
-One call starts a SuperLink on your machine, publishes it as a `.onion`, and brings all three nodes onto Tor:
-
-```{r torup}
-ds.flower.tor.up(conns)
-```
-
-```
-SuperLink started (PID: 99435)
-  Fleet API (SuperNodes): 127.0.0.1:9092
-  Control API (flwr run): 127.0.0.1:9093
-Publishing SuperLink as a Tor hidden service (bootstrapping Tor)...
-  SuperLink onion: kx3ffiojuk625h5e2ouyiulw3g3cehp36jnxcrxisqqoqkcbu5mevoqd.onion:9092
-Bringing nodes onto Tor...
-Tor transport ready.
-```
-
-::: {.callout-tip}
-## What just happened
-Your laptop is now reachable by the hospitals at a `.onion` address that exists only for this session. Tor trades a little speed for the ability to federate with **zero infrastructure** — no VPN, no cloud host, no firewall changes. When you tear it down (Section 6) the onion disappears.
-:::
-
-# 4. Train the model — federated, with Secure Aggregation
-
-Now the actual training. We fit a federated **logistic regression** (`sklearn_logreg`) with the **FedAvg** strategy for 5 rounds, under the `clinical_default` privacy profile (which enforces Secure Aggregation):
-
-```{r fit}
-fit <- ds.flower.fit(
-  conns,
-  symbol   = "D",
-  target   = "malignant",
-  features = features,
-  model    = "sklearn_logreg",
-  strategy = "fedavg",
-  privacy  = "clinical_default",   # enforces Secure Aggregation (SecAgg+)
-  rounds   = 5L,
-  verbose  = TRUE
-)
-```
-
-```
-[ROUND 1] Secure aggregation commencing. ... sampled 3 clients (out of 3)
-          aggregate_fit: received 3 results and 0 failures
-          Secure aggregation completed.
-...
-[ROUND 5] Secure aggregation completed.
-[SUMMARY] Run finished 5 round(s) in 236.89s
-Model saved to ./dsflower_output/sklearn_logreg_FedAvg_5r_...
+```{r connect}
+ds.flower.link.up(conns)
 ```
 
 ::: {.callout-note}
-## Read the log
-Every round shows `Secure aggregation commencing` → `completed`, and `received 3 results and 0 failures` — all three hospitals contributed, and each update was masked so no individual contribution was ever visible. The model that comes back is the **averaged** logistic regression, trained on all 569 patients without any of them leaving their hospital.
+The SuperLink runs locally on your machine; it is shut down again in the last section.
 :::
 
-# 5. Make predictions for new patients
+# 2. Logistic regression — predicting malignancy
 
-The trained model is an ordinary object you can predict with. Here are six **new patients** (three benign, three malignant) the model has never seen:
+## Look at the data
 
-```{r predict}
-new_patients <- read.csv("https://raw.githubusercontent.com/isglobal-brge/workshop_DSWB/main/data/breast_cancer_new_patients.csv")
+The **breast-cancer** cohort: 569 tumours described by 30 cell-nucleus measurements, split across the three sites. The target `malignant` is `1` for malignant, `0` for benign.
 
-prob <- ds.flower.predict(fit, new_patients[, features], type = "prob")
+```{r bc-explore}
+ds.dim("D", datasources = conns)                 # rows per site + pooled
+ds.table("D$malignant", datasources = conns)     # class balance
+```
 
-data.frame(
-  actual      = new_patients$malignant,
-  predicted   = as.integer(prob >= 0.5),
-  P_malignant = round(prob, 3)
+```{r bc-features}
+bc_features <- setdiff(ds.colnames("D", datasources = conns)[[1]], "malignant")
+length(bc_features)   # 30 predictors
+```
+
+This is a **binary** problem with well-separated classes — exactly what a **logistic regression** does well.
+
+## Train (watch the process)
+
+Five rounds of federated averaging with Secure Aggregation. The log shows each round masking and combining the three sites' updates:
+
+```{r bc-train, message=TRUE}
+bc_fit <- ds.flower.fit(
+  conns, symbol = "D", target = "malignant", features = bc_features,
+  model = "sklearn_logreg", strategy = "fedavg",
+  privacy = "clinical_default", rounds = 5L, verbose = TRUE
 )
 ```
 
-```
-  actual predicted P_malignant
-1      0         0       0.025
-2      0         0       0.000
-3      0         0       0.004
-4      1         1       1.000
-5      1         1       1.000
-6      1         1       1.000
+## Predict on new patients
+
+```{r bc-predict}
+bc_new <- read.csv("https://raw.githubusercontent.com/isglobal-brge/workshop_DSWB/main/data/breast_cancer_new_patients.csv")
+bc_prob <- ds.flower.predict(bc_fit, bc_new[, bc_features], type = "prob")
+
+data.frame(
+  actual      = bc_new$malignant,
+  predicted   = as.integer(bc_prob >= 0.5),
+  P_malignant = round(bc_prob, 3)
+)
 ```
 
-All six correct — the federated model cleanly separates benign from malignant, with calibrated probabilities. **A model trained across three hospitals, predicting for a new patient, with no raw data ever shared.**
+# 3. A harder dataset: handwritten digits
+
+Now a **10-class** problem: the classic **digits** dataset — 1797 images of handwritten digits, each an 8×8 grid of pixel intensities (64 features), split across the three sites.
+
+```{r digits-explore}
+ds.dim("G", datasources = conns)
+ds.table("G$digit", datasources = conns)   # ~180 of each digit, balanced
+```
+
+Each row is really a tiny image. Here are a few examples (reconstructed locally just to show what the pixels mean):
+
+```{r digits-images, fig.width=9, fig.height=1.6}
+dg_new <- read.csv("https://raw.githubusercontent.com/isglobal-brge/workshop_DSWB/main/data/digits_new_samples.csv")
+px <- grep("^px_", colnames(dg_new), value = TRUE)
+op <- par(mfrow = c(1, 10), mar = c(0, 0, 1.2, 0))
+for (i in 1:10) {
+  img <- matrix(as.numeric(dg_new[i, px]), 8, 8, byrow = TRUE)
+  image(t(img[8:1, ]), col = grey.colors(16, 1, 0), axes = FALSE)
+  title(main = dg_new$digit[i], line = 0.2)
+}
+par(op)
+```
+
+```{r digits-features}
+digit_features <- setdiff(ds.colnames("G", datasources = conns)[[1]], c("id", "digit"))
+length(digit_features)   # 64 pixels
+```
+
+Ten classes from raw pixels is much harder than a binary split. We will pit a **logistic regression** against a **neural network** and see the difference.
+
+# 4. Logistic regression vs a neural network
+
+## Logistic regression (multiclass)
+
+```{r dg-logreg-train, message=TRUE}
+dg_lr <- ds.flower.fit(
+  conns, symbol = "G", target = "digit", features = digit_features,
+  model = "sklearn_logreg", strategy = "fedavg",
+  privacy = "clinical_default", rounds = 5L, verbose = TRUE
+)
+```
+
+## Neural network (a small multilayer perceptron)
+
+```{r dg-nn-train, message=TRUE}
+dg_nn <- ds.flower.fit(
+  conns, symbol = "G", target = "digit", features = digit_features,
+  model = ds.flower.model.pytorch_multiclass(n_classes = 10L, hidden_layers = c(64L, 32L)),
+  strategy = "fedavg", privacy = "clinical_default", rounds = 3L, verbose = TRUE
+)
+```
+
+## Predict with both, side by side
+
+```{r dg-predict}
+lr_pred <- unlist(ds.flower.predict(dg_lr, dg_new[, digit_features], type = "response"))
+nn_pred <- unlist(ds.flower.predict(dg_nn, dg_new[, digit_features], type = "response"))
+
+data.frame(actual = dg_new$digit, logreg = lr_pred, neural_net = nn_pred)
+cat("logistic regression accuracy:", round(mean(lr_pred == dg_new$digit), 3),
+    " | neural network accuracy:", round(mean(nn_pred == dg_new$digit), 3), "\n")
+```
+
+# 5. Gradient boosting (XGBoost)
+
+XGBoost builds an **ensemble of decision trees**. The federated, privacy-preserving version trains **one tree per class in every round**, each from a securely-aggregated gradient histogram — which is powerful but **heavy over the secure channel**. To keep it tractable here we restrict it to **four digit classes (0–3)**.
+
+```{r xgb-explore}
+ds.dim("G4", datasources = conns)
+ds.table("G4$digit", datasources = conns)
+```
+
+```{r xgb-train, message=TRUE}
+xgb_fit <- ds.flower.fit(
+  conns, symbol = "G4", target = "digit", features = digit_features,
+  model = ds.flower.model.xgboost(objective = "multi:softmax", num_class = 4L,
+                                  n_trees = 8L, eta = 0.5),
+  strategy = "fedavg", privacy = "clinical_default", rounds = 2L, verbose = TRUE
+)
+```
+
+```{r xgb-predict}
+xgb_new <- read.csv("https://raw.githubusercontent.com/isglobal-brge/workshop_DSWB/main/data/digits4_new_samples.csv")
+xgb_pred <- unlist(ds.flower.predict(xgb_fit, xgb_new[, digit_features], type = "response"))
+
+data.frame(actual = xgb_new$digit, predicted = xgb_pred)
+cat("xgboost accuracy:", round(mean(xgb_pred == xgb_new$digit), 3), "\n")
+```
+
+::: {.callout-note}
+## A note on XGBoost here
+Under Secure Aggregation each tree is a shallow *stump* trained from a securely-aggregated gradient histogram, and **every class needs its own trees** — powerful, but heavy over the secure channel, which is why we restricted it to four classes. Even so it classifies the held-out samples well. With more rounds (and a faster channel than the one we use to *reach* across NAT) it scales to all ten classes like any boosted model.
+:::
 
 # 6. Tear down
 
-Stop the SuperNodes, remove the Tor onion, and log out:
-
 ```{r teardown}
-ds.flower.tor.down(conns)
+ds.flower.link.down(conns)
 DSI::datashield.logout(conns)
 ```
 
@@ -204,14 +214,8 @@ DSI::datashield.logout(conns)
 
 # Where to go next
 
-You have now trained a **federated machine-learning model** and used it to predict — the same DataSHIELD principle (data never moves), extended from summary statistics to full ML via Flower.
-
-::: {.callout-tip}
-## A note on speed and scale
-Tor makes the federation work from anywhere, but it is **not fast** — this 5-round run took ~4 minutes, most of it network latency. For a tiny logistic regression that overhead dominates; for larger models on a trusted network you can swap the transport for a direct or coordinator-based one. The point of Tor here is **reach**: training across locked-down hospital servers that can't expose anything.
-:::
+You have now trained **three different federated models** — a linear classifier, a neural network, and a gradient-boosted ensemble — across three hospitals, and used each to predict on new samples, all without any raw data being shared.
 
 ::: {.callout-note}
-## Other models
-`dsFlower` ships templates beyond logistic regression — `pytorch_*` neural networks (with patient-level differential privacy via Opacus) and `xgboost`. The workflow is identical: `ds.flower.tor.up()` → `ds.flower.fit(model = ...)` → `ds.flower.predict()`.
+The same recipe works for other tasks: `dsFlower` ships templates for regression, survival, and more. The workflow never changes — `ds.flower.link.up()` → `ds.flower.fit(model = ...)` → `ds.flower.predict()`.
 :::
