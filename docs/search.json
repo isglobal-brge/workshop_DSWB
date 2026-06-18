@@ -397,5 +397,47 @@
     "title": "Federated machine learning with dsFlower",
     "section": "Predict with both, side by side",
     "text": "Predict with both, side by side\n\nlr_pred &lt;- unlist(ds.flower.predict(dg_lr, dg_new[, digit_features], type = \"response\"))\nnn_pred &lt;- unlist(ds.flower.predict(dg_nn, dg_new[, digit_features], type = \"response\"))\n\ndata.frame(actual = dg_new$digit, logreg = lr_pred, neural_net = nn_pred)\n\n#&gt;    actual logreg neural_net\n#&gt; 1       0      0          0\n#&gt; 2       0      0          0\n#&gt; 3       1      1          1\n#&gt; 4       1      1          1\n#&gt; 5       2      2          2\n#&gt; 6       2      2          2\n#&gt; 7       3      3          3\n#&gt; 8       3      3          3\n#&gt; 9       4      4          4\n#&gt; 10      4      4          4\n#&gt; 11      5      9          9\n#&gt; 12      5      5          5\n#&gt; 13      6      6          6\n#&gt; 14      6      6          6\n#&gt; 15      7      7          7\n#&gt; 16      7      7          7\n#&gt; 17      8      8          8\n#&gt; 18      8      8          8\n#&gt; 19      9      9          9\n#&gt; 20      9      9          9\n\ncat(\"logistic regression accuracy:\", round(mean(lr_pred == dg_new$digit), 3),\n    \" | neural network accuracy:\", round(mean(nn_pred == dg_new$digit), 3), \"\\n\")\n\n#&gt; logistic regression accuracy: 0.95  | neural network accuracy: 0.95"
+  },
+  {
+    "objectID": "dsflower.html#what-is-this-dataset",
+    "href": "dsflower.html#what-is-this-dataset",
+    "title": "Federated machine learning with dsFlower",
+    "section": "What is this dataset?",
+    "text": "What is this dataset?\nThe Breast Cancer Wisconsin (Diagnostic) dataset is a classic in medical machine learning. Each row is one patient who had a fine-needle aspiration (FNA) of a breast mass. A digitised image of the cell nuclei was analysed to produce 30 numeric features: ten morphology measurements of the nuclei —\n\nradius, texture, perimeter, area, smoothness, compactness, concavity, concave points, symmetry, fractal dimension\n\n— each summarised three ways (its mean, its standard error, and its “worst”/largest value across the nuclei). The label malignant is 1 for a malignant (cancerous) tumour and 0 for a benign one. The task: predict malignancy from the morphology of the cell nuclei.\nIn this workshop the 569 patients are split across the three hospitals, and no hospital shares its raw rows — we only ever see aggregate, disclosure-controlled views."
+  },
+  {
+    "objectID": "dsflower.html#how-many-patients-and-how-balanced",
+    "href": "dsflower.html#how-many-patients-and-how-balanced",
+    "title": "Federated machine learning with dsFlower",
+    "section": "How many patients, and how balanced?",
+    "text": "How many patients, and how balanced?\n\nds.dim(\"D\", datasources = conns)              # rows per hospital + pooled total\n\n#&gt; $`dimensions of D in nairobi`\n#&gt; [1] 190  31\n#&gt;\n#&gt; $`dimensions of D in dakar`\n#&gt; [1] 190  31\n#&gt;\n#&gt; $`dimensions of D in douala`\n#&gt; [1] 189  31\n#&gt;\n#&gt; $`dimensions of D in combined studies`\n#&gt; [1] 569  31\n\nds.table(\"D$malignant\", datasources = conns)  # benign (0) vs malignant (1)\n\n#&gt; Data in all studies were valid\n#&gt;\n#&gt; D$malignant\n#&gt;   0   1\n#&gt; 357 212\nEach hospital holds ~190 patients (569 pooled, 357 benign / 212 malignant), and every site has both classes."
+  },
+  {
+    "objectID": "dsflower.html#do-the-features-actually-separate-the-two-groups",
+    "href": "dsflower.html#do-the-features-actually-separate-the-two-groups",
+    "title": "Federated machine learning with dsFlower",
+    "section": "Do the features actually separate the two groups?",
+    "text": "Do the features actually separate the two groups?\nA federated comparison of one of the most discriminative features — worst_concave_points — between benign and malignant tumours. The group means and SDs are computed across all three hospitals’ patients without any row leaving a site:\n\nds.asFactor(\"D$malignant\", \"mal_f\", datasources = conns)\nsep &lt;- ds.meanSdGp(x = \"D$worst_concave_points\", y = \"mal_f\",\n                   type = \"combine\", datasources = conns)\ndata.frame(\n  diagnosis = c(\"benign\", \"malignant\"),\n  mean_worst_concave_points = round(as.numeric(sep$Mean_gp), 4),\n  sd  = round(as.numeric(sep$StDev_gp), 4),\n  n   = as.integer(sep$Nvalid_gp)\n)\n\n#&gt;   diagnosis mean_worst_concave_points     sd   n\n#&gt; 1    benign                    0.0744 0.0359 357\n#&gt; 2 malignant                    0.1822 0.0464 212\nMalignant tumours have more than double the “worst concave points” of benign ones — the features carry strong signal, so even a simple model should separate the classes well.\n\nbc_features &lt;- setdiff(ds.colnames(\"D\", datasources = conns)[[1]], \"malignant\")\nlength(bc_features)   # 30 predictors\n\n#&gt; [1] 30"
+  },
+  {
+    "objectID": "dsflower.html#predict-with-both-models",
+    "href": "dsflower.html#predict-with-both-models",
+    "title": "Federated machine learning with dsFlower",
+    "section": "Predict with both models",
+    "text": "Predict with both models\nds.flower.predict() returns a malignancy probability (type = \"prob\") or a 0/1 class (type = \"response\"):\n\nX &lt;- bc[, bc_features]\n\np_lr  &lt;- ds.flower.predict(fit_lr,  X, type = \"prob\")\np_sgd &lt;- ds.flower.predict(fit_sgd, X, type = \"prob\")\n\nhead(data.frame(\n  actual         = bc$malignant,\n  P_malig_logreg = round(p_lr, 3),\n  P_malig_sgd    = round(p_sgd, 3)\n), 8)\n\n#&gt;   actual P_malig_logreg P_malig_sgd\n#&gt; 1      1          0.726       0.475\n#&gt; 2      1          0.660       0.403\n#&gt; 3      1          0.956       0.359\n#&gt; 4      1          0.624       0.676\n#&gt; 5      1          0.740       0.721\n#&gt; 6      1          0.655       0.528\n#&gt; 7      1          0.935       0.598\n#&gt; 8      1          0.836       0.717"
+  },
+  {
+    "objectID": "dsflower.html#how-separable-are-the-predictions",
+    "href": "dsflower.html#how-separable-are-the-predictions",
+    "title": "Federated machine learning with dsFlower",
+    "section": "How separable are the predictions?",
+    "text": "How separable are the predictions?\nA good classifier pushes benign cases toward probability 0 and malignant cases toward 1. Here is each model’s score, split by the true diagnosis:\n\nop &lt;- par(mfrow = c(1, 2))\nfor (m in list(c(\"Logistic regression\", \"p_lr\"), c(\"SGD classifier\", \"p_sgd\"))) {\n  boxplot(get(m[2]) ~ bc$malignant, names = c(\"benign\", \"malignant\"),\n          col = c(\"#9ecae1\", \"#fc9272\"), ylab = \"predicted P(malignant)\",\n          xlab = \"true diagnosis\", main = m[1], ylim = c(0, 1))\n}\npar(op)\n\n\n\n\nPredicted malignancy probability by true diagnosis. Both models push benign cases low and malignant cases high; logistic regression separates them a little more cleanly than the SGD classifier."
+  },
+  {
+    "objectID": "dsflower.html#accuracy-and-confusion-matrices",
+    "href": "dsflower.html#accuracy-and-confusion-matrices",
+    "title": "Federated machine learning with dsFlower",
+    "section": "Accuracy and confusion matrices",
+    "text": "Accuracy and confusion matrices\n\nreport &lt;- function(prob, truth, name) {\n  pred &lt;- as.integer(prob &gt;= 0.5)\n  cm &lt;- table(predicted = pred, actual = truth)\n  cat(\"\\n==\", name, \"==\\n\"); print(cm)\n  cat(sprintf(\"accuracy: %.1f%%\\n\", 100 * mean(pred == truth)))\n}\nreport(p_lr,  bc$malignant, \"Logistic regression\")\nreport(p_sgd, bc$malignant, \"SGD classifier\")\n\n== Logistic regression ==\n         actual\npredicted   0   1\n        0 345   9\n        1  12 203\naccuracy: 96.3%\n\n== SGD classifier ==\n         actual\npredicted   0   1\n        0 319  24\n        1  38 188\naccuracy: 89.1%\n\n\n\n\n\n\nNote\n\n\n\nThis public copy is the same well-known cohort the hospitals hold, so the numbers above reflect fit rather than out-of-sample generalisation — in a real study you would validate on a separate, held-out test set. The point here is the workflow: train privately across sites, then use the portable model to predict and visualise."
   }
 ]

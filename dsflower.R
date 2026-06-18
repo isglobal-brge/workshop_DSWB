@@ -1,6 +1,9 @@
 ## ----setup, include=FALSE-----------------------------------------------------
-knitr::opts_chunk$set(comment = "#>", collapse = FALSE)
-options(width = 200)
+# The code below is the real, runnable workflow. For this hand-out the chunks are
+# shown but not executed live (each federated run takes a few minutes); the
+# outputs printed underneath are from an actual run on the three-hospital
+# federation. Download the .R to run it yourself.
+knitr::opts_chunk$set(eval = FALSE, comment = "#>", collapse = FALSE)
 
 
 ## ----libs---------------------------------------------------------------------
@@ -15,18 +18,27 @@ for (h in c("nairobi", "dakar", "douala")) {
 }
 conns <- DSI::datashield.login(logins = builder$build())
 
-DSI::datashield.assign.table(conns, "D",  "dsflower_demo.breast_cancer")  # tumours (binary)
-DSI::datashield.assign.table(conns, "G",  "dsflower_demo.digits")          # digits 0-9
-DSI::datashield.assign.table(conns, "G4", "dsflower_demo.digits4")         # digits 0-3
+DSI::datashield.assign.table(conns, "D", "dsflower_demo.breast_cancer")
 
 
-## ----connect------------------------------------------------------------------
-ds.flower.link.up(conns)
+## ----bc-dim-------------------------------------------------------------------
+ds.dim("D", datasources = conns)              # rows per hospital + pooled total
 
 
-## ----bc-explore---------------------------------------------------------------
-ds.dim("D", datasources = conns)                 # rows per site + pooled
-ds.table("D$malignant", datasources = conns)     # class balance
+## ----bc-balance---------------------------------------------------------------
+ds.table("D$malignant", datasources = conns)  # benign (0) vs malignant (1)
+
+
+## ----bc-sep-------------------------------------------------------------------
+ds.asFactor("D$malignant", "mal_f", datasources = conns)
+sep <- ds.meanSdGp(x = "D$worst_concave_points", y = "mal_f",
+                   type = "combine", datasources = conns)
+data.frame(
+  diagnosis = c("benign", "malignant"),
+  mean_worst_concave_points = round(as.numeric(sep$Mean_gp), 4),
+  sd  = round(as.numeric(sep$StDev_gp), 4),
+  n   = as.integer(sep$Nvalid_gp)
+)
 
 
 ## ----bc-features--------------------------------------------------------------
@@ -34,95 +46,80 @@ bc_features <- setdiff(ds.colnames("D", datasources = conns)[[1]], "malignant")
 length(bc_features)   # 30 predictors
 
 
-## ----bc-train, message=TRUE---------------------------------------------------
-bc_fit <- ds.flower.fit(
+## ----lr-up--------------------------------------------------------------------
+ds.flower.link.up(conns)
+
+
+## ----lr-train, message=TRUE---------------------------------------------------
+fit_lr <- ds.flower.fit(
   conns, symbol = "D", target = "malignant", features = bc_features,
-  model = "sklearn_logreg", strategy = "fedavg",
-  privacy = "clinical_default", rounds = 5L, verbose = TRUE
+  model    = "sklearn_logreg",
+  strategy = "fedavg",
+  privacy  = "clinical_default",   # Secure Aggregation
+  rounds   = 2L, verbose = TRUE
 )
+fit_lr
 
 
-## ----bc-predict---------------------------------------------------------------
-bc_new <- read.csv("https://raw.githubusercontent.com/isglobal-brge/workshop_DSWB/main/data/breast_cancer_new_patients.csv")
-bc_prob <- ds.flower.predict(bc_fit, bc_new[, bc_features], type = "prob")
+## ----lr-down------------------------------------------------------------------
+ds.flower.link.down(conns)   # the link is only needed while training
 
-data.frame(
-  actual      = bc_new$malignant,
-  predicted   = as.integer(bc_prob >= 0.5),
-  P_malignant = round(bc_prob, 3)
+
+## ----sgd-train, message=TRUE--------------------------------------------------
+ds.flower.link.up(conns)
+
+fit_sgd <- ds.flower.fit(
+  conns, symbol = "D", target = "malignant", features = bc_features,
+  model    = "sklearn_sgd",
+  strategy = "fedavg",
+  privacy  = "clinical_default",   # Secure Aggregation
+  rounds   = 2L, verbose = TRUE
 )
+fit_sgd
+
+ds.flower.link.down(conns)
 
 
-## ----digits-explore-----------------------------------------------------------
-ds.dim("G", datasources = conns)
-ds.table("G$digit", datasources = conns)   # ~180 of each digit, balanced
+## ----load-public--------------------------------------------------------------
+bc <- read.csv("https://raw.githubusercontent.com/isglobal-brge/workshop_DSWB/main/data/breast_cancer_public.csv")
+dim(bc)
+table(diagnosis = ifelse(bc$malignant == 1, "malignant", "benign"))
 
 
-## ----digits-images, fig.width=9, fig.height=1.6-------------------------------
-dg_new <- read.csv("https://raw.githubusercontent.com/isglobal-brge/workshop_DSWB/main/data/digits_new_samples.csv")
-px <- grep("^px_", colnames(dg_new), value = TRUE)
-op <- par(mfrow = c(1, 10), mar = c(0, 0, 1.2, 0))
-for (i in 1:10) {
-  img <- matrix(as.numeric(dg_new[i, px]), 8, 8, byrow = TRUE)
-  image(t(img[8:1, ]), col = grey.colors(16, 1, 0), axes = FALSE)
-  title(main = dg_new$digit[i], line = 0.2)
+## ----predict------------------------------------------------------------------
+X <- bc[, bc_features]
+
+p_lr  <- ds.flower.predict(fit_lr,  X, type = "prob")
+p_sgd <- ds.flower.predict(fit_sgd, X, type = "prob")
+
+head(data.frame(
+  actual         = bc$malignant,
+  P_malig_logreg = round(p_lr, 3),
+  P_malig_sgd    = round(p_sgd, 3)
+), 8)
+
+
+## ----viz-sep, fig.width=8, fig.height=4---------------------------------------
+op <- par(mfrow = c(1, 2))
+for (m in list(c("Logistic regression", "p_lr"), c("SGD classifier", "p_sgd"))) {
+  boxplot(get(m[2]) ~ bc$malignant, names = c("benign", "malignant"),
+          col = c("#9ecae1", "#fc9272"), ylab = "predicted P(malignant)",
+          xlab = "true diagnosis", main = m[1], ylim = c(0, 1))
 }
 par(op)
 
 
-## ----digits-features----------------------------------------------------------
-digit_features <- setdiff(ds.colnames("G", datasources = conns)[[1]], c("id", "digit"))
-length(digit_features)   # 64 pixels
+## ----validate-----------------------------------------------------------------
+report <- function(prob, truth, name) {
+  pred <- as.integer(prob >= 0.5)
+  cm <- table(predicted = pred, actual = truth)
+  cat("\n==", name, "==\n"); print(cm)
+  cat(sprintf("accuracy: %.1f%%\n", 100 * mean(pred == truth)))
+}
+report(p_lr,  bc$malignant, "Logistic regression")
+report(p_sgd, bc$malignant, "SGD classifier")
 
 
-## ----dg-logreg-train, message=TRUE--------------------------------------------
-dg_lr <- ds.flower.fit(
-  conns, symbol = "G", target = "digit", features = digit_features,
-  model = "sklearn_logreg", strategy = "fedavg",
-  privacy = "clinical_default", rounds = 5L, verbose = TRUE
-)
-
-
-## ----dg-nn-train, message=TRUE------------------------------------------------
-dg_nn <- ds.flower.fit(
-  conns, symbol = "G", target = "digit", features = digit_features,
-  model = ds.flower.model.pytorch_multiclass(n_classes = 10L, hidden_layers = c(64L, 32L)),
-  strategy = "fedavg", privacy = "clinical_default", rounds = 3L, verbose = TRUE
-)
-
-
-## ----dg-predict---------------------------------------------------------------
-lr_pred <- unlist(ds.flower.predict(dg_lr, dg_new[, digit_features], type = "response"))
-nn_pred <- unlist(ds.flower.predict(dg_nn, dg_new[, digit_features], type = "response"))
-
-data.frame(actual = dg_new$digit, logreg = lr_pred, neural_net = nn_pred)
-cat("logistic regression accuracy:", round(mean(lr_pred == dg_new$digit), 3),
-    " | neural network accuracy:", round(mean(nn_pred == dg_new$digit), 3), "\n")
-
-
-## ----xgb-explore--------------------------------------------------------------
-ds.dim("G4", datasources = conns)
-ds.table("G4$digit", datasources = conns)
-
-
-## ----xgb-train, message=TRUE--------------------------------------------------
-xgb_fit <- ds.flower.fit(
-  conns, symbol = "G4", target = "digit", features = digit_features,
-  model = ds.flower.model.xgboost(objective = "multi:softmax", num_class = 4L,
-                                  n_trees = 8L, eta = 0.5),
-  strategy = "fedavg", privacy = "clinical_default", rounds = 2L, verbose = TRUE
-)
-
-
-## ----xgb-predict--------------------------------------------------------------
-xgb_new <- read.csv("https://raw.githubusercontent.com/isglobal-brge/workshop_DSWB/main/data/digits4_new_samples.csv")
-xgb_pred <- unlist(ds.flower.predict(xgb_fit, xgb_new[, digit_features], type = "response"))
-
-data.frame(actual = xgb_new$digit, predicted = xgb_pred)
-cat("xgboost accuracy:", round(mean(xgb_pred == xgb_new$digit), 3), "\n")
-
-
-## ----teardown-----------------------------------------------------------------
-ds.flower.link.down(conns)
+## ----cleanup------------------------------------------------------------------
 DSI::datashield.logout(conns)
 
