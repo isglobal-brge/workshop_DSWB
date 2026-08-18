@@ -4,7 +4,11 @@ options(width = 200)   # print wide output on one line; the page scrolls it hori
 
 
 ## ----install, eval=FALSE------------------------------------------------------
-# devtools::install_github("isglobal-brge/dsOMOPClient", force = TRUE)
+# devtools::install_github(
+#   "isglobal-brge/dsOMOPClient@2.7.1",
+#   force = TRUE,
+#   upgrade = "never"
+# )
 
 
 ## ----libs---------------------------------------------------------------------
@@ -41,19 +45,13 @@ ds.omop.concept.prevalence("person", concept_col = "gender_concept_id",
                            scope = "pooled", symbol = "omop", conns = conns)
 
 
-## ----birth-hist, fig.width=7, fig.height=4------------------------------------
-ds.omop.value.histogram("person", value_col = "year_of_birth", nbins = 6, plot = TRUE,
-                        xlab = "Year of birth", main = "Patient birth years (pooled)",
-                        symbol = "omop", conns = conns)
-
-
 ## ----topcond------------------------------------------------------------------
 ds.omop.concept.prevalence("condition_occurrence", metric = "persons",
                            top_n = 10, scope = "pooled", symbol = "omop", conns = conns)
 
 
 ## ----search-------------------------------------------------------------------
-ds.omop.concept.search("hyperlipidemia", domain = "Condition",
+ds.omop.concept.search("infarction / myocardial-acute", domain = "Condition",
                        limit = 5, symbol = "omop", conns = conns)
 
 
@@ -68,15 +66,8 @@ ds.omop.column.stats("measurement", "value_as_number", concept_id = 3027018,
 
 ## ----hr-hist, fig.width=7, fig.height=4---------------------------------------
 ds.omop.value.histogram("measurement", value_col = "value_as_number", concept_id = 3027018,
-                        nbins = 7, plot = TRUE, xlab = "Heart rate (bpm)",
+                        bins = 3, nbins = 3, plot = TRUE, xlab = "Heart rate (bpm)",
                         main = "Heart rate (pooled across sites)",
-                        symbol = "omop", conns = conns)
-
-
-## ----creat-hist, fig.width=7, fig.height=4------------------------------------
-ds.omop.value.histogram("measurement", value_col = "value_as_number", concept_id = 3016723,
-                        nbins = 9, plot = TRUE, col = "#C44E52", xlab = "Creatinine (mg/dL)",
-                        main = "Serum creatinine (pooled across sites)",
                         symbol = "omop", conns = conns)
 
 

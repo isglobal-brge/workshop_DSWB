@@ -38,15 +38,24 @@ We work with a **very small sample of OMOP CDM data** (MIMIC, ~100 patients per 
 
 We work with **MIMIC** (an intensive-care database, ~100 patients here): connect → explore → learn the **recipe** for building analysis tables → filter → and finish with a real **regression model**.
 
-# Before you start: update dsOMOPClient
+# Before you start: install the validated dsOMOPClient
 
-These machines already have **`devtools`**, so update the client to the latest version before anything else. Force the upgrade so it reinstalls even when a version is already present:
+These machines already have **`devtools`**. Install the client version used to validate this tutorial before anything else; pinning the tag keeps every participant on the same API:
 
 ```{r install, eval=FALSE}
-devtools::install_github("isglobal-brge/dsOMOPClient", force = TRUE)
+devtools::install_github(
+  "isglobal-brge/dsOMOPClient@2.7.1",
+  force = TRUE,
+  upgrade = "never"
+)
 ```
 
 If R already had `dsOMOPClient` loaded, restart the session afterwards, then carry on.
+
+::: {.callout-note}
+## Validated client/server pair
+This edition uses **dsOMOPClient 2.7.1** with **dsOMOP 2.5.1** on the servers (`davidsarrat/rock-dsomop-dswb-reproducibility:2.5.1`). The server profile is maintained centrally; workshop participants do not need server-administrator access.
+:::
 
 # 1. Connecting to the federation
 
@@ -69,6 +78,8 @@ conns <- DSI::datashield.login(logins = builder$build())
 
 ds.omop.connect(resource = "omop_demo.mimic", symbol = "omop", conns = conns)
 ```
+
+If `ds.omop.connect()` reports unsafe `c`/`list` aggregate methods, the selected server profile is stale rather than your login being wrong. Ask the workshop maintainer to deploy the validated `dsOMOP 2.5.1` profile; do not weaken the client-side safety check.
 
 ::: {.callout-warning}
 ## Always select a profile
@@ -104,16 +115,10 @@ ds.omop.concept.prevalence("person", concept_col = "gender_concept_id",
 You got `MALE` / `FEMALE`, not codes like `8507` / `8532` — any `*_concept_id` column is automatically translated. **Concept translation is on by default.**
 :::
 
-And their **birth years** — `ds.omop.value.histogram()` draws a disclosure-safe, federation-wide histogram of any numeric column when you pass `plot = TRUE`:
-
-```{r birth-hist, fig.width=7, fig.height=4}
-ds.omop.value.histogram("person", value_col = "year_of_birth", nbins = 6, plot = TRUE,
-                        xlab = "Year of birth", main = "Patient birth years (pooled)",
-                        symbol = "omop", conns = conns)
-```
-
 ::: {.callout-note}
-This extract was re-anchored so its records run through **2024**; subtract a birth year from 2024 for an age (earlier birth years = older patients). We'll get age directly from the recipe in Section 7.
+Raw birth dates and birth years remain protected. In Section 7 the recipe asks
+dsOMOP to derive age inside each server, so the source values never leave the
+DataSHIELD session.
 :::
 
 # 4. Discovering what was recorded
@@ -125,10 +130,11 @@ ds.omop.concept.prevalence("condition_occurrence", metric = "persons",
                            top_n = 10, scope = "pooled", symbol = "omop", conns = conns)
 ```
 
-Don't know a concept's code? **Search** for it:
+Don't know a concept's code? **Search** for it. The search accepts normal
+words: spaces and punctuation do not have to match the vocabulary spelling.
 
 ```{r search}
-ds.omop.concept.search("hyperlipidemia", domain = "Condition",
+ds.omop.concept.search("infarction / myocardial-acute", domain = "Condition",
                        limit = 5, symbol = "omop", conns = conns)
 ```
 
@@ -151,23 +157,16 @@ Its distribution — again with `plot = TRUE`:
 
 ```{r hr-hist, fig.width=7, fig.height=4}
 ds.omop.value.histogram("measurement", value_col = "value_as_number", concept_id = 3027018,
-                        nbins = 7, plot = TRUE, xlab = "Heart rate (bpm)",
+                        bins = 3, nbins = 3, plot = TRUE, xlab = "Heart rate (bpm)",
                         main = "Heart rate (pooled across sites)",
                         symbol = "omop", conns = conns)
 ```
 
-Heart rate is **roughly symmetric**. Contrast it with **serum creatinine** (`3016723`):
-
-```{r creat-hist, fig.width=7, fig.height=4}
-ds.omop.value.histogram("measurement", value_col = "value_as_number", concept_id = 3016723,
-                        nbins = 9, plot = TRUE, col = "#C44E52", xlab = "Creatinine (mg/dL)",
-                        main = "Serum creatinine (pooled across sites)",
-                        symbol = "omop", conns = conns)
-```
-
 ::: {.callout-important}
-## Symmetric vs skewed
-Creatinine has a **long right tail** (a minority with kidney injury) that pulls its mean above the median — so the mean overstates the "typical" patient. Always look at the shape before trusting a mean.
+## Shared bins
+Federated histograms use the same bin edges at every site and combine only
+disclosure-safe bin counts. With this small teaching dataset, three broad bins
+keep every site represented in the pooled plot.
 :::
 
 # 6. A categorical measurement: heart rhythm

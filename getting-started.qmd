@@ -35,7 +35,11 @@ install.packages(
   repos = c("https://molgenis.r-universe.dev", "https://cloud.r-project.org")
 )
 devtools::install_github("datashield/dsBaseClient", force = TRUE)
-devtools::install_github("isglobal-brge/dsOMOPClient")
+devtools::install_github(
+  "isglobal-brge/dsOMOPClient@2.7.1",
+  force = TRUE,
+  upgrade = "never"
+)
 devtools::install_github("isglobal-brge/dsOmicsClient")
 install.packages("metafor")
 install.packages("readr")

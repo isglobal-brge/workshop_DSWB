@@ -56,7 +56,7 @@ ds.omop.column.stats("measurement", "value_as_number", concept_id = 21492239,
                      scope = "pooled", symbol = "omop", conns = conns)
 
 ds.omop.value.histogram("measurement", value_col = "value_as_number", concept_id = 21492239,
-                        nbins = 9, plot = TRUE, xlab = "Systolic BP (mmHg)",
+                        bins = 3, nbins = 3, plot = TRUE, xlab = "Systolic BP (mmHg)",
                         main = "Systolic blood pressure (pooled)",
                         symbol = "omop", conns = conns)
 ```
